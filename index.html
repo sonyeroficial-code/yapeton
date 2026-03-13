@@ -2459,20 +2459,18 @@ html, body { height: 100%; }
 
     body{
       display:flex;
-      justify-content:flex-start;
-      align-items:stretch;
-      padding: 0;
+      justify-content:center;
+      align-items:center;
+      padding: 12px;
     }
 
     .device{
-      width: 100vw;
-      height: 100dvh;
-      max-width: 100vw;
-      max-height: 100dvh;
-      border-radius: 0;
+      width: min(100vw, var(--appMax));
+      height: min(100vh, 900px);
+      border-radius: 28px;
       overflow:hidden;
       background:#333333;
-      box-shadow: none;
+      box-shadow: 0 20px 60px rgba(0,0,0,.55);
       position:relative;
     }
 
@@ -3203,7 +3201,7 @@ html, body { height: 100%; }
 
     #voucherView .card{
       margin-top:120px !important;
-      width:100%;
+      width:98%; /* un poco más ancho */
       margin-left:auto;
       margin-right:auto;
       background:#f4f4f6;
@@ -4297,43 +4295,6 @@ html, body { height: 100%; }
   align-items:center;
   justify-content:center;
   color: #5b2be0;
-}
-
-/* Override final: el scanner SIEMPRE debe cubrir toda la ventana */
-html body #qrScanView,
-html body #qrScanView.qrScan-wrap{
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  width: 100vw !important;
-  height: 100dvh !important;
-  min-width: 100vw !important;
-  min-height: 100dvh !important;
-  max-width: 100vw !important;
-  max-height: 100dvh !important;
-  inset: 0 !important;
-  margin: 0 !important;
-  transform: none !important;
-  border-radius: 0 !important;
-  z-index: 2147483647 !important;
-  overflow: hidden !important;
-  background: #000 !important;
-}
-html body #qrScanView .qrScan-video{
-  position: absolute !important;
-  inset: 0 !important;
-  width: 100vw !important;
-  height: 100dvh !important;
-  object-fit: cover !important;
-  background: #000 !important;
-}
-html body #qrScanView .qrScan-bottom{
-  position: absolute !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
 }
 
 
@@ -13995,58 +13956,7 @@ if (&quot;serviceWorker&quot; in navigator) {
 
   // Expose helpers
   window.abrirEscanearQR = showScan;
-  
-  // Forzar overlay realmente full screen aunque exista contenedor tipo telefono
-  function ensureScanOverlayRoot(){
-    if(!scanView) return;
-    if(scanView.parentElement !== document.body){
-      document.body.appendChild(scanView);
-    }
-    const vh = (window.visualViewport && window.visualViewport.height) ? window.visualViewport.height : window.innerHeight;
-    scanView.style.position = "fixed";
-    scanView.style.top = "0";
-    scanView.style.left = "0";
-    scanView.style.right = "0";
-    scanView.style.bottom = "0";
-    scanView.style.width = "100vw";
-    scanView.style.height = vh + "px";
-    scanView.style.maxWidth = "100vw";
-    scanView.style.maxHeight = vh + "px";
-    scanView.style.zIndex = "2147483647";
-    scanView.style.margin = "0";
-    scanView.style.transform = "none";
-    scanView.style.borderRadius = "0";
-  }
-
-  function syncScanOverlaySize(){
-    if(!scanView || scanView.style.display === "none") return;
-    ensureScanOverlayRoot();
-  }
-
-  window.addEventListener("resize", syncScanOverlaySize, { passive:true });
-  if(window.visualViewport){
-    window.visualViewport.addEventListener("resize", syncScanOverlaySize, { passive:true });
-    window.visualViewport.addEventListener("scroll", syncScanOverlaySize, { passive:true });
-  }
-
-  const __origShowScan = showScan;
-  showScan = function(){
-    ensureScanOverlayRoot();
-    __origShowScan();
-    ensureScanOverlayRoot();
-    document.documentElement.style.overflow = "hidden";
-    document.body.style.overflow = "hidden";
-  };
-
-  const __origHideScan = hideScan;
-  hideScan = function(){
-    __origHideScan();
-    document.documentElement.style.overflow = "";
-    document.body.style.overflow = "";
-  };
-
-  ensureScanOverlayRoot();
-window.cerrarEscanearQR = hideScan;
+  window.cerrarEscanearQR = hideScan;
 })();
 &lt;/script&gt;
 
@@ -17644,5 +17554,90 @@ img,video,canvas,svg{max-width:100% !important;height:auto !important;}`;
 #mNameBox{font-weight:500 !important;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif !important;}
 #mAmountInput{font-weight:400 !important;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif !important;}
 </style>
+
+<style id="ios-safari-screen-fix-v3">
+html.ios-vv-fix, html.ios-vv-fix body{
+  width:100% !important;
+  max-width:100% !important;
+  overflow-x:hidden !important;
+}
+html.ios-vv-fix body{
+  min-height:var(--ios-vh, 100dvh) !important;
+}
+html.ios-vv-fix .stage{
+  position:fixed !important;
+  inset:0 !important;
+  width:100% !important;
+  max-width:100% !important;
+  height:var(--ios-vh, 100dvh) !important;
+  min-height:var(--ios-vh, 100dvh) !important;
+  overflow:hidden !important;
+}
+html.ios-vv-fix .device,
+html.ios-vv-fix .views,
+html.ios-vv-fix .screen,
+html.ios-vv-fix iframe{
+  width:100% !important;
+  max-width:100% !important;
+}
+html.ios-vv-fix .device,
+html.ios-vv-fix iframe{
+  height:var(--ios-vh, 100dvh) !important;
+  min-height:var(--ios-vh, 100dvh) !important;
+}
+html.ios-vv-fix .device{
+  margin:0 auto !important;
+  left:0 !important;
+  right:0 !important;
+}
+</style>
+<script id="ios-safari-screen-fix-script-v3">
+(function(){
+  var ua = navigator.userAgent || '';
+  var isiOS = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if(!isiOS) return;
+  var root = document.documentElement;
+  root.classList.add('ios-vv-fix');
+  function setIOSVars(){
+    var vv = window.visualViewport;
+    var h = vv ? vv.height : window.innerHeight;
+    var w = vv ? vv.width : window.innerWidth;
+    root.style.setProperty('--ios-vh', h + 'px');
+    root.style.setProperty('--ios-vw', w + 'px');
+  }
+  function injectInto(doc){
+    try{
+      if(!doc || !doc.documentElement) return;
+      doc.documentElement.classList.add('ios-vv-fix');
+      doc.documentElement.style.setProperty('--ios-vh', getComputedStyle(root).getPropertyValue('--ios-vh'));
+      doc.documentElement.style.setProperty('--ios-vw', getComputedStyle(root).getPropertyValue('--ios-vw'));
+      var style = doc.getElementById('ios-safari-inner-fix-v3');
+      if(!style){
+        style = doc.createElement('style');
+        style.id = 'ios-safari-inner-fix-v3';
+        (doc.head || doc.documentElement).appendChild(style);
+      }
+      style.textContent = 'html.ios-vv-fix,html.ios-vv-fix body{width:100%!important;max-width:100%!important;overflow-x:hidden!important;}html.ios-vv-fix body{min-height:var(--ios-vh,100dvh)!important;}html.ios-vv-fix .stage{position:fixed!important;inset:0!important;width:100%!important;max-width:100%!important;height:var(--ios-vh,100dvh)!important;min-height:var(--ios-vh,100dvh)!important;overflow:hidden!important;}html.ios-vv-fix .device,html.ios-vv-fix .views,html.ios-vv-fix .screen,html.ios-vv-fix iframe{width:100%!important;max-width:100%!important;}html.ios-vv-fix .device,html.ios-vv-fix iframe{height:var(--ios-vh,100dvh)!important;min-height:var(--ios-vh,100dvh)!important;}html.ios-vv-fix .device{margin:0 auto!important;left:0!important;right:0!important;}';
+    }catch(e){}
+  }
+  function applyAll(){
+    setIOSVars();
+    document.querySelectorAll('iframe').forEach(function(fr){
+      try{ injectInto(fr.contentDocument || (fr.contentWindow && fr.contentWindow.document)); }catch(e){}
+    });
+  }
+  ['DOMContentLoaded','load','resize','orientationchange','pageshow'].forEach(function(ev){
+    window.addEventListener(ev, applyAll, {passive:true});
+  });
+  if(window.visualViewport){
+    visualViewport.addEventListener('resize', applyAll, {passive:true});
+    visualViewport.addEventListener('scroll', applyAll, {passive:true});
+  }
+  setTimeout(applyAll, 0);
+  setTimeout(applyAll, 250);
+  setTimeout(applyAll, 1000);
+})();
+</script>
+
 </body>
 </html>
