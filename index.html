@@ -4868,7 +4868,7 @@ html, body { height: 100%; }
             &lt;/div&gt;
 
             &lt;div class=&quot;mName&quot; id=&quot;mNameBox&quot; contenteditable=&quot;true&quot; data-placeholder=&quot;Sin nombre&quot;
-                 style=&quot;margin-top:12px;text-align:center;font-size:22px;font-weight:900;color:var(--mPurple);outline:none;cursor:text;display:block;&quot;&gt;
+                 style=&quot;margin-top:12px;text-align:center;font-size:22px;font-weight:500 !important;color:var(--mPurple);outline:none;cursor:text;display:block;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;&quot;&gt;
               Sin nombre
             &lt;/div&gt;
 
@@ -4881,7 +4881,7 @@ html, body { height: 100%; }
 
             &lt;div class=&quot;mAmount&quot; style=&quot;margin-top:40px;text-align:center;&quot;&gt;
               &lt;input id=&quot;mAmountInput&quot; type=&quot;text&quot; value=&quot;0&quot; inputmode=&quot;decimal&quot;
-                     style=&quot;width:100%;border:none;outline:none;background:transparent;text-align:center;font-size:82px;font-weight:500;color:var(--mPurple);caret-color:var(--mPurple);&quot; /&gt;
+                     style=&quot;width:100%;border:none;outline:none;background:transparent;text-align:center;font-size:82px;font-weight:400 !important;color:var(--mPurple);caret-color:var(--mPurple);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;&quot; /&gt;
             &lt;/div&gt;
 
             &lt;div class=&quot;montoLimitWrap&quot;&gt;&lt;div class=&quot;mPill limitPill&quot; id=&quot;mLimitPill&quot;
@@ -17530,5 +17530,10 @@ img,video,canvas,svg{max-width:100% !important;height:auto !important;}`;
 })();
 </script>
 
+
+<style>
+#mNameBox{font-weight:500 !important;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif !important;}
+#mAmountInput{font-weight:400 !important;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif !important;}
+</style>
 </body>
 </html>
