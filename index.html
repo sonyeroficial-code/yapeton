@@ -793,6 +793,242 @@ iframe{
 }
 </style>
 
+
+<style id="global-responsive-fix-v2">
+/* ===== Global responsive fix stronger ===== */
+:root{
+  --app-max: 430px;
+  --app-side: clamp(12px, 3.6vw, 18px);
+  --app-top: max(env(safe-area-inset-top), 8px);
+  --app-bottom: max(env(safe-area-inset-bottom), 12px);
+}
+html,body{
+  width:100%;
+  min-height:100%;
+  overflow-x:hidden !important;
+}
+body{
+  position:relative;
+}
+.stage{
+  overflow:hidden !important;
+}
+#voucherView{
+  overflow-x:hidden !important;
+  overflow-y:auto !important;
+  -webkit-overflow-scrolling:touch;
+  padding-top:0 !important;
+}
+#voucherView .voucherBody{
+  width:100% !important;
+  min-height:100dvh !important;
+  padding: var(--app-top) var(--app-side) calc(var(--app-bottom) + 18px) !important;
+  align-items:flex-start !important;
+  box-sizing:border-box !important;
+}
+#voucherView .container{
+  width:min(100%, var(--app-max)) !important;
+  max-width:min(100%, var(--app-max)) !important;
+  margin:0 auto !important;
+  padding-top:6px !important;
+  position:relative !important;
+  left:auto !important;
+  right:auto !important;
+  transform:none !important;
+}
+#voucherView .close-btn{
+  top: max(2px, env(safe-area-inset-top)) !important;
+  right: 0 !important;
+}
+#voucherView .yape-logo{
+  top: clamp(26px, 7vw, 44px) !important;
+  left: clamp(8px, 2vw, 12px) !important;
+  width: clamp(56px, 16vw, 78px) !important;
+  height: clamp(56px, 16vw, 78px) !important;
+}
+#voucherView .card{
+  width:100% !important;
+  max-width:100% !important;
+  margin-top: clamp(108px, 28vw, 132px) !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+  padding: clamp(18px, 4.4vw, 23px) clamp(14px, 4.2vw, 19px) clamp(16px, 4vw, 19px) !important;
+  border-radius: clamp(20px, 6vw, 28px) !important;
+  box-sizing:border-box !important;
+}
+#voucherView .header,
+#voucherView .security-row,
+#voucherView .promo-grid,
+#voucherView .row{
+  width:100% !important;
+  max-width:100% !important;
+  box-sizing:border-box !important;
+}
+#voucherView .header,
+#voucherView .security-row{
+  gap:12px !important;
+}
+#voucherView .share{
+  flex:0 0 auto !important;
+  white-space:nowrap !important;
+}
+#voucherView .amount{
+  flex-wrap:wrap !important;
+}
+#voucherView .currency{
+  font-size: clamp(18px, 5vw, 20px) !important;
+}
+#voucherView .number{
+  font-size: clamp(40px, 14vw, 52px) !important;
+}
+#voucherView .title,
+#voucherView .name{
+  overflow-wrap:anywhere !important;
+  word-break:break-word !important;
+}
+#voucherView .datetime{
+  row-gap:8px !important;
+  column-gap:8px !important;
+}
+#voucherView .security-label,
+#voucherView .section-title,
+#voucherView .vMsgText,
+#voucherView .promo-text,
+#voucherView .data,
+#voucherView .row span,
+#voucherView .datetime,
+#voucherView .share,
+#voucherView .title,
+#voucherView .name{
+  max-width:100% !important;
+  min-width:0 !important;
+}
+#voucherView .security-row{
+  flex-wrap:nowrap !important;
+}
+#voucherView .security-label{
+  flex:1 1 auto !important;
+}
+#voucherView .security-boxes{
+  flex:0 0 auto !important;
+}
+#voucherView .code{
+  width: clamp(26px, 7vw, 30px) !important;
+  height: clamp(26px, 7vw, 30px) !important;
+}
+#voucherView .data{
+  font-size: clamp(16px, 4.8vw, 18px) !important;
+}
+#voucherView .row{
+  flex-wrap:nowrap !important;
+  align-items:flex-start !important;
+}
+#voucherView .row > span:first-child{
+  flex:1 1 auto !important;
+  min-width:0 !important;
+  padding-right:10px !important;
+}
+#voucherView .row > span:last-child{
+  flex:0 0 auto !important;
+  text-align:right !important;
+  max-width:50% !important;
+  overflow-wrap:anywhere !important;
+}
+#voucherView .promo-wrap{
+  width:100% !important;
+  box-sizing:border-box !important;
+  padding: clamp(14px, 4vw, 18px) !important;
+  border-radius: clamp(18px, 5vw, 24px) !important;
+}
+#voucherView .promo-card{
+  width:100% !important;
+  box-sizing:border-box !important;
+}
+#voucherView .promo-grid{
+  flex-wrap:nowrap !important;
+  gap:0 !important;
+}
+#voucherView .promo-left{
+  flex:1.25 1 0 !important;
+  min-width:0 !important;
+  min-height: clamp(118px, 32vw, 156px) !important;
+  border-radius: 16px 0 0 16px !important;
+}
+#voucherView .promo-right{
+  flex:0.95 1 0 !important;
+  min-width:0 !important;
+  padding: clamp(10px, 2.8vw, 14px) clamp(10px, 3vw, 14px) !important;
+}
+#voucherView .promo-text{
+  font-size: clamp(11px, 3.1vw, 13px) !important;
+}
+#voucherView .promo-price{
+  font-size: clamp(28px, 8.5vw, 34px) !important;
+}
+#voucherView .promo-cta{
+  max-width:100% !important;
+  white-space:nowrap !important;
+}
+#voucherView .voucher-actions{
+  width:100% !important;
+}
+#voucherView .voucher-btn{
+  min-height:52px !important;
+}
+#voucherView .voucher-btn-primary,
+#voucherView .voucher-btn-ghost{
+  width:100% !important;
+}
+@media (max-width: 380px){
+  #voucherView .voucherBody{
+    padding-left:12px !important;
+    padding-right:12px !important;
+  }
+  #voucherView .share{
+    font-size: 15px !important;
+    gap:4px !important;
+  }
+  #voucherView .title{
+    font-size: 18px !important;
+  }
+  #voucherView .name{
+    font-size: 18px !important;
+  }
+  #voucherView .promo-wrap{
+    padding: 12px !important;
+  }
+  #voucherView .promo-left{
+    min-height: 108px !important;
+  }
+  #voucherView .promo-price{
+    font-size: 26px !important;
+  }
+  #voucherView .promo-cta{
+    padding: 8px 10px !important;
+    font-size: 11px !important;
+  }
+}
+@media (max-width: 340px){
+  #voucherView .security-row,
+  #voucherView .header{
+    align-items:flex-start !important;
+  }
+  #voucherView .share{
+    font-size: 14px !important;
+  }
+  #voucherView .promo-text{
+    font-size: 10px !important;
+    line-height:1.2 !important;
+  }
+  #voucherView .promo-from{
+    font-size: 9px !important;
+  }
+  #voucherView .promo-price{
+    font-size: 24px !important;
+  }
+}
+</style>
+
 </head>
 <body class="mode-login">
 
@@ -2221,28 +2457,34 @@ html, body { height: 100%; }
 
     @media (max-width: 520px){
       body{
-        padding:0;
-        align-items:stretch;
+        padding:0 !important;
+        align-items:stretch !important;
+        justify-content:flex-start !important;
       }
       .device{
-        width: 100vw;
-        height: 100dvh;
-        border-radius: 0;
-        box-shadow: none;
+        width: 100vw !important;
+        height: 100dvh !important;
+        max-width: 100vw !important;
+        max-height: 100dvh !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
       }
     }
 
     /* En celulares (aunque activen &quot;Sitio de escritorio&quot;), forzamos pantalla completa */
     @media (pointer: coarse){
       body{
-        padding:0;
-        align-items:stretch;
+        padding:0 !important;
+        align-items:stretch !important;
+        justify-content:flex-start !important;
       }
       .device{
-        width: 100vw;
-        height: 100dvh;
-        border-radius: 0;
-        box-shadow: none;
+        width: 100vw !important;
+        height: 100dvh !important;
+        max-width: 100vw !important;
+        max-height: 100dvh !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
       }
     }
     /* ====== MODO ESCRITORIO/TABLET (simulador) ======
@@ -2252,8 +2494,12 @@ html, body { height: 100%; }
     @media (pointer: fine) and (min-width: 521px){
       /* contenedor tipo teléfono */
       .device{
-        width: min(430px, 92vw);
-        height: min(900px, 92vh);
+        width: 100vw !important;
+        height: 100dvh !important;
+        max-width: 100vw !important;
+        max-height: 100dvh !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
       }
 
       /* overlays / sheets / modales dentro del teléfono (evita que se vayan a todo el navegador) */
@@ -17123,6 +17369,164 @@ window.__YAPE_CONFETTI_DATA = {"v":"5.7.4","fr":24,"ip":0,"op":56,"w":848,"h":19
   setInterval(queue, 2200);
   var mo = new MutationObserver(queue);
   mo.observe(document.documentElement, {childList:true, subtree:true, attributes:true, attributeFilter:['style','class']});
+})();
+</script>
+
+
+<style id="__iframe_true_fullwidth_patch">
+html,body{max-width:100% !important; overflow-x:hidden !important;}
+.stage{width:100% !important; height:100dvh !important;}
+iframe{width:100% !important; height:100% !important;}
+</style>
+<script id="__iframe_true_fullwidth_runtime">
+(function(){
+  const CSS = `
+html,body{
+  width:100% !important;
+  max-width:100% !important;
+  min-height:100% !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow-x:hidden !important;
+}
+body{
+  display:block !important;
+  justify-content:initial !important;
+  align-items:initial !important;
+  background:#742284 !important;
+}
+.device,
+.views,
+.view,
+.app,
+#voucherView,
+#voucherView .voucherBody,
+#voucherView .container{
+  width:100% !important;
+  max-width:100% !important;
+}
+.device{
+  height:100dvh !important;
+  min-height:100dvh !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  margin:0 !important;
+}
+@media (pointer: fine) and (min-width: 521px){
+  body{
+    padding:0 !important;
+    align-items:stretch !important;
+  }
+  .device{
+    width:100vw !important;
+    height:100dvh !important;
+    max-width:100vw !important;
+    max-height:none !important;
+    border-radius:0 !important;
+    box-shadow:none !important;
+  }
+}
+#perfilEditarView{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+}
+#voucherView{
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+}
+#voucherView .voucherBody{
+  min-height:100dvh !important;
+  padding: max(env(safe-area-inset-top), 10px) 16px calc(max(env(safe-area-inset-bottom), 12px) + 18px) !important;
+  box-sizing:border-box !important;
+}
+#voucherView .container{
+  margin:0 auto !important;
+  left:auto !important;
+  right:auto !important;
+  transform:none !important;
+}
+#voucherView .card,
+#voucherView .promo-wrap,
+#voucherView .promo-card{
+  width:100% !important;
+  max-width:100% !important;
+}
+img,video,canvas,svg,iframe{max-width:100% !important;}
+`;
+  function inject(doc){
+    if(!doc || !doc.documentElement) return;
+    try{
+      let style = doc.getElementById('__true_fullwidth_injected');
+      if(!style){
+        style = doc.createElement('style');
+        style.id='__true_fullwidth_injected';
+        (doc.head || doc.documentElement).appendChild(style);
+      }
+      style.textContent = CSS;
+    }catch(e){}
+  }
+  function apply(){
+    inject(document);
+    document.querySelectorAll('iframe').forEach(function(fr){
+      try{ inject(fr.contentDocument || (fr.contentWindow && fr.contentWindow.document)); }catch(e){}
+    });
+  }
+  ['DOMContentLoaded','load','resize','orientationchange'].forEach(function(ev){
+    window.addEventListener(ev, apply, {passive:true});
+  });
+  if(window.visualViewport){
+    visualViewport.addEventListener('resize', apply, {passive:true});
+  }
+  setTimeout(apply, 50);
+  setTimeout(apply, 400);
+  setTimeout(apply, 1200);
+  setInterval(apply, 2000);
+})();
+</script>
+
+
+
+<style id="__responsive_no_font_patch">
+html,body{width:100% !important;height:100% !important;max-width:100% !important;overflow-x:hidden !important;}
+body{margin:0 !important;padding:0 !important;}
+.stage{position:fixed !important;inset:0 !important;width:100vw !important;height:100dvh !important;overflow:hidden !important;}
+.stage iframe{position:absolute !important;inset:0 !important;width:100% !important;height:100% !important;border:0 !important;}
+@media (pointer:fine) and (min-width:521px){
+  body{padding:0 !important;align-items:stretch !important;justify-content:flex-start !important;}
+  .device{width:100vw !important;height:100dvh !important;max-width:100vw !important;max-height:100dvh !important;border-radius:0 !important;box-shadow:none !important;margin:0 !important;}
+}
+</style>
+<script>
+(function(){
+  var CSS = `html,body{width:100% !important;height:100% !important;max-width:100% !important;overflow-x:hidden !important;}
+body{margin:0 !important;padding:0 !important;}
+.device,.app,.screen,.views,.view{max-width:100% !important;}
+@media (pointer:fine) and (min-width:521px){
+  body{padding:0 !important;align-items:stretch !important;justify-content:flex-start !important;background:#111 !important;}
+  .device{width:100vw !important;height:100dvh !important;max-width:100vw !important;max-height:100dvh !important;border-radius:0 !important;box-shadow:none !important;margin:0 !important;}
+}
+#voucherView,#perfilEditarView{width:100% !important;min-height:100dvh !important;overflow-x:hidden !important;}
+#voucherView .voucherBody{min-height:100dvh !important;box-sizing:border-box !important;}
+#voucherView .container,#voucherView .card,#voucherView .promo-wrap,#voucherView .promo-card{max-width:100% !important;}
+img,video,canvas,svg{max-width:100% !important;height:auto !important;}`;
+  function applyDoc(doc){
+    try{
+      if(!doc || !doc.documentElement) return;
+      var s=doc.getElementById('__responsive_no_font_patch_inner');
+      if(!s){ s=doc.createElement('style'); s.id='__responsive_no_font_patch_inner'; (doc.head||doc.documentElement).appendChild(s); }
+      s.textContent=CSS;
+    }catch(e){}
+  }
+  function applyAll(){
+    applyDoc(document);
+    document.querySelectorAll('iframe').forEach(function(fr){
+      try{ applyDoc(fr.contentDocument || fr.contentWindow.document); }catch(e){}
+    });
+  }
+  ['DOMContentLoaded','load','resize','orientationchange'].forEach(function(ev){window.addEventListener(ev,applyAll,{passive:true});});
+  setTimeout(applyAll,50); setTimeout(applyAll,400); setTimeout(applyAll,1200);
 })();
 </script>
 
