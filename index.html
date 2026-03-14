@@ -4913,7 +4913,7 @@ html, body { height: 100%; }
           &lt;/div&gt;
 
           &lt;div class=&quot;mFooter&quot; id=&quot;mFooter&quot;
-               style=&quot;position:fixed;left:0;right:0;bottom:0;width:100%;background:var(--mBg);padding:14px 20px calc(14px + env(safe-area-inset-bottom));z-index:50;transform:translateY(var(--mKb));will-change:transform;&quot;&gt;
+               style=&quot;position:absolute;left:0;right:0;bottom:0;width:100%;background:var(--mBg);padding:14px 20px calc(14px + env(safe-area-inset-bottom));z-index:50;transform:translateY(var(--mKb,0px));will-change:transform;box-sizing:border-box;&quot;&gt;
             &lt;div class=&quot;mMessage&quot; style=&quot;margin-bottom:14px;&quot;&gt;
               &lt;input id=&quot;mMsgInput&quot; type=&quot;text&quot; placeholder=&quot;Agregar mensaje&quot;
                      style=&quot;width:100%;border:none;outline:none;border-bottom:2px solid #cfcfcf;padding:6px 4px;font-size:14px;text-align:center;background:transparent;&quot; /&gt;
@@ -4955,6 +4955,21 @@ html, body { height: 100%; }
               content: attr(data-placeholder);
               color: #b7b7b7;
               font-weight:500;
+            }
+            @supports (-webkit-touch-callout: none){
+              #montoView, #montoView .mApp{
+                min-height:var(--ios-vh, 100dvh);
+                height:var(--ios-vh, 100dvh);
+              }
+              #montoView .mContent{
+                overscroll-behavior:contain;
+                padding-bottom:10px;
+              }
+              #montoView .mFooter{
+                width:100%;
+                max-width:100%;
+                transform:translateY(var(--mKb,0px));
+              }
             }
           
 /* ===== FIX SCROLL MOVIMIENTOS ===== */
@@ -11606,18 +11621,38 @@ function maskPhoneVoucher(p){
     let mBASE_H = 0;
     let mPhoneFull = &quot;999999222&quot;;
 
-    function mSetBaseHeight(){
-      mBASE_H = Math.max(document.documentElement.clientHeight, window.innerHeight);
+    function mSetBaseHeight(force){
+      const now = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0, (window.visualViewport ? window.visualViewport.height : 0));
+      if(force || !mBASE_H || now > mBASE_H){
+        mBASE_H = now;
+      }
     }
     function mFitLayout(){
-      const h = mFooter.offsetHeight;
+      const h = mFooter ? mFooter.offsetHeight : 0;
       mContent.style.bottom = h + &quot;px&quot;;
+      if(mFooter){
+        mFooter.style.left = &quot;0&quot;;
+        mFooter.style.right = &quot;0&quot;;
+      }
+    }
+    function mEditableFocused(){
+      const el = document.activeElement;
+      if(!el) return false;
+      if(el === mAmountInp || el === mMsgInput || el === mPhoneInp) return true;
+      if(el === mNameBox) return true;
+      const tag = (el.tagName || &quot;&quot;).toLowerCase();
+      return tag === &quot;input&quot; || tag === &quot;textarea&quot; || el.isContentEditable;
     }
     function mLockFooter(){
-      if(!window.visualViewport || !mBASE_H) return;
-      const vv = window.visualViewport;
-      const kb = Math.max(0, mBASE_H - vv.height - vv.offsetTop);
+      let kb = 0;
+      if(window.visualViewport && mBASE_H){
+        const vv = window.visualViewport;
+        const raw = Math.max(0, mBASE_H - vv.height - vv.offsetTop);
+        kb = raw > 120 ? raw : 0;
+        if(!mEditableFocused()) kb = 0;
+      }
       document.documentElement.style.setProperty(&quot;--mKb&quot;, kb + &quot;px&quot;);
+      requestAnimationFrame(mFitLayout);
     }
 
     function mMaskPhone(full){
@@ -11861,9 +11896,8 @@ window.__mostrarNombreCompletoTemporal = false;
       mValidateAmount();
       mCleanName();
 
-      mSetBaseHeight();
-      mFitLayout();
-      mLockFooter();
+      mRefreshMontoLayout(true);
+      setTimeout(()=&gt; mRefreshMontoLayout(true), 120);
     }
 
     /* ================= BANCOS (desde MONTO) ================= */
@@ -11985,21 +12019,29 @@ window.__mostrarNombreCompletoTemporal = false;
 
 
 
-    window.addEventListener(&quot;load&quot;, ()=&gt;{
-      mSetBaseHeight();
+    function mRefreshMontoLayout(forceBase){
+      mSetBaseHeight(!!forceBase);
       mFitLayout();
       mLockFooter();
+    }
+
+    [mAmountInp, mMsgInput, mPhoneInp, mNameBox].forEach((el)=&gt;{
+      if(!el) return;
+      el.addEventListener(&quot;focus&quot;, ()=&gt; setTimeout(()=&gt; mRefreshMontoLayout(false), 30));
+      el.addEventListener(&quot;blur&quot;,  ()=&gt; setTimeout(()=&gt; mRefreshMontoLayout(true), 180));
+    });
+
+    window.addEventListener(&quot;load&quot;, ()=&gt;{
+      mRefreshMontoLayout(true);
       mValidateAmount();
       mPaintPhone();
     });
     window.addEventListener(&quot;resize&quot;, ()=&gt;{
-      mSetBaseHeight();
-      mFitLayout();
-      mLockFooter();
+      mRefreshMontoLayout(false);
     });
     if(window.visualViewport){
-      visualViewport.addEventListener(&quot;resize&quot;, mLockFooter);
-      visualViewport.addEventListener(&quot;scroll&quot;, mLockFooter);
+      visualViewport.addEventListener(&quot;resize&quot;, ()=&gt; mRefreshMontoLayout(false));
+      visualViewport.addEventListener(&quot;scroll&quot;, ()=&gt; mRefreshMontoLayout(false));
     }
     /* =========================
        CONEXIÓN: MONTO -&gt; (Yapeando...) -&gt; VOUCHER
