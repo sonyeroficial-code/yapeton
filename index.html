@@ -2459,20 +2459,18 @@ html, body { height: 100%; }
 
     body{
       display:flex;
-      justify-content:flex-start;
-      align-items:stretch;
-      padding: 0;
+      justify-content:center;
+      align-items:center;
+      padding: 12px;
     }
 
     .device{
-      width: 100vw;
-      height: 100dvh;
-      max-width: 100vw;
-      max-height: 100dvh;
-      border-radius: 0;
+      width: min(100vw, var(--appMax));
+      height: min(100vh, 900px);
+      border-radius: 28px;
       overflow:hidden;
       background:#333333;
-      box-shadow: none;
+      box-shadow: 0 20px 60px rgba(0,0,0,.55);
       position:relative;
     }
 
@@ -3203,7 +3201,7 @@ html, body { height: 100%; }
 
     #voucherView .card{
       margin-top:120px !important;
-      width:100%;
+      width:98%; /* un poco más ancho */
       margin-left:auto;
       margin-right:auto;
       background:#f4f4f6;
@@ -17644,5 +17642,157 @@ img,video,canvas,svg{max-width:100% !important;height:auto !important;}`;
 #mNameBox{font-weight:500 !important;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif !important;}
 #mAmountInput{font-weight:400 !important;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif !important;}
 </style>
+
+<style id="__ios_keyboard_final_fix">
+html,body{overflow-x:hidden !important;}
+html.ios-final-fix,
+html.ios-final-fix body,
+html.ios-final-fix .stage{
+  height:var(--ios-app-height,100dvh) !important;
+  min-height:var(--ios-app-height,100dvh) !important;
+}
+html.ios-final-fix .stage{
+  width:100% !important;
+}
+html.ios-final-fix .device,
+html.ios-final-fix .app,
+html.ios-final-fix .screen,
+html.ios-final-fix .views,
+html.ios-final-fix .view{
+  max-width:100% !important;
+}
+html.ios-final-fix #montoView{
+  position:relative !important;
+  height:var(--ios-vv-height,var(--ios-app-height,100dvh)) !important;
+  min-height:var(--ios-vv-height,var(--ios-app-height,100dvh)) !important;
+  max-height:var(--ios-vv-height,var(--ios-app-height,100dvh)) !important;
+  overflow:hidden !important;
+}
+html.ios-final-fix #montoView #mContent{
+  position:absolute !important;
+  inset:0 0 calc(var(--mFooterH,118px) + var(--ios-content-gap,0px)) 0 !important;
+  overflow:auto !important;
+  -webkit-overflow-scrolling:touch !important;
+  overscroll-behavior:contain !important;
+  padding-bottom:16px !important;
+}
+html.ios-final-fix #montoView #mFooter{
+  position:absolute !important;
+  left:0 !important;
+  right:0 !important;
+  bottom:var(--ios-keyboard-offset,0px) !important;
+  width:100% !important;
+  transform:none !important;
+  will-change:bottom !important;
+  z-index:60 !important;
+}
+html.ios-final-fix.ios-kb-open #montoView #mContent{
+  inset:0 0 calc(var(--mFooterH,118px) + 8px) 0 !important;
+}
+html.ios-final-fix.ios-kb-open #montoView #mFooter{
+  padding-bottom:max(10px, env(safe-area-inset-bottom)) !important;
+}
+html.ios-final-fix #montoView input,
+html.ios-final-fix #montoView textarea,
+html.ios-final-fix #montoView [contenteditable="true"]{
+  font-size:16px !important;
+}
+html.ios-final-fix iframe{
+  max-width:100% !important;
+}
+</style>
+<script id="__ios_keyboard_final_fix_js">
+(function(){
+  var ua = navigator.userAgent || '';
+  var isIOS = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && 'ontouchend' in document);
+  if(!isIOS) return;
+  document.documentElement.classList.add('ios-final-fix');
+
+  var maxAppHeight = Math.max(window.innerHeight || 0, document.documentElement.clientHeight || 0, (window.visualViewport && window.visualViewport.height) || 0);
+
+  function setVar(name, value){
+    document.documentElement.style.setProperty(name, value);
+  }
+
+  function getMontoEls(){
+    return {
+      montoView: document.getElementById('montoView'),
+      mContent: document.getElementById('mContent'),
+      mFooter: document.getElementById('mFooter'),
+      amount: document.getElementById('mAmountInput'),
+      msg: document.getElementById('mMsgInput'),
+      phone: document.getElementById('mPhoneInput')
+    };
+  }
+
+  function updateViewportVars(){
+    var vv = window.visualViewport;
+    var rawHeight = vv ? vv.height : window.innerHeight;
+    var offsetTop = vv ? vv.offsetTop : 0;
+    if(rawHeight + offsetTop > maxAppHeight * 0.92){
+      maxAppHeight = Math.max(maxAppHeight, rawHeight + offsetTop, window.innerHeight || 0, document.documentElement.clientHeight || 0);
+    }
+    var keyboard = vv ? Math.max(0, maxAppHeight - rawHeight - offsetTop) : 0;
+    if(keyboard < 0) keyboard = 0;
+    setVar('--ios-app-height', maxAppHeight + 'px');
+    setVar('--ios-vv-height', rawHeight + 'px');
+    setVar('--ios-vv-top', offsetTop + 'px');
+    setVar('--ios-keyboard-offset', keyboard + 'px');
+    document.documentElement.classList.toggle('ios-kb-open', keyboard > 90);
+
+    var els = getMontoEls();
+    if(els.mFooter){
+      setVar('--mFooterH', els.mFooter.offsetHeight + 'px');
+      els.mFooter.style.transform = 'none';
+    }
+    if(els.mContent && els.mFooter){
+      els.mContent.style.bottom = els.mFooter.offsetHeight + 'px';
+    }
+  }
+
+  function nudgeActiveField(){
+    var el = document.activeElement;
+    if(!el) return;
+    var tag = (el.tagName || '').toUpperCase();
+    if(tag !== 'INPUT' && tag !== 'TEXTAREA' && !el.isContentEditable) return;
+    try{
+      el.scrollIntoView({block:'center', inline:'nearest'});
+    }catch(e){}
+  }
+
+  function focusFix(){
+    updateViewportVars();
+    setTimeout(updateViewportVars, 40);
+    setTimeout(updateViewportVars, 120);
+    setTimeout(updateViewportVars, 260);
+    setTimeout(nudgeActiveField, 80);
+  }
+
+  ['DOMContentLoaded','load','resize','orientationchange','pageshow'].forEach(function(ev){
+    window.addEventListener(ev, updateViewportVars, {passive:true});
+  });
+  window.addEventListener('focusin', focusFix, true);
+  window.addEventListener('focusout', function(){
+    setTimeout(updateViewportVars, 80);
+    setTimeout(updateViewportVars, 220);
+  }, true);
+  document.addEventListener('click', function(e){
+    var t = e.target;
+    if(t && (t.id === 'mAmountInput' || t.id === 'mMsgInput' || t.id === 'mPhoneInput')){
+      focusFix();
+    }
+  }, true);
+
+  if(window.visualViewport){
+    visualViewport.addEventListener('resize', updateViewportVars, {passive:true});
+    visualViewport.addEventListener('scroll', updateViewportVars, {passive:true});
+  }
+
+  setTimeout(updateViewportVars, 50);
+  setTimeout(updateViewportVars, 300);
+  setTimeout(updateViewportVars, 800);
+})();
+</script>
+
 </body>
 </html>
