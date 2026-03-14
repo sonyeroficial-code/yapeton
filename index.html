@@ -235,12 +235,13 @@ height:100% !important;
     position: fixed;
     inset: 0;
     background: #742284 !important;
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     z-index: 2147483647;
-    opacity: 1;
+    opacity: 0;
+    pointer-events: none;
   }
   #__yapeSplashLogo {
     width: 130px;
@@ -500,19 +501,6 @@ height:100% !important;
   /* evita barras negras por estilos globales */
   body.mode-login { color-scheme: light; background:#742284 !important; }
   body.mode-app { background:#742284 !important; }
-
-  /* entrada suave de la app */
-  #appWrap.app-entering{
-    opacity: 0;
-    transform: translateY(14px) scale(.995);
-    filter: saturate(.98);
-    animation: appEnterSoft .55s cubic-bezier(.22,.61,.36,1) forwards;
-    will-change: opacity, transform;
-  }
-  @keyframes appEnterSoft{
-    0%{ opacity:0; transform: translateY(14px) scale(.995); filter:saturate(.98); }
-    100%{ opacity:1; transform: translateY(0) scale(1); filter:saturate(1); }
-  }
 </style>
 
 <script>
@@ -1071,20 +1059,21 @@ h1,h2,h3,.title,.contact-name{
 
 <script>
 (function(){
-  var MIN_MS = 3000; // duración mínima del splash inicial (3s)
-  var start = Date.now();
+  var MIN_MS = 5000; // primer splash: 5 segundos reales
 
   function hidePreSplash(){
     var sp = document.getElementById("preSplash");
     if(!sp) return;
     sp.classList.add("preSplashHide");
-    setTimeout(function(){ try{ sp.remove(); }catch(e){ sp.style.display="none"; } }, 500);
+    setTimeout(function(){
+      try{ sp.remove(); }catch(e){ sp.style.display="none"; }
+      window.__preSplashDone = true;
+      window.dispatchEvent(new CustomEvent("preSplashDone"));
+    }, 500);
   }
 
   window.addEventListener("load", function(){
-    var elapsed = Date.now() - start;
-    var wait = Math.max(0, MIN_MS - elapsed);
-    setTimeout(hidePreSplash, wait);
+    setTimeout(hidePreSplash, MIN_MS);
   });
 })();
 </script>
@@ -1111,26 +1100,33 @@ h1,h2,h3,.title,.contact-name{
       if(lw) lw.style.display = "none";
       if(aw) aw.style.display = "block";
 
-      // segundo flash: 1 segundo + salida suave
+      // segundo splash: solo después del primero y dura 2 segundos
       var sp = document.getElementById("__yapeSplash");
       if(sp){
-        sp.classList.remove("__hide");
-        sp.style.display = "flex";
-        sp.style.opacity = "1";
-        sp.style.transition = "opacity .45s ease";
-        setTimeout(function(){
-          sp.classList.add("__hide");
-          sp.style.opacity = "0";
-          setTimeout(function(){ sp.style.display = "none"; }, 460);
-        }, 1000);
-      }
+        if (window.__secondSplashStarted) return;
 
-      // entrada suave de la pantalla principal
-      if(aw){
-        aw.classList.remove("app-entering");
-        void aw.offsetWidth;
-        aw.classList.add("app-entering");
-        setTimeout(function(){ aw.classList.remove("app-entering"); }, 700);
+        var startSecondSplash = function(){
+          if (window.__secondSplashStarted) return;
+          window.__secondSplashStarted = true;
+          sp.style.transition = "none";
+          sp.classList.remove("__hide");
+          sp.style.display = "flex";
+          sp.style.opacity = "1";
+          sp.style.pointerEvents = "auto";
+
+          setTimeout(function(){
+            sp.style.transition = "opacity .35s ease";
+            sp.style.opacity = "0";
+            sp.style.pointerEvents = "none";
+            setTimeout(function(){ sp.style.display = "none"; }, 380);
+          }, 2000);
+        };
+
+        if (window.__preSplashDone) {
+          startSecondSplash();
+        } else {
+          window.addEventListener("preSplashDone", startSecondSplash, { once:true });
+        }
       }
     }
 
@@ -15709,31 +15705,8 @@ function setUploadState(state){
 
 <script>
 (function(){
-  // Splash: muestra 3 segundos y luego se oculta suave.
-  var SHOW_MS = 7000;
-  var splash = document.getElementById('__yapeSplash');
-  if (!splash) return;
-
-  function hide(){
-    splash.classList.add('__hide');
-    // compat: por si el selector exacto no aplica
-    splash.classList.add('__hide'); 
-    splash.classList.add('__hide');
-    splash.classList.add('__hide');
-    splash.classList.add('__hide');
-  }
-
-  function remove(){
-    if (!splash) return;
-    splash.remove();
-  }
-
-  // Añadimos la clase de hide con el nombre correcto
-  // (usamos id + clase __hide definida arriba)
-  setTimeout(function(){
-    splash.classList.add('__hide');
-    setTimeout(remove, 500);
-  }, SHOW_MS);
+  // Desactivado: el segundo splash ahora se controla solo desde showApp()
+  // para que no se cruce con el primer splash.
 })();
 </script>
 <script>
