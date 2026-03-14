@@ -235,13 +235,12 @@ height:100% !important;
     position: fixed;
     inset: 0;
     background: #742284 !important;
-    display: none;
+    display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     z-index: 2147483647;
-    opacity: 0;
-    pointer-events: none;
+    opacity: 1;
   }
   #__yapeSplashLogo {
     width: 130px;
@@ -1059,21 +1058,20 @@ h1,h2,h3,.title,.contact-name{
 
 <script>
 (function(){
-  var MIN_MS = 5000; // primer splash: 5 segundos reales
+  var MIN_MS = 3000; // duración mínima del splash inicial (3s)
+  var start = Date.now();
 
   function hidePreSplash(){
     var sp = document.getElementById("preSplash");
     if(!sp) return;
     sp.classList.add("preSplashHide");
-    setTimeout(function(){
-      try{ sp.remove(); }catch(e){ sp.style.display="none"; }
-      window.__preSplashDone = true;
-      window.dispatchEvent(new CustomEvent("preSplashDone"));
-    }, 500);
+    setTimeout(function(){ try{ sp.remove(); }catch(e){ sp.style.display="none"; } }, 500);
   }
 
   window.addEventListener("load", function(){
-    setTimeout(hidePreSplash, MIN_MS);
+    var elapsed = Date.now() - start;
+    var wait = Math.max(0, MIN_MS - elapsed);
+    setTimeout(hidePreSplash, wait);
   });
 })();
 </script>
@@ -1100,33 +1098,17 @@ h1,h2,h3,.title,.contact-name{
       if(lw) lw.style.display = "none";
       if(aw) aw.style.display = "block";
 
-      // segundo splash: solo después del primero y dura 2 segundos
+      // mantener el "flash" / splash de la app grande
       var sp = document.getElementById("__yapeSplash");
       if(sp){
-        if (window.__secondSplashStarted) return;
-
-        var startSecondSplash = function(){
-          if (window.__secondSplashStarted) return;
-          window.__secondSplashStarted = true;
-          sp.style.transition = "none";
-          sp.classList.remove("__hide");
-          sp.style.display = "flex";
-          sp.style.opacity = "1";
-          sp.style.pointerEvents = "auto";
-
-          setTimeout(function(){
-            sp.style.transition = "opacity .35s ease";
-            sp.style.opacity = "0";
-            sp.style.pointerEvents = "none";
-            setTimeout(function(){ sp.style.display = "none"; }, 380);
-          }, 2000);
-        };
-
-        if (window.__preSplashDone) {
-          startSecondSplash();
-        } else {
-          window.addEventListener("preSplashDone", startSecondSplash, { once:true });
-        }
+        sp.style.display = "flex";
+        sp.style.opacity = "1";
+        // pequeño tiempo de splash para que se vea como en tu app
+        setTimeout(function(){
+          sp.style.transition = "opacity .35s ease";
+          sp.style.opacity = "0";
+          setTimeout(function(){ sp.style.display = "none"; }, 380);
+        }, 900);
       }
     }
 
@@ -3237,7 +3219,17 @@ html, body { height: 100%; }
       height:100%;
       object-fit:contain;
       display:block;
-      transform: scale(1.04);
+      transform: scale(1);
+    }
+
+    /* Solo reduce el logo SVG embebido; no toca el GIF */
+    #voucherView .yape-logo img[src^="data:image/svg+xml"]{
+      transform: scale(0.86) !important;
+    }
+
+    #voucherView .yape-logo img.yape-gif,
+    #voucherView .yape-gif{
+      transform: scale(1) !important;
     }
 
     #voucherView .voucher-actions{
@@ -15705,8 +15697,31 @@ function setUploadState(state){
 
 <script>
 (function(){
-  // Desactivado: el segundo splash ahora se controla solo desde showApp()
-  // para que no se cruce con el primer splash.
+  // Splash: muestra 3 segundos y luego se oculta suave.
+  var SHOW_MS = 7000;
+  var splash = document.getElementById('__yapeSplash');
+  if (!splash) return;
+
+  function hide(){
+    splash.classList.add('__hide');
+    // compat: por si el selector exacto no aplica
+    splash.classList.add('__hide'); 
+    splash.classList.add('__hide');
+    splash.classList.add('__hide');
+    splash.classList.add('__hide');
+  }
+
+  function remove(){
+    if (!splash) return;
+    splash.remove();
+  }
+
+  // Añadimos la clase de hide con el nombre correcto
+  // (usamos id + clase __hide definida arriba)
+  setTimeout(function(){
+    splash.classList.add('__hide');
+    setTimeout(remove, 500);
+  }, SHOW_MS);
 })();
 </script>
 <script>
