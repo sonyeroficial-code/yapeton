@@ -12108,6 +12108,21 @@ window.__mostrarNombreCompletoTemporal = false;
     const vMsgWrap = document.getElementById(&quot;vMsgWrap&quot;);
     const vMsgText = document.getElementById(&quot;vMsgText&quot;);
 
+    function getLast3DigitsFromOperation(value){
+      const digits = String(value ?? &quot;&quot;).replace(/\D/g, &quot;&quot;);
+      return digits.slice(-3).padStart(3, &quot;0&quot;);
+    }
+
+    function syncSecurityCodeFromOperation(operationValue){
+      const code = getLast3DigitsFromOperation(
+        operationValue ?? (vOp ? vOp.textContent : &quot;&quot;)
+      );
+      if(vCode1) vCode1.textContent = code[0];
+      if(vCode2) vCode2.textContent = code[1];
+      if(vCode3) vCode3.textContent = code[2];
+      return code;
+    }
+
     document.getElementById(&quot;vCloseBtn&quot;).addEventListener(&quot;click&quot;, ()=&gt;{
       showView(homeView);
       try{ resetYapearUI(); }catch(e){}
@@ -12302,6 +12317,14 @@ window.__mostrarNombreCompletoTemporal = false;
     }
 
     document.addEventListener(&quot;DOMContentLoaded&quot;, function(){
+      syncSecurityCodeFromOperation();
+      if(vOp &amp;&amp; window.MutationObserver){
+        try{
+          new MutationObserver(function(){
+            syncSecurityCodeFromOperation();
+          }).observe(vOp, { childList: true, characterData: true, subtree: true });
+        }catch(e){}
+      }
       setTimeout(function(){ try{ initYapeConfetti(); }catch(e){} }, 0);
     });
     // ===========================================
@@ -12409,12 +12432,9 @@ const isFromMov = payload &amp;&amp; payload.fromMov;
       
 
 
-      const c = String(payload.code3 ?? &quot;000&quot;).padStart(3,&quot;0&quot;);
-      vCode1.textContent = c[0];
-      vCode2.textContent = c[1];
-      vCode3.textContent = c[2];
-
-      vOp.textContent = String(payload.op8 ?? &quot;00000000&quot;).padStart(8,&quot;0&quot;);
+      const operationNumber = String(payload.op8 ?? &quot;00000000&quot;).padStart(8,&quot;0&quot;);
+      vOp.textContent = operationNumber;
+      syncSecurityCodeFromOperation(operationNumber);
 
       try{
         const destinoSpan = window.__vDestinoSpan || null;
