@@ -12465,7 +12465,7 @@ const isFromMov = payload &amp;&amp; payload.fromMov;
 
 
       const code3 = randomDigits(3);
-      const op8   = randomDigits(5) + code3;
+      const op8   = randomDigits(8);
       const now   = new Date();
 
       /* (2) ✅ RESTA: saldoHome - monto, en tiempo real, sin recargar */
@@ -13336,14 +13336,7 @@ window.fsUpsertQr = async function(qrText, data){
     }
 
     // Generar nro de operación (8 dígitos)
-    let opNumBase = String(Math.floor(10000000 + Math.random()*90000000));
-    // tomar código de seguridad mostrado
-    let cod3 = '';
-    document.querySelectorAll('.security-boxes div').forEach(d=>cod3+=d.textContent.trim());
-    if(cod3.length===3){
-      opNumBase = opNumBase.slice(0,5) + cod3;
-    }
-    const opNum = opNumBase;
+    const opNum = String(Math.floor(10000000 + Math.random()*90000000));
 
     // Guardar en movimientos (sin romper otros vouchers)
     try{
