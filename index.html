@@ -17899,3 +17899,31 @@ html.ios-final-fix iframe{
 
 </body>
 </html>
+
+<style id="ios-safe-header-fix-final">
+/* Ajuste final solo para iPhone / iOS Safari:
+   baja el header de vistas internas para que el botón volver
+   no quede pegado al notch o a la barra superior. */
+@supports (padding-top: env(safe-area-inset-top)) {
+  #yapearView .yApp{
+    min-height: 100dvh !important;
+    min-height: -webkit-fill-available !important;
+  }
+
+  #yapearView .yHeader{
+    padding-top: calc(env(safe-area-inset-top, 0px) + 10px) !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    padding-bottom: 12px !important;
+    min-height: calc(46px + env(safe-area-inset-top, 0px)) !important;
+    box-sizing: border-box !important;
+  }
+
+  #yapearView .yBack,
+  #yapearView .yClose,
+  #yapearView .yTitle{
+    position: relative;
+    top: 0 !important;
+  }
+}
+</style>
