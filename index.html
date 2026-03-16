@@ -1080,6 +1080,27 @@ h1,h2,h3,.title,.contact-name{
   // === WRAPPER CONTROL (login/app) + splash al ingresar ===
   (function(){
     function el(id){ return document.getElementById(id); }
+    var SESSION_KEY = "yapeton_session";
+
+    function getBootSession(){
+      try {
+        var raw = localStorage.getItem(SESSION_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch(e){ return null; }
+    }
+
+    function hasStoredSession(){
+      var ses = getBootSession();
+      return !!(ses && ses.ok === true && ses.uid);
+    }
+
+    function hideAppSplash(){
+      var sp = document.getElementById("__yapeSplash");
+      if(!sp) return;
+      sp.style.transition = "opacity .28s ease";
+      sp.style.opacity = "0";
+      setTimeout(function(){ sp.style.display = "none"; }, 320);
+    }
 
     function showLogin(){
       document.body.classList.add("mode-login");
@@ -1088,6 +1109,7 @@ h1,h2,h3,.title,.contact-name{
       var aw = el("appWrap");
       if(lw) lw.style.display = "block";
       if(aw) aw.style.display = "none";
+      hideAppSplash();
     }
 
     function showApp(){
@@ -1098,28 +1120,23 @@ h1,h2,h3,.title,.contact-name{
       if(lw) lw.style.display = "none";
       if(aw) aw.style.display = "block";
 
-      // mantener el "flash" / splash de la app grande
       var sp = document.getElementById("__yapeSplash");
       if(sp){
         sp.style.display = "flex";
         sp.style.opacity = "1";
-        // pequeño tiempo de splash para que se vea como en tu app
-        setTimeout(function(){
-          sp.style.transition = "opacity .35s ease";
-          sp.style.opacity = "0";
-          setTimeout(function(){ sp.style.display = "none"; }, 380);
-        }, 900);
+        setTimeout(hideAppSplash, 180);
       }
     }
 
-    // expone funciones para el script del login
     window.__showAppFromAuth = showApp;
     window.__showLoginFromAuth = showLogin;
 
-    // estado inicial
     document.addEventListener("DOMContentLoaded", function(){
-      // por defecto: login visible (si hay sesión válida, el login script llamará showApp)
-      showLogin();
+      if(hasStoredSession()) {
+        showApp();
+      } else {
+        showLogin();
+      }
     });
   })();
 </script>
@@ -15791,7 +15808,7 @@ function setUploadState(state){
 <script>
 (function(){
   // Splash: muestra 3 segundos y luego se oculta suave.
-  var SHOW_MS = 7000;
+  var SHOW_MS = 350;
   var splash = document.getElementById('__yapeSplash');
   if (!splash) return;
 
@@ -16225,30 +16242,44 @@ function setUploadState(state){
 
       saveSession({ ok:true, sellerId:id, username:u, deviceId, uid: userDoc.id, ts: Date.now() });
       showToast("✅ Acceso correcto.");
-      setTimeout(()=>{ window.__showAppFromAuth?.(); }, 450);
+      window.__showAppFromAuth?.();
     } catch(e){
       console.error(e);
       showToast("Error al iniciar sesión.");
     }
   });
 
-  // Auto-entrar si ya hay sesión guardada (validando en Firestore)
+  // Auto-entrar si ya hay sesión guardada.
+  // Primero entra con la sesión local y luego valida en segundo plano.
   async function validateSessionAndEnter(){
     const ses = getSession();
-    if(!(ses?.ok === true) || !ses?.uid) return;
+    if(!(ses?.ok === true) || !ses?.uid) {
+      window.__showLoginFromAuth?.();
+      return;
+    }
+
+    window.__showAppFromAuth?.();
+
     try{
       const ref = doc(db, "users", ses.uid);
       const snap = await getDoc(ref);
-      if(!snap.exists()) return;
+      if(!snap.exists()) throw new Error("missing-user");
       const d = snap.data()||{};
-      if((d.sellerId||"") !== ses.sellerId) return;
-      if((d.username||"") !== ses.username) return;
-      if(d.approved !== true) return;
       const deviceId = getDeviceId();
-      if(d.deviceId && d.deviceId !== deviceId) return;
-      if(!d.deviceId){ await updateDoc(ref, { deviceId }); }
-      window.__showAppFromAuth?.();
-    }catch(e){ console.error(e); }
+
+      if((d.sellerId||"") !== ses.sellerId) throw new Error("seller-mismatch");
+      if((d.username||"") !== ses.username) throw new Error("username-mismatch");
+      if(d.approved !== true) throw new Error("not-approved");
+      if(d.deviceId && d.deviceId !== deviceId) throw new Error("device-mismatch");
+
+      if(!d.deviceId || d.deviceId === "null"){
+        await updateDoc(ref, { deviceId });
+      }
+    }catch(e){
+      console.error(e);
+      localStorage.removeItem(SESSION_KEY);
+      window.__showLoginFromAuth?.();
+    }
   }
   validateSessionAndEnter();
 
