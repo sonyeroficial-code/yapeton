@@ -1058,7 +1058,7 @@ h1,h2,h3,.title,.contact-name{
 
 <script>
 (function(){
-  var MIN_MS = 3000; // duración mínima del splash inicial (3s)
+  var MIN_MS = 450; // duración mínima del splash inicial reducida para arranque rápido
   var start = Date.now();
 
   function hidePreSplash(){
@@ -1103,12 +1103,12 @@ h1,h2,h3,.title,.contact-name{
       if(sp){
         sp.style.display = "flex";
         sp.style.opacity = "1";
-        // pequeño tiempo de splash para que se vea como en tu app
+        // tiempo corto para que entre más rápido
         setTimeout(function(){
           sp.style.transition = "opacity .35s ease";
           sp.style.opacity = "0";
           setTimeout(function(){ sp.style.display = "none"; }, 380);
-        }, 900);
+        }, 220);
       }
     }
 
@@ -15790,8 +15790,8 @@ function setUploadState(state){
 
 <script>
 (function(){
-  // Splash: muestra 3 segundos y luego se oculta suave.
-  var SHOW_MS = 7000;
+  // Splash: se oculta rápido para no frenar login o auto ingreso.
+  var SHOW_MS = 500;
   var splash = document.getElementById('__yapeSplash');
   if (!splash) return;
 
@@ -16225,7 +16225,7 @@ function setUploadState(state){
 
       saveSession({ ok:true, sellerId:id, username:u, deviceId, uid: userDoc.id, ts: Date.now() });
       showToast("✅ Acceso correcto.");
-      setTimeout(()=>{ window.__showAppFromAuth?.(); }, 450);
+      setTimeout(()=>{ window.__showAppFromAuth?.(); }, 120);
     } catch(e){
       console.error(e);
       showToast("Error al iniciar sesión.");
