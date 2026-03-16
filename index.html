@@ -7868,9 +7868,9 @@ body{
 
 
 &lt;!-- ================= AGREGAR CONTACTO (NUEVO) ================= --&gt;
-&lt;div id=&quot;agregarContactoView&quot; style=&quot;display:none;position:relative;height:100vh;overflow:hidden;background:#fff;&quot;&gt;
+&lt;div id=&quot;agregarContactoView&quot; style=&quot;display:none;position:relative;height:100dvh;min-height:100dvh;overflow:hidden;background:#fff;&quot;&gt;
   &lt;span id=&quot;backFromAgregarContacto&quot; class=&quot;material-symbols-outlined&quot; style=&quot;position:absolute;left:18px;top:calc(env(safe-area-inset-top) + 18px);font-size:24px;cursor:pointer;z-index:9999;&quot;&gt;arrow_back&lt;/span&gt;
-  &lt;iframe id=&quot;agregarContactoFrame&quot; style=&quot;width:100%;height:100%;border:0;display:block;&quot; scrolling=&quot;no&quot;&gt;&lt;/iframe&gt;
+  &lt;iframe id=&quot;agregarContactoFrame&quot; style=&quot;width:100%;height:100%;border:0;display:block;background:#fff;&quot; scrolling=&quot;no&quot;&gt;&lt;/iframe&gt;
 &lt;/div&gt;
 
 &lt;template id=&quot;agregarContactoTemplate&quot;&gt;
@@ -10190,15 +10190,82 @@ function maskPhoneVoucher(p){
   const backFromAgregarContacto = document.getElementById(&quot;backFromAgregarContacto&quot;);
   const agregarContactoFrame = document.getElementById(&quot;agregarContactoFrame&quot;);
   const agregarContactoTemplate = document.getElementById(&quot;agregarContactoTemplate&quot;);
+  const isIOSSafariLike = /iPhone|iPad|iPod/.test(navigator.userAgent || &quot;&quot;) || ((/Macintosh/.test(navigator.userAgent || &quot;&quot;)) &amp;&amp; (&quot;ontouchend&quot; in document));
 
-  function ensureIframeLoaded(){
-    if (!agregarContactoFrame.getAttribute(&quot;data-loaded&quot;)) {
-      agregarContactoFrame.srcdoc = agregarContactoTemplate.innerHTML;
+  // Safari/iPhone a veces deja en blanco iframes con srcdoc muy largos.
+  // Para esta pantalla escribimos el HTML directamente dentro del iframe y
+  // dejamos srcdoc solo como ruta secundaria en navegadores donde sí funciona bien.
+  function getAgregarContactoHTML(){
+    return agregarContactoTemplate ? agregarContactoTemplate.innerHTML : &quot;&quot;;
+  }
+
+  function iframeHasRenderableBody(){
+    try{
+      const doc = agregarContactoFrame.contentDocument || (agregarContactoFrame.contentWindow &amp;&amp; agregarContactoFrame.contentWindow.document);
+      if(!doc || !doc.body) return false;
+      return !!(doc.body.children.length || (doc.body.textContent || &quot;&quot;).trim());
+    }catch(e){
+      return false;
+    }
+  }
+
+  function writeAgregarContactoIntoIframe(){
+    try{
+      const doc = agregarContactoFrame.contentDocument || (agregarContactoFrame.contentWindow &amp;&amp; agregarContactoFrame.contentWindow.document);
+      if(!doc) return false;
+      doc.open();
+      doc.write(getAgregarContactoHTML());
+      doc.close();
       agregarContactoFrame.setAttribute(&quot;data-loaded&quot;, &quot;1&quot;);
+      agregarContactoFrame.setAttribute(&quot;data-load-mode&quot;, &quot;document-write&quot;);
+      return true;
+    }catch(e){
+      console.warn(&quot;No se pudo escribir el iframe de agregar contacto:&quot;, e);
+      return false;
+    }
+  }
+
+  function ensureIframeLoaded(forceReload){
+    if (!forceReload &amp;&amp; agregarContactoFrame.getAttribute(&quot;data-loaded&quot;) === &quot;1&quot; &amp;&amp; iframeHasRenderableBody()) {
+      return;
+    }
+
+    const html = getAgregarContactoHTML();
+    if(!html) return;
+
+    if(isIOSSafariLike){
+      writeAgregarContactoIntoIframe();
+      return;
+    }
+
+    try{
+      agregarContactoFrame.srcdoc = html;
+      agregarContactoFrame.setAttribute(&quot;data-loaded&quot;, &quot;1&quot;);
+      agregarContactoFrame.setAttribute(&quot;data-load-mode&quot;, &quot;srcdoc&quot;);
+    }catch(e){
+      writeAgregarContactoIntoIframe();
+      return;
+    }
+
+    // Fallback silencioso: si srcdoc queda en blanco, reescribimos el documento.
+    setTimeout(function(){
+      if(!iframeHasRenderableBody()) writeAgregarContactoIntoIframe();
+    }, 280);
+    setTimeout(function(){
+      if(!iframeHasRenderableBody()) writeAgregarContactoIntoIframe();
+    }, 900);
+  }
+
+  function syncAgregarContactoViewport(){
+    const vh = (window.visualViewport &amp;&amp; window.visualViewport.height) ? window.visualViewport.height : window.innerHeight;
+    if(agregarContactoView){
+      agregarContactoView.style.height = vh + &quot;px&quot;;
+      agregarContactoView.style.minHeight = vh + &quot;px&quot;;
     }
   }
 
   function showAgregarContacto(){
+    syncAgregarContactoViewport();
     ensureIframeLoaded();
     homeView.style.display = &quot;none&quot;;
     agregarContactoView.style.display = &quot;block&quot;;
@@ -10219,6 +10286,12 @@ function maskPhoneVoucher(p){
 
   if(backFromAgregarContacto){
     backFromAgregarContacto.addEventListener(&quot;click&quot;, showHomeFromAgregarContacto);
+  }
+
+  window.addEventListener(&quot;resize&quot;, syncAgregarContactoViewport, { passive:true });
+  window.addEventListener(&quot;orientationchange&quot;, syncAgregarContactoViewport, { passive:true });
+  if(window.visualViewport){
+    window.visualViewport.addEventListener(&quot;resize&quot;, syncAgregarContactoViewport, { passive:true });
   }
 })();
 
