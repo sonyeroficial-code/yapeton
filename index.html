@@ -16065,6 +16065,7 @@ function setUploadState(state){
 
   const SESSION_KEY = "yapeton_session";
   const DEVICE_KEY  = "yapeton_device_id";
+  const OFFLINE_LOGIN_KEY = "yapeton_offline_login";
   
   const $ = (id)=>document.getElementById(id);
   const toast = $("toast");
@@ -16100,6 +16101,38 @@ function setUploadState(state){
       const raw = localStorage.getItem(SESSION_KEY);
       return raw ? JSON.parse(raw) : null;
     } catch(e){ return null; }
+  }
+
+  function saveOfflineAccess(payload){
+    try {
+      localStorage.setItem(OFFLINE_LOGIN_KEY, JSON.stringify(payload));
+    } catch(e){}
+  }
+
+  function getOfflineAccess(){
+    try {
+      const raw = localStorage.getItem(OFFLINE_LOGIN_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch(e){ return null; }
+  }
+
+  function tryOfflineLogin(sellerId, username, password){
+    const saved = getOfflineAccess();
+    if(!saved || saved.ok !== true) return false;
+    if((saved.sellerId||"") !== sellerId) return false;
+    if((saved.username||"") !== username) return false;
+    if((saved.password||"") !== password) return false;
+    if(saved.deviceId && saved.deviceId !== getDeviceId()) return false;
+    saveSession({
+      ok:true,
+      sellerId:sellerId,
+      username:username,
+      deviceId:getDeviceId(),
+      uid:saved.uid || null,
+      ts:Date.now(),
+      offline:true
+    });
+    return true;
   }
 
   function go(which){
@@ -16204,6 +16237,14 @@ function setUploadState(state){
     if(!u) return showToast("Ingresa tu usuario.");
     if(pw.length < 6) return showToast("Contraseña mínimo 6 caracteres.");
 
+    if(!navigator.onLine){
+      if(tryOfflineLogin(id, u, pw)){
+        showToast("✅ Acceso offline correcto.");
+        return setTimeout(()=>{ window.__showAppFromAuth?.(); }, 250);
+      }
+      return showToast("Sin internet. Debes iniciar sesión una vez con conexión en este dispositivo.");
+    }
+
     try {
       const st = await getSellerStatus(id);
     if(!st.exists) return showToast("Vendedor no existe");
@@ -16224,18 +16265,36 @@ function setUploadState(state){
       }
 
       saveSession({ ok:true, sellerId:id, username:u, deviceId, uid: userDoc.id, ts: Date.now() });
+      saveOfflineAccess({ ok:true, sellerId:id, username:u, password:pw, deviceId, uid:userDoc.id, approved:true, ts:Date.now() });
       showToast("✅ Acceso correcto.");
       setTimeout(()=>{ window.__showAppFromAuth?.(); }, 450);
     } catch(e){
       console.error(e);
+      if(tryOfflineLogin(id, u, pw)){
+        showToast("✅ Acceso offline correcto.");
+        return setTimeout(()=>{ window.__showAppFromAuth?.(); }, 250);
+      }
       showToast("Error al iniciar sesión.");
     }
   });
 
-  // Auto-entrar si ya hay sesión guardada (validando en Firestore)
+  // Auto-entrar si ya hay sesión guardada
   async function validateSessionAndEnter(){
     const ses = getSession();
-    if(!(ses?.ok === true) || !ses?.uid) return;
+    if(!(ses?.ok === true)) return;
+    if(!navigator.onLine){
+      const saved = getOfflineAccess();
+      if(
+        saved && saved.ok === true &&
+        (saved.sellerId||"") === (ses.sellerId||"") &&
+        (saved.username||"") === (ses.username||"") &&
+        (!saved.deviceId || saved.deviceId === getDeviceId())
+      ){
+        window.__showAppFromAuth?.();
+      }
+      return;
+    }
+    if(!ses?.uid) return;
     try{
       const ref = doc(db, "users", ses.uid);
       const snap = await getDoc(ref);
