@@ -8,9 +8,6 @@
   
   <!-- PWA -->
   <link rel="manifest" href="manifest.webmanifest">
-<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
   <meta name="theme-color" content="#742284">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -504,28 +501,47 @@ height:100% !important;
 
 <script>
 (function(){
-  try {
-    if (!('serviceWorker' in navigator)) return;
-    if (window.__yapeSwBootRegistered) return;
-    window.__yapeSwBootRegistered = true;
+  try{
+    if(!('serviceWorker' in navigator)) return;
 
-    window.addEventListener('load', function(){
-      navigator.serviceWorker.getRegistrations().then(function(regs){
-        regs.forEach(function(reg){
-          try {
-            var url = reg && reg.active && reg.active.scriptURL ? reg.active.scriptURL : '';
-            if (url && /\/sw\.js(\?|$)/.test(url) && reg.unregister) reg.unregister();
-          } catch(e){}
-        });
-      }).catch(function(){});
-
+    var refreshing = false;
+    function registerSW(){
       navigator.serviceWorker.register('./service-worker.js', { scope: './' }).then(function(reg){
-        try {
-          if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
-        } catch(e){}
-      }).catch(function(e){ console.warn('SW register failed', e); });
-    }, { once:true });
-  } catch(e) { console.warn(e); }
+        try { reg.update && reg.update(); } catch(e){}
+
+        function promoteWaiting(worker){
+          if(!worker) return;
+          try { worker.postMessage({ type:'SKIP_WAITING' }); } catch(e){}
+        }
+
+        if(reg.waiting) promoteWaiting(reg.waiting);
+
+        reg.addEventListener('updatefound', function(){
+          var nw = reg.installing;
+          if(!nw) return;
+          nw.addEventListener('statechange', function(){
+            if(nw.state === 'installed' && navigator.serviceWorker.controller){
+              promoteWaiting(nw);
+            }
+          });
+        });
+      }).catch(function(e){
+        console.warn('SW register failed', e);
+      });
+
+      navigator.serviceWorker.addEventListener('controllerchange', function(){
+        if(refreshing) return;
+        refreshing = true;
+        setTimeout(function(){ refreshing = false; }, 1500);
+      });
+    }
+
+    if('requestIdleCallback' in window){
+      requestIdleCallback(registerSW, { timeout: 1500 });
+    } else {
+      window.addEventListener('load', registerSW, { once:true });
+    }
+  }catch(e){ console.warn(e); }
 })();
 </script>
 
@@ -1063,6 +1079,90 @@ h1,h2,h3,.title,.contact-name{
 }
 </style>
 
+<script>
+(function(){
+  var SESSION_KEY = 'yapeton_session';
+  var BOOT_MAX_WAIT = 4500;
+  var released = false;
+
+  function hasStoredSession(){
+    try{
+      var raw = localStorage.getItem(SESSION_KEY);
+      if(!raw) return false;
+      var data = JSON.parse(raw);
+      return !!(data && data.ok === true && data.uid);
+    }catch(e){
+      return false;
+    }
+  }
+
+  function hideNode(node){
+    if(!node) return;
+    try { node.classList.add('preSplashHide'); } catch(e){}
+    try { node.classList.add('__hide'); } catch(e){}
+    try { node.style.opacity = '0'; } catch(e){}
+    try { node.style.pointerEvents = 'none'; } catch(e){}
+    setTimeout(function(){
+      try { node.remove(); } catch(e){ try { node.style.display = 'none'; } catch(_){} }
+    }, 450);
+  }
+
+  function releaseBoot(reason){
+    if(released) return;
+    released = true;
+    try { window.__BOOT_RELEASE_REASON = reason || 'timeout'; } catch(e){}
+
+    var appWrap = document.getElementById('appWrap');
+    var loginWrap = document.getElementById('loginWrap');
+    var preferApp = hasStoredSession();
+
+    if(appWrap && loginWrap){
+      if(preferApp){
+        appWrap.style.display = 'block';
+        loginWrap.style.display = 'none';
+        document.body.classList.add('mode-app');
+        document.body.classList.remove('mode-login');
+      } else {
+        loginWrap.style.display = 'block';
+        appWrap.style.display = 'none';
+        document.body.classList.add('mode-login');
+        document.body.classList.remove('mode-app');
+      }
+    }
+
+    hideNode(document.getElementById('preSplash'));
+    hideNode(document.getElementById('__yapeSplash'));
+  }
+
+  window.__releaseBootSplash = releaseBoot;
+  window.addEventListener('error', function(){ setTimeout(function(){ releaseBoot('error'); }, 0); }, true);
+  window.addEventListener('unhandledrejection', function(){ setTimeout(function(){ releaseBoot('promise'); }, 0); });
+
+  function armWatchdog(){
+    setTimeout(function(){
+      var pre = document.getElementById('preSplash');
+      var main = document.getElementById('__yapeSplash');
+      var appWrap = document.getElementById('appWrap');
+      var loginWrap = document.getElementById('loginWrap');
+      var appVisible = !!(appWrap && appWrap.style.display !== 'none');
+      var loginVisible = !!(loginWrap && loginWrap.style.display !== 'none');
+      if(pre || main || (!appVisible && !loginVisible)){
+        releaseBoot('watchdog');
+      }
+    }, BOOT_MAX_WAIT);
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', armWatchdog, { once:true });
+  } else {
+    armWatchdog();
+  }
+
+  window.addEventListener('pageshow', function(){
+    setTimeout(function(){ releaseBoot('pageshow'); }, 2500);
+  }, { once:true });
+})();
+</script>
 </head>
 <body class="mode-login">
 
@@ -1085,6 +1185,7 @@ h1,h2,h3,.title,.contact-name{
     if(!sp) return;
     sp.classList.add("preSplashHide");
     setTimeout(function(){ try{ sp.remove(); }catch(e){ sp.style.display="none"; } }, 500);
+    try{ window.__releaseBootSplash && window.__releaseBootSplash("presplash"); }catch(e){}
   }
 
   function scheduleHide(){
@@ -1128,7 +1229,8 @@ h1,h2,h3,.title,.contact-name{
       if(!sp) return;
       sp.style.transition = "opacity .28s ease";
       sp.style.opacity = "0";
-      setTimeout(function(){ sp.style.display = "none"; }, 320);
+      setTimeout(function(){ try{ sp.remove(); }catch(e){ sp.style.display = "none"; } }, 320);
+      try{ window.__releaseBootSplash && window.__releaseBootSplash("app-splash"); }catch(e){}
     }
 
     function showLogin(){
@@ -4466,7 +4568,7 @@ html body #qrScanView .qrScan-bottom{
 }
 #qrRegView *{box-sizing:border-box;font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;}
 #qrRegView .qrReg-app{
-  min-height:100vh;
+  min-height:100dvh;
   min-height:100dvh;
   position:relative;
   overflow:hidden;
@@ -6897,7 +6999,7 @@ body{
 }
 #qrRegView *{box-sizing:border-box;font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;}
 #qrRegView .qrReg-app{
-  min-height:100vh;
+  min-height:100dvh;
   min-height:100dvh;
   position:relative;
   overflow:hidden;
@@ -8304,7 +8406,7 @@ body{
 }
 #qrRegView *{box-sizing:border-box;font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;}
 #qrRegView .qrReg-app{
-  min-height:100vh;
+  min-height:100dvh;
   min-height:100dvh;
   position:relative;
   overflow:hidden;
@@ -14585,7 +14687,7 @@ function setUploadState(state){
     .app{
       max-width:420px;
       margin:0 auto;
-      min-height:100vh;
+      min-height:100dvh;
       background:var(--bg);
       overflow:hidden;
       position:relative;
@@ -15057,8 +15159,8 @@ function setUploadState(state){
     }
     *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
     html,body{margin:0;background:var(--bg);font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Arial, sans-serif;color:var(--text)}
-    body{min-height:100vh;overflow-x:hidden}
-    .app{max-width:430px;margin:0 auto;background:var(--bg);position:relative;min-height:100vh;padding-bottom:96px}
+    body{min-height:100dvh;overflow-x:hidden}
+    .app{max-width:430px;margin:0 auto;background:var(--bg);position:relative;min-height:100dvh;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
     .header{
       position:sticky;top:0;z-index:50;
       background:linear-gradient(180deg,var(--purple),#8b17d6 100%);
@@ -15852,7 +15954,8 @@ function setUploadState(state){
 
   function remove(){
     if (!splash) return;
-    splash.remove();
+    try{ splash.remove(); }catch(e){ splash.style.display = "none"; }
+    try{ window.__releaseBootSplash && window.__releaseBootSplash("tail-splash"); }catch(e){}
   }
 
   // Añadimos la clase de hide con el nombre correcto
@@ -16344,6 +16447,13 @@ function setUploadState(state){
   }
 
   validateSessionAndEnter();
+  setTimeout(function(){
+    try{
+      if(document.getElementById("__yapeSplash") || document.getElementById("preSplash")){
+        window.__releaseBootSplash && window.__releaseBootSplash("firebase-timeout");
+      }
+    }catch(e){}
+  }, 3500);
   window.addEventListener("online", ()=>{ validateSessionAndEnter(true); });
 
   document.addEventListener('gesturestart', (e)=>e.preventDefault(), {passive:false});
@@ -17991,57 +18101,6 @@ html.ios-final-fix iframe{
 })();
 </script>
 
-
-<script>
-(function(){
-  var HARD_TIMEOUT = 4500;
-  var removed = false;
-
-  function safeShowContent(){
-    try {
-      var hasSession = false;
-      try {
-        var raw = localStorage.getItem('yapeton_session');
-        var parsed = raw ? JSON.parse(raw) : null;
-        hasSession = !!(parsed && parsed.ok === true && parsed.uid);
-      } catch(e) {}
-
-      document.body.classList.toggle('mode-app', hasSession);
-      document.body.classList.toggle('mode-login', !hasSession);
-
-      var loginWrap = document.getElementById('loginWrap');
-      var appWrap = document.getElementById('appWrap');
-      if (loginWrap) loginWrap.style.display = hasSession ? 'none' : 'block';
-      if (appWrap) appWrap.style.display = hasSession ? 'block' : 'none';
-    } catch(e) {}
-  }
-
-  function removeSplashNow(){
-    if (removed) return;
-    removed = true;
-    ['preSplash', '__yapeSplash'].forEach(function(id){
-      try {
-        var el = document.getElementById(id);
-        if (!el) return;
-        el.style.opacity = '0';
-        el.style.pointerEvents = 'none';
-        el.style.transition = 'opacity .25s ease';
-        setTimeout(function(){ try { el.remove(); } catch(e) { el.style.display = 'none'; } }, 260);
-      } catch(e){}
-    });
-    safeShowContent();
-  }
-
-  window.__forceAppBootContinue = removeSplashNow;
-  window.addEventListener('error', function(){ setTimeout(removeSplashNow, 50); });
-  window.addEventListener('unhandledrejection', function(){ setTimeout(removeSplashNow, 50); });
-  window.addEventListener('pageshow', function(){ setTimeout(removeSplashNow, 400); }, { once:true });
-  document.addEventListener('visibilitychange', function(){ if (document.visibilityState === 'visible') setTimeout(removeSplashNow, 1000); });
-  if (document.readyState === 'complete') setTimeout(removeSplashNow, 1600);
-  else window.addEventListener('load', function(){ setTimeout(removeSplashNow, 1600); }, { once:true });
-  setTimeout(removeSplashNow, HARD_TIMEOUT);
-})();
-</script>
 </body>
 </html>
 
@@ -18072,154 +18131,3 @@ html.ios-final-fix iframe{
   }
 }
 </style>
-
-<style id="ios-bottom-safe-fix-preserve-layout">
-@supports (padding: env(safe-area-inset-bottom)) {
-  html, body {
-    min-height: -webkit-fill-available;
-  }
-
-  body {
-    padding-bottom: 0 !important;
-  }
-
-  #loginWrap,
-  #appWrap,
-  .stage,
-  .wrap,
-  .panel,
-  .panelInner,
-  .screens,
-  .screen,
-  .bottom,
-  .card {
-    box-sizing: border-box !important;
-  }
-
-  /* Login / registro */
-  #loginWrap {
-    min-height: var(--ios-real-vh, 100dvh) !important;
-    padding-bottom: max(env(safe-area-inset-bottom), 0px) !important;
-  }
-
-  #loginWrap .wrap {
-    min-height: calc(var(--ios-real-vh, 100dvh) - max(env(safe-area-inset-bottom), 0px)) !important;
-    display: flex !important;
-    flex-direction: column !important;
-  }
-
-  #loginWrap .panel {
-    flex: 1 1 auto !important;
-    min-height: 0 !important;
-  }
-
-  #loginWrap .panelInner {
-    max-height: none !important;
-    height: auto !important;
-    min-height: 0 !important;
-    padding-bottom: calc(16px + env(safe-area-inset-bottom)) !important;
-  }
-
-  #loginWrap .actions {
-    bottom: 0 !important;
-    padding-bottom: calc(10px + env(safe-area-inset-bottom)) !important;
-  }
-
-  /* Pantalla de clave / teclado */
-  .screen {
-    min-height: var(--ios-real-vh, 100dvh) !important;
-    padding-bottom: 0 !important;
-  }
-
-  .bottom {
-    margin-bottom: 0 !important;
-    padding-bottom: 0 !important;
-    min-height: 0 !important;
-    align-items: flex-end !important;
-    justify-content: flex-end !important;
-  }
-
-  .card {
-    margin-bottom: 0 !important;
-    transform: none !important;
-    padding-bottom: calc(18px + env(safe-area-inset-bottom)) !important;
-  }
-
-  /* overlays / sheets */
-  .bio-overlay,
-  #pnGlobalOverlay {
-    padding-bottom: calc(18px + env(safe-area-inset-bottom)) !important;
-  }
-
-  #pnGlobalSheet,
-  .bio-sheet {
-    margin-bottom: 0 !important;
-  }
-}
-</style>
-
-<script id="ios-bottom-safe-fix-script">
-(function(){
-  var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent) ||
-    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  if(!isIOS) return;
-
-  function currentVH(){
-    var vv = window.visualViewport;
-    if(vv && vv.height) return Math.round(vv.height);
-    return Math.round(window.innerHeight || document.documentElement.clientHeight || screen.height || 0);
-  }
-
-  function applyVars(doc){
-    if(!doc || !doc.documentElement) return;
-    var vh = currentVH();
-    doc.documentElement.style.setProperty('--ios-real-vh', vh + 'px');
-    doc.documentElement.style.setProperty('--app-vh', vh + 'px');
-  }
-
-  function injectIntoFrame(frame){
-    try {
-      var doc = frame && frame.contentDocument;
-      if(!doc || !doc.head) return;
-      applyVars(doc);
-      if(doc.getElementById('ios-iframe-safe-fix')) return;
-      var style = doc.createElement('style');
-      style.id = 'ios-iframe-safe-fix';
-      style.textContent = [
-        ':root{--ios-real-vh:100dvh;}',
-        'html,body{min-height:-webkit-fill-available !important;}',
-        '.screen{min-height:var(--ios-real-vh,100dvh) !important;padding-bottom:0 !important;box-sizing:border-box !important;}',
-        '.bottom{margin-bottom:0 !important;padding-bottom:0 !important;min-height:0 !important;align-items:flex-end !important;justify-content:flex-end !important;}',
-        '.card{margin-bottom:0 !important;transform:none !important;padding-bottom:calc(18px + env(safe-area-inset-bottom)) !important;box-sizing:border-box !important;}',
-        '.bio-overlay{padding-bottom:calc(18px + env(safe-area-inset-bottom)) !important;}',
-        '#pnGlobalOverlay{padding-bottom:calc(18px + env(safe-area-inset-bottom)) !important;}',
-        '#pnGlobalSheet,.bio-sheet{margin-bottom:0 !important;}'
-      ].join('');
-      doc.head.appendChild(style);
-    } catch(e) {}
-  }
-
-  function refreshAll(){
-    applyVars(document);
-    document.querySelectorAll('iframe').forEach(injectIntoFrame);
-  }
-
-  ['DOMContentLoaded','load','pageshow','resize','orientationchange'].forEach(function(ev){
-    window.addEventListener(ev, refreshAll, {passive:true});
-  });
-
-  if(window.visualViewport){
-    visualViewport.addEventListener('resize', refreshAll, {passive:true});
-    visualViewport.addEventListener('scroll', refreshAll, {passive:true});
-  }
-
-  var tries = 0;
-  var timer = setInterval(function(){
-    refreshAll();
-    tries += 1;
-    if(tries > 20) clearInterval(timer);
-  }, 250);
-
-  refreshAll();
-})();
-</script>
