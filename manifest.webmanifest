@@ -1,11 +1,18 @@
 {
+  "id": "./",
   "name": "Yape",
   "short_name": "Yape",
-  "start_url": "./index.html",
+  "description": "Yape PWA",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
   "background_color": "#742284",
   "theme_color": "#742284",
-  "scope": "./",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "icon-192.png",

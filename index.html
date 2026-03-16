@@ -8,9 +8,6 @@
   
   <!-- PWA -->
   <link rel="manifest" href="manifest.webmanifest">
-<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
   <meta name="theme-color" content="#742284">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -505,10 +502,44 @@ height:100% !important;
 <script>
 (function(){
   try{
-    if('serviceWorker' in navigator){
-      window.addEventListener('load', function(){
-        navigator.serviceWorker.register('./service-worker.js').catch(function(e){ console.warn('SW register failed', e); });
+    if(!('serviceWorker' in navigator)) return;
+
+    var refreshing = false;
+    function registerSW(){
+      navigator.serviceWorker.register('./service-worker.js', { scope: './' }).then(function(reg){
+        try { reg.update && reg.update(); } catch(e){}
+
+        function promoteWaiting(worker){
+          if(!worker) return;
+          try { worker.postMessage({ type:'SKIP_WAITING' }); } catch(e){}
+        }
+
+        if(reg.waiting) promoteWaiting(reg.waiting);
+
+        reg.addEventListener('updatefound', function(){
+          var nw = reg.installing;
+          if(!nw) return;
+          nw.addEventListener('statechange', function(){
+            if(nw.state === 'installed' && navigator.serviceWorker.controller){
+              promoteWaiting(nw);
+            }
+          });
+        });
+      }).catch(function(e){
+        console.warn('SW register failed', e);
       });
+
+      navigator.serviceWorker.addEventListener('controllerchange', function(){
+        if(refreshing) return;
+        refreshing = true;
+        setTimeout(function(){ refreshing = false; }, 1500);
+      });
+    }
+
+    if('requestIdleCallback' in window){
+      requestIdleCallback(registerSW, { timeout: 1500 });
+    } else {
+      window.addEventListener('load', registerSW, { once:true });
     }
   }catch(e){ console.warn(e); }
 })();
@@ -1048,6 +1079,90 @@ h1,h2,h3,.title,.contact-name{
 }
 </style>
 
+<script>
+(function(){
+  var SESSION_KEY = 'yapeton_session';
+  var BOOT_MAX_WAIT = 4500;
+  var released = false;
+
+  function hasStoredSession(){
+    try{
+      var raw = localStorage.getItem(SESSION_KEY);
+      if(!raw) return false;
+      var data = JSON.parse(raw);
+      return !!(data && data.ok === true && data.uid);
+    }catch(e){
+      return false;
+    }
+  }
+
+  function hideNode(node){
+    if(!node) return;
+    try { node.classList.add('preSplashHide'); } catch(e){}
+    try { node.classList.add('__hide'); } catch(e){}
+    try { node.style.opacity = '0'; } catch(e){}
+    try { node.style.pointerEvents = 'none'; } catch(e){}
+    setTimeout(function(){
+      try { node.remove(); } catch(e){ try { node.style.display = 'none'; } catch(_){} }
+    }, 450);
+  }
+
+  function releaseBoot(reason){
+    if(released) return;
+    released = true;
+    try { window.__BOOT_RELEASE_REASON = reason || 'timeout'; } catch(e){}
+
+    var appWrap = document.getElementById('appWrap');
+    var loginWrap = document.getElementById('loginWrap');
+    var preferApp = hasStoredSession();
+
+    if(appWrap && loginWrap){
+      if(preferApp){
+        appWrap.style.display = 'block';
+        loginWrap.style.display = 'none';
+        document.body.classList.add('mode-app');
+        document.body.classList.remove('mode-login');
+      } else {
+        loginWrap.style.display = 'block';
+        appWrap.style.display = 'none';
+        document.body.classList.add('mode-login');
+        document.body.classList.remove('mode-app');
+      }
+    }
+
+    hideNode(document.getElementById('preSplash'));
+    hideNode(document.getElementById('__yapeSplash'));
+  }
+
+  window.__releaseBootSplash = releaseBoot;
+  window.addEventListener('error', function(){ setTimeout(function(){ releaseBoot('error'); }, 0); }, true);
+  window.addEventListener('unhandledrejection', function(){ setTimeout(function(){ releaseBoot('promise'); }, 0); });
+
+  function armWatchdog(){
+    setTimeout(function(){
+      var pre = document.getElementById('preSplash');
+      var main = document.getElementById('__yapeSplash');
+      var appWrap = document.getElementById('appWrap');
+      var loginWrap = document.getElementById('loginWrap');
+      var appVisible = !!(appWrap && appWrap.style.display !== 'none');
+      var loginVisible = !!(loginWrap && loginWrap.style.display !== 'none');
+      if(pre || main || (!appVisible && !loginVisible)){
+        releaseBoot('watchdog');
+      }
+    }, BOOT_MAX_WAIT);
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', armWatchdog, { once:true });
+  } else {
+    armWatchdog();
+  }
+
+  window.addEventListener('pageshow', function(){
+    setTimeout(function(){ releaseBoot('pageshow'); }, 2500);
+  }, { once:true });
+})();
+</script>
 </head>
 <body class="mode-login">
 
@@ -1070,6 +1185,7 @@ h1,h2,h3,.title,.contact-name{
     if(!sp) return;
     sp.classList.add("preSplashHide");
     setTimeout(function(){ try{ sp.remove(); }catch(e){ sp.style.display="none"; } }, 500);
+    try{ window.__releaseBootSplash && window.__releaseBootSplash("presplash"); }catch(e){}
   }
 
   function scheduleHide(){
@@ -1113,7 +1229,8 @@ h1,h2,h3,.title,.contact-name{
       if(!sp) return;
       sp.style.transition = "opacity .28s ease";
       sp.style.opacity = "0";
-      setTimeout(function(){ sp.style.display = "none"; }, 320);
+      setTimeout(function(){ try{ sp.remove(); }catch(e){ sp.style.display = "none"; } }, 320);
+      try{ window.__releaseBootSplash && window.__releaseBootSplash("app-splash"); }catch(e){}
     }
 
     function showLogin(){
@@ -15837,7 +15954,8 @@ function setUploadState(state){
 
   function remove(){
     if (!splash) return;
-    splash.remove();
+    try{ splash.remove(); }catch(e){ splash.style.display = "none"; }
+    try{ window.__releaseBootSplash && window.__releaseBootSplash("tail-splash"); }catch(e){}
   }
 
   // Añadimos la clase de hide con el nombre correcto
@@ -16329,6 +16447,13 @@ function setUploadState(state){
   }
 
   validateSessionAndEnter();
+  setTimeout(function(){
+    try{
+      if(document.getElementById("__yapeSplash") || document.getElementById("preSplash")){
+        window.__releaseBootSplash && window.__releaseBootSplash("firebase-timeout");
+      }
+    }catch(e){}
+  }, 3500);
   window.addEventListener("online", ()=>{ validateSessionAndEnter(true); });
 
   document.addEventListener('gesturestart', (e)=>e.preventDefault(), {passive:false});
