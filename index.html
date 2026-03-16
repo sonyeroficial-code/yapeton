@@ -17803,70 +17803,6 @@ html.ios-final-fix #montoView [contenteditable="true"]{
 html.ios-final-fix iframe{
   max-width:100% !important;
 }
-
-
-/* === iPhone safe-area fix final === */
-/* Ajusta headers internos para que el botón volver no quede debajo de la barra de estado en iPhone */
-.yHeader{
-  padding-top: calc(env(safe-area-inset-top, 0px) + 12px) !important;
-  padding-right: 16px !important;
-  padding-bottom: 12px !important;
-  padding-left: 16px !important;
-  min-height: calc(54px + env(safe-area-inset-top, 0px)) !important;
-  box-sizing: border-box !important;
-  gap: 10px !important;
-  align-items: center !important;
-}
-.yBack,
-.yClose{
-  flex: 0 0 34px !important;
-  width: 34px !important;
-  height: 34px !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  line-height: 1 !important;
-  font-size: 24px !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-.yTitle{
-  flex: 1 1 auto !important;
-  min-width: 0 !important;
-  font-size: 22px !important;
-  line-height: 1.15 !important;
-  margin: 0 !important;
-}
-.ySearch{
-  margin-top: 12px !important;
-}
-
-/* También corrige la cabecera de la vista de monto, que usa otro header */
-.mHeaderLikePhoto{
-  padding-top: calc(env(safe-area-inset-top, 0px) + 12px) !important;
-  padding-right: 16px !important;
-  padding-bottom: 12px !important;
-  padding-left: 16px !important;
-  min-height: calc(54px + env(safe-area-inset-top, 0px)) !important;
-  box-sizing: border-box !important;
-}
-.mHeaderLikePhoto .mTitle{
-  margin-left: 10px !important;
-  line-height: 1.15 !important;
-}
-.mHeaderLikePhoto #mBack,
-.mHeaderLikePhoto #mClose{
-  width: 34px !important;
-  height: 34px !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  line-height: 1 !important;
-}
-.mHeaderLikePhoto #mClose{
-  right: 16px !important;
-  top: calc(50% + (env(safe-area-inset-top, 0px) / 2)) !important;
-}
 </style>
 <script id="__ios_keyboard_final_fix_js">
 (function(){
@@ -17963,3 +17899,31 @@ html.ios-final-fix iframe{
 
 </body>
 </html>
+
+<style id="ios-safe-header-fix-final">
+/* Ajuste final solo para iPhone / iOS Safari:
+   baja el header de vistas internas para que el botón volver
+   no quede pegado al notch o a la barra superior. */
+@supports (padding-top: env(safe-area-inset-top)) {
+  #yapearView .yApp{
+    min-height: 100dvh !important;
+    min-height: -webkit-fill-available !important;
+  }
+
+  #yapearView .yHeader{
+    padding-top: calc(env(safe-area-inset-top, 0px) + 10px) !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    padding-bottom: 12px !important;
+    min-height: calc(46px + env(safe-area-inset-top, 0px)) !important;
+    box-sizing: border-box !important;
+  }
+
+  #yapearView .yBack,
+  #yapearView .yClose,
+  #yapearView .yTitle{
+    position: relative;
+    top: 0 !important;
+  }
+}
+</style>
