@@ -5706,6 +5706,31 @@ body{
   transform: scale(0.98);
   filter: brightness(1.05);
 }
+.opciones-update.has-update{
+  background: rgba(255,255,255,0.22);
+  border-color: rgba(255,255,255,0.34);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.16);
+}
+.opciones-update .update-badge{
+  display:none;
+  width:10px;
+  height:10px;
+  border-radius:999px;
+  background:#ff4d67;
+  box-shadow:0 0 0 3px rgba(255,77,103,0.20);
+  flex:0 0 10px;
+}
+.opciones-update.has-update .update-badge{
+  display:inline-block;
+  animation:updatePulse 1.25s ease-in-out infinite;
+}
+.opciones-update .update-label{
+  white-space:nowrap;
+}
+@keyframes updatePulse{
+  0%,100%{ transform:scale(1); opacity:1; }
+  50%{ transform:scale(1.18); opacity:.78; }
+}
 
 .back-opciones:active{ transform: scale(0.98); }
 
@@ -7310,7 +7335,7 @@ body{
 
       &lt;div style=&quot;background:#f3f0f5;margin:28px -20px -32px -20px;padding:24px 20px calc(env(safe-area-inset-bottom) + 26px) 20px;&quot;&gt;
         &lt;div style=&quot;color:#5b4f63;font-size:15px;line-height:1.75;font-weight:500;&quot;&gt;
-          &lt;div&gt;&lt;b&gt;Versión Yape:&lt;/b&gt; 9.0.0&lt;/div&gt;
+          &lt;div id=&quot;versionApp&quot;&gt;&lt;b&gt;Versión Yape:&lt;/b&gt; --&lt;/div&gt;
           &lt;div&gt;&lt;b&gt;Tipo de cuenta:&lt;/b&gt; Yape con BCP&lt;/div&gt;
           &lt;div&gt;&lt;b&gt;Banco de Crédito del Perú&lt;/b&gt;&lt;/div&gt;
           &lt;div&gt;&lt;b&gt;RUC:&lt;/b&gt; 20100047218&lt;/div&gt;
@@ -7349,7 +7374,7 @@ body{
 
       &lt;div class=&quot;opciones-header&quot;&gt;
         &lt;span class=&quot;material-symbols-outlined back-opciones&quot; onclick=&quot;volverPerfil()&quot;&gt;arrow_back&lt;/span&gt;
-        &lt;button class=&quot;opciones-update&quot; type=&quot;button&quot; onclick=&quot;actualizarApp()&quot;&gt;&lt;span class=&quot;material-symbols-outlined&quot;&gt;notifications&lt;/span&gt;Actualizar&lt;/button&gt;
+        &lt;button id=&quot;updateAppBtn&quot; class=&quot;opciones-update&quot; type=&quot;button&quot; onclick=&quot;actualizarApp()&quot;&gt;&lt;span class=&quot;material-symbols-outlined&quot;&gt;notifications&lt;/span&gt;&lt;span class=&quot;update-label&quot;&gt;Actualizar&lt;/span&gt;&lt;span class=&quot;update-badge&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;&lt;/button&gt;
 
         
         &lt;div class=&quot;opciones-hero-text&quot;&gt;
@@ -10135,6 +10160,124 @@ function actualizarApp(){
     window.top.location.reload();
   }
 }
+
+(function(){
+  const SW_FILE = './service-worker.js';
+  const VERSION_PREFIX = 'yape-precache-';
+  let updateUiReady = false;
+
+  function getUpdateNodes(){
+    return {
+      btn: document.getElementById('updateAppBtn'),
+      label: document.querySelector('#updateAppBtn .update-label'),
+      version: document.getElementById('versionApp')
+    };
+  }
+
+  function setUpdateButtonState(hasUpdate, latestVersion){
+    const {btn,label} = getUpdateNodes();
+    if(!btn || !label) return;
+    btn.classList.toggle('has-update', !!hasUpdate);
+    label.textContent = hasUpdate ? 'Nueva actualización' : 'Actualizar';
+    btn.setAttribute('aria-label', hasUpdate ? ('Nueva actualización disponible ' + (latestVersion || '')) : 'Actualizar app');
+    if(hasUpdate && latestVersion){ btn.dataset.version = latestVersion; }
+    else { delete btn.dataset.version; }
+  }
+
+  async function getInstalledVersion(){
+    try{
+      const keys = await caches.keys();
+      const precache = keys.find(k => k.indexOf(VERSION_PREFIX) === 0);
+      if(precache) return precache.slice(VERSION_PREFIX.length);
+      const runtime = keys.find(k => k.indexOf('yape-runtime-') === 0);
+      if(runtime) return runtime.slice('yape-runtime-'.length);
+    }catch(e){}
+    return null;
+  }
+
+  async function getLatestVersion(){
+    try{
+      const res = await fetch(SW_FILE + '?v=' + Date.now(), { cache: 'no-store' });
+      const txt = await res.text();
+      const m = txt.match(/CACHE_VERSION\s*=\s*['"]([^'"]+)['"]/);
+      return m ? m[1] : null;
+    }catch(e){
+      return null;
+    }
+  }
+
+  function renderVersion(version){
+    const {version:versionNode} = getUpdateNodes();
+    if(versionNode && version){
+      versionNode.innerHTML = '<b>Versión Yape:</b> ' + version;
+    }
+  }
+
+  async function syncUpdateUi(){
+    const installedVersion = await getInstalledVersion();
+    if(installedVersion) renderVersion(installedVersion);
+
+    const latestVersion = await getLatestVersion();
+    if(!latestVersion){
+      setUpdateButtonState(false, null);
+      return;
+    }
+
+    if(!installedVersion){
+      renderVersion(latestVersion);
+      setUpdateButtonState(false, null);
+      return;
+    }
+
+    setUpdateButtonState(latestVersion !== installedVersion, latestVersion);
+  }
+
+  async function initLiveUpdateUi(){
+    if(updateUiReady) return;
+    updateUiReady = true;
+    await syncUpdateUi();
+
+    if('serviceWorker' in navigator){
+      try{
+        const reg = await navigator.serviceWorker.getRegistration('./service-worker.js') || await navigator.serviceWorker.getRegistration();
+        if(reg){
+          if(reg.waiting){
+            const latestVersion = await getLatestVersion();
+            setUpdateButtonState(true, latestVersion);
+          }
+          reg.addEventListener('updatefound', async function(){
+            const latestVersion = await getLatestVersion();
+            setUpdateButtonState(true, latestVersion);
+          });
+        }
+        navigator.serviceWorker.addEventListener('controllerchange', function(){
+          setTimeout(syncUpdateUi, 200);
+        });
+      }catch(e){}
+    }
+
+    setInterval(async function(){
+      try{
+        if('serviceWorker' in navigator){
+          const reg = await navigator.serviceWorker.getRegistration('./service-worker.js') || await navigator.serviceWorker.getRegistration();
+          if(reg) await reg.update();
+        }
+      }catch(e){}
+      syncUpdateUi();
+    }, 30000);
+
+    window.addEventListener('online', syncUpdateUi);
+    document.addEventListener('visibilitychange', function(){
+      if(!document.hidden) syncUpdateUi();
+    });
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', initLiveUpdateUi, { once:true });
+  }else{
+    initLiveUpdateUi();
+  }
+})();
 
 function abrirWhatsApp(){
   const numero=&quot;51942978154&quot;;
