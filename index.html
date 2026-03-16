@@ -1058,7 +1058,7 @@ h1,h2,h3,.title,.contact-name{
 
 <script>
 (function(){
-  var MIN_MS = 1200; // duración mínima del splash inicial (1.2s)
+  var MIN_MS = 3000; // duración mínima del splash inicial (3s)
   var start = Date.now();
 
   function hidePreSplash(){
@@ -15791,7 +15791,7 @@ function setUploadState(state){
 <script>
 (function(){
   // Splash: muestra 3 segundos y luego se oculta suave.
-  var SHOW_MS = 1200;
+  var SHOW_MS = 7000;
   var splash = document.getElementById('__yapeSplash');
   if (!splash) return;
 
@@ -16225,56 +16225,30 @@ function setUploadState(state){
 
       saveSession({ ok:true, sellerId:id, username:u, deviceId, uid: userDoc.id, ts: Date.now() });
       showToast("✅ Acceso correcto.");
-      window.__showAppFromAuth?.();
+      setTimeout(()=>{ window.__showAppFromAuth?.(); }, 450);
     } catch(e){
       console.error(e);
       showToast("Error al iniciar sesión.");
     }
   });
 
-  // Auto-entrar si ya hay sesión guardada.
-  // Primero entra rápido con la sesión local y luego valida en segundo plano.
+  // Auto-entrar si ya hay sesión guardada (validando en Firestore)
   async function validateSessionAndEnter(){
     const ses = getSession();
     if(!(ses?.ok === true) || !ses?.uid) return;
-
-    const deviceId = getDeviceId();
-
-    // Entra rápido si la sesión local parece válida.
-    if((!ses.deviceId || ses.deviceId === deviceId) && ses.sellerId && ses.username){
-      window.__showAppFromAuth?.();
-    }
-
     try{
       const ref = doc(db, "users", ses.uid);
       const snap = await getDoc(ref);
       if(!snap.exists()) return;
       const d = snap.data()||{};
-
-      const invalid = (
-        (d.sellerId||"") !== ses.sellerId ||
-        (d.username||"") !== ses.username ||
-        d.approved !== true ||
-        (d.deviceId && d.deviceId !== deviceId)
-      );
-
-      if(invalid){
-        // Solo si Firebase confirma que la sesión ya no sirve, limpiamos y volvemos al login.
-        localStorage.removeItem(SESSION_KEY);
-        window.__showLoginFromAuth?.();
-        return;
-      }
-
-      if(!d.deviceId){
-        await updateDoc(ref, { deviceId });
-      }
-
-      saveSession({ ...ses, deviceId, ts: Date.now() });
+      if((d.sellerId||"") !== ses.sellerId) return;
+      if((d.username||"") !== ses.username) return;
+      if(d.approved !== true) return;
+      const deviceId = getDeviceId();
+      if(d.deviceId && d.deviceId !== deviceId) return;
+      if(!d.deviceId){ await updateDoc(ref, { deviceId }); }
       window.__showAppFromAuth?.();
-    }catch(e){
-      // Si falla internet o Firestore tarda, no sacar al usuario al login.
-      console.error(e);
-    }
+    }catch(e){ console.error(e); }
   }
   validateSessionAndEnter();
 
