@@ -353,7 +353,7 @@ height:100% !important;
 
     .panelInner{
       padding:16px 16px 14px;
-      max-height: calc(100vh - 16px - 22px - 44px - 10px - 10px);
+      max-height: calc(100dvh - 16px - 22px - 44px - 10px - 10px);
       overflow:auto;
       -webkit-overflow-scrolling: touch;
     }
@@ -490,7 +490,7 @@ height:100% !important;
       radial-gradient(1200px 600px at 50% -10%, rgba(255,255,255,.14), rgba(255,255,255,0) 60%),
       linear-gradient(180deg,var(--p1) 0%, var(--p2) 18%, var(--p3) 45%, var(--p4) 72%, var(--p5) 100%) !important;
     background-attachment: fixed !important;
-    min-height: 100vh !important;
+    min-height: 100dvh !important;
   }
   html, body { height: 100%; }
   body.mode-login #appWrap { display:none !important; }
@@ -724,7 +724,7 @@ height:100% !important;
 /* === GLOBAL RESPONSIVE PATCH === */
 :root{
   --app-vw: 100vw;
-  --app-vh: 100vh;
+  --app-vh: 100dvh;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -767,7 +767,7 @@ input, textarea, select, button{
 .stage{
   width:100vw;
   width:var(--app-vw);
-  height:100vh;
+  height:100dvh;
   height:var(--app-vh);
   max-width:100vw;
   overflow:hidden;
@@ -1061,6 +1061,12 @@ h1,h2,h3,.title,.contact-name{
   color:#666666 !important;
   font-weight:400 !important;
 }
+</style>
+
+
+<style id="ios-scroll-fix">
+html,body{height:100%;overflow:hidden;}
+.ios-scroll-fix{height:100dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
 </style>
 
 </head>
@@ -2512,7 +2518,7 @@ html, body { height: 100%; }
 
     .device{
       width: min(100vw, var(--appMax));
-      height: min(100vh, 900px);
+      height: min(100dvh, 900px);
       border-radius: 28px;
       overflow:hidden;
       background:#333333;
@@ -2633,7 +2639,7 @@ html, body { height: 100%; }
       position: fixed;
       inset: 0;
       width: 100vw;
-      height: 100vh;
+      height: 100dvh;
       z-index: 999999;
       background:#fff !important;
       transform: translateX(-100%);
@@ -4466,7 +4472,7 @@ html body #qrScanView .qrScan-bottom{
 }
 #qrRegView *{box-sizing:border-box;font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;}
 #qrRegView .qrReg-app{
-  min-height:100vh;
+  min-height:100dvh;
   min-height:100dvh;
   position:relative;
   overflow:hidden;
@@ -5453,7 +5459,7 @@ body{
 /* ================= SCREENS ================= */
 .screen{
   display:none;
-  height:100vh;
+  height:100dvh;
   overflow:hidden;
 }
 
@@ -6163,7 +6169,7 @@ body{
 
 /* Solo se desliza el bloque (sheet). El header queda fijo */
 #opcionesScreen .opciones-wrapper{
-  height: 100vh !important;
+  height: 100dvh !important;
   overflow: hidden !important;
   display: flex !important;
   flex-direction: column !important;
@@ -6897,7 +6903,7 @@ body{
 }
 #qrRegView *{box-sizing:border-box;font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;}
 #qrRegView .qrReg-app{
-  min-height:100vh;
+  min-height:100dvh;
   min-height:100dvh;
   position:relative;
   overflow:hidden;
@@ -8304,7 +8310,7 @@ body{
 }
 #qrRegView *{box-sizing:border-box;font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;}
 #qrRegView .qrReg-app{
-  min-height:100vh;
+  min-height:100dvh;
   min-height:100dvh;
   position:relative;
   overflow:hidden;
@@ -14585,7 +14591,7 @@ function setUploadState(state){
     .app{
       max-width:420px;
       margin:0 auto;
-      min-height:100vh;
+      min-height:100dvh;
       background:var(--bg);
       overflow:hidden;
       position:relative;
@@ -15057,8 +15063,8 @@ function setUploadState(state){
     }
     *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
     html,body{margin:0;background:var(--bg);font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Arial, sans-serif;color:var(--text)}
-    body{min-height:100vh;overflow-x:hidden}
-    .app{max-width:430px;margin:0 auto;background:var(--bg);position:relative;min-height:100vh;padding-bottom:96px}
+    body{min-height:100dvh;overflow-x:hidden}
+    .app{max-width:430px;margin:0 auto;background:var(--bg);position:relative;min-height:100dvh;padding-bottom:96px}
     .header{
       position:sticky;top:0;z-index:50;
       background:linear-gradient(180deg,var(--purple),#8b17d6 100%);
