@@ -16251,7 +16251,29 @@ function setUploadState(state){
 
   // Auto-entrar si ya hay sesión guardada.
   // Primero entra con la sesión local y luego valida en segundo plano.
-  async function validateSessionAndEnter(){
+  function isNetworkLikeError(err){
+    const code = String(err?.code || "").toLowerCase();
+    const msg = String(err?.message || err || "").toLowerCase();
+    return (
+      code.includes("unavailable") ||
+      code.includes("failed-precondition") ||
+      code.includes("deadline-exceeded") ||
+      msg.includes("offline") ||
+      msg.includes("network") ||
+      msg.includes("client is offline") ||
+      msg.includes("failed to get document") ||
+      msg.includes("unavailable") ||
+      msg.includes("timed out")
+    );
+  }
+
+  function clearSession(){
+    try{ localStorage.removeItem(SESSION_KEY); }catch(e){}
+  }
+
+  let __sessionValidationRunning = false;
+
+  async function validateSessionAndEnter(forceOnlineCheck = false){
     const ses = getSession();
     if(!(ses?.ok === true) || !ses?.uid) {
       window.__showLoginFromAuth?.();
@@ -16259,6 +16281,11 @@ function setUploadState(state){
     }
 
     window.__showAppFromAuth?.();
+
+    if(__sessionValidationRunning) return;
+    if(!forceOnlineCheck && navigator.onLine === false) return;
+
+    __sessionValidationRunning = true;
 
     try{
       const ref = doc(db, "users", ses.uid);
@@ -16277,11 +16304,18 @@ function setUploadState(state){
       }
     }catch(e){
       console.error(e);
-      localStorage.removeItem(SESSION_KEY);
+      if(isNetworkLikeError(e) || navigator.onLine === false){
+        return;
+      }
+      clearSession();
       window.__showLoginFromAuth?.();
+    } finally {
+      __sessionValidationRunning = false;
     }
   }
+
   validateSessionAndEnter();
+  window.addEventListener("online", ()=>{ validateSessionAndEnter(true); });
 
   document.addEventListener('gesturestart', (e)=>e.preventDefault(), {passive:false});
 </script>
