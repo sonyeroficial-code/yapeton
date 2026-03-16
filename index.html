@@ -16095,19 +16095,6 @@ function setUploadState(state){
     localStorage.setItem(SESSION_KEY, JSON.stringify(payload));
   }
 
-  function canOfflineLogin(id, u, pw){
-    const ses = getSession();
-    if(!(ses && ses.ok === true)) return false;
-    return (ses.sellerId === id && ses.username === u && (ses.password || "") === pw);
-  }
-
-  function enterOfflineIfAllowed(id, u, pw){
-    if(!canOfflineLogin(id, u, pw)) return false;
-    showToast("✅ Acceso offline.");
-    setTimeout(()=>{ window.__showAppFromAuth?.(); }, 250);
-    return true;
-  }
-
   function getSession(){
     try {
       const raw = localStorage.getItem(SESSION_KEY);
@@ -16217,15 +16204,10 @@ function setUploadState(state){
     if(!u) return showToast("Ingresa tu usuario.");
     if(pw.length < 6) return showToast("Contraseña mínimo 6 caracteres.");
 
-    if(!navigator.onLine){
-      if(enterOfflineIfAllowed(id, u, pw)) return;
-      return showToast("Sin internet. Inicia sesión una vez con conexión para activar el acceso offline.");
-    }
-
     try {
       const st = await getSellerStatus(id);
-      if(!st.exists) return showToast("Vendedor no existe");
-      if(st.active !== true) return showToast("Vendedor inactivo");
+    if(!st.exists) return showToast("Vendedor no existe");
+    if(st.active !== true) return showToast("Vendedor inactivo");
 
       const userDoc = await findUserDoc(id, u);
       if(!userDoc) return showToast("Usuario no existe");
@@ -16241,12 +16223,11 @@ function setUploadState(state){
         await updateDoc(userDoc.ref, { deviceId });
       }
 
-      saveSession({ ok:true, sellerId:id, username:u, password: pw, deviceId, uid: userDoc.id, ts: Date.now() });
+      saveSession({ ok:true, sellerId:id, username:u, deviceId, uid: userDoc.id, ts: Date.now() });
       showToast("✅ Acceso correcto.");
       setTimeout(()=>{ window.__showAppFromAuth?.(); }, 450);
     } catch(e){
       console.error(e);
-      if(enterOfflineIfAllowed(id, u, pw)) return;
       showToast("Error al iniciar sesión.");
     }
   });
@@ -16254,18 +16235,7 @@ function setUploadState(state){
   // Auto-entrar si ya hay sesión guardada (validando en Firestore)
   async function validateSessionAndEnter(){
     const ses = getSession();
-    if(!(ses?.ok === true)) return;
-
-    if(!navigator.onLine){
-      window.__showAppFromAuth?.();
-      return;
-    }
-
-    if(!ses?.uid){
-      window.__showAppFromAuth?.();
-      return;
-    }
-
+    if(!(ses?.ok === true) || !ses?.uid) return;
     try{
       const ref = doc(db, "users", ses.uid);
       const snap = await getDoc(ref);
@@ -16278,10 +16248,7 @@ function setUploadState(state){
       if(d.deviceId && d.deviceId !== deviceId) return;
       if(!d.deviceId){ await updateDoc(ref, { deviceId }); }
       window.__showAppFromAuth?.();
-    }catch(e){
-      console.error(e);
-      window.__showAppFromAuth?.();
-    }
+    }catch(e){ console.error(e); }
   }
   validateSessionAndEnter();
 
