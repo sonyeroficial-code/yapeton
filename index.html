@@ -1058,21 +1058,35 @@ h1,h2,h3,.title,.contact-name{
 
 <script>
 (function(){
-  var MIN_MS = 3000; // duración mínima del splash inicial (3s)
+  var MIN_MS = 1200; // splash mínimo visible
+  var MAX_MS = 4000; // jamás quedarse pegado más de esto
   var start = Date.now();
+  var hidden = false;
 
-  function hidePreSplash(){
+  function doHide(){
+    if(hidden) return;
+    hidden = true;
     var sp = document.getElementById("preSplash");
     if(!sp) return;
     sp.classList.add("preSplashHide");
     setTimeout(function(){ try{ sp.remove(); }catch(e){ sp.style.display="none"; } }, 500);
   }
 
-  window.addEventListener("load", function(){
+  function scheduleHide(){
     var elapsed = Date.now() - start;
     var wait = Math.max(0, MIN_MS - elapsed);
-    setTimeout(hidePreSplash, wait);
-  });
+    setTimeout(doHide, wait);
+  }
+
+  if(document.readyState === "interactive" || document.readyState === "complete") {
+    scheduleHide();
+  } else {
+    document.addEventListener("DOMContentLoaded", scheduleHide, { once:true });
+    window.addEventListener("load", scheduleHide, { once:true });
+  }
+
+  window.addEventListener("pageshow", scheduleHide, { once:true });
+  setTimeout(doHide, MAX_MS);
 })();
 </script>
 
