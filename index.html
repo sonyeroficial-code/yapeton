@@ -3440,13 +3440,13 @@ html, body { height: 100%; }
     }
 
     #voucherView .close-btn{
-      position:fixed;
-      top:calc(env(safe-area-inset-top) + 8px);
-      right:12px;
-      width:44px;
-      height:44px;
+      position:absolute;
+      top:calc(env(safe-area-inset-top) + 18px);
+      right:16px;
+      width:46px;
+      height:46px;
       border-radius:50%;
-      background:rgba(255,255,255,0.15);
+      background:rgba(255,255,255,0.12);
       display:flex;
       align-items:center;
       justify-content:center;
@@ -3458,6 +3458,9 @@ html, body { height: 100%; }
       transform:none;
       backface-visibility:hidden;
       -webkit-font-smoothing:antialiased;
+      backdrop-filter:none;
+      -webkit-backdrop-filter:none;
+      box-shadow:none;
     }
 
     #voucherView .close-btn::before,
@@ -3485,10 +3488,10 @@ html, body { height: 100%; }
 
     #voucherView .yape-logo{
       position:absolute;
-      top:20px;
-      left:8px;
-      width:76px;
-      height:76px;
+      top:30px;
+      left:10px;
+      width:82px;
+      height:82px;
       border-radius:50%;
       overflow:visible;
     }
@@ -3505,7 +3508,7 @@ html, body { height: 100%; }
     }
 
     #voucherView .card{
-      margin-top:120px !important;
+      margin-top:128px !important;
       width:98%; /* un poco más ancho */
       margin-left:auto;
       margin-right:auto;
@@ -3529,7 +3532,7 @@ html, body { height: 100%; }
 
     /* Solo reduce el logo SVG embebido; no toca el GIF */
     #voucherView .yape-logo img[src^="data:image/svg+xml"]{
-      transform: scale(0.86) !important;
+      transform: scale(0.92) !important;
     }
 
     #voucherView .yape-logo img.yape-gif,
@@ -18376,10 +18379,10 @@ html.ios-final-fix iframe{
     logo.style.backgroundImage = 'none';
     logo.style.background = 'none';
     logo.style.display = 'block';
-    logo.style.width = '60px';
-    logo.style.height = '76px';
+    logo.style.width = '66px';
+    logo.style.height = '84px';
     logo.style.marginLeft = '16px';
-    logo.style.marginTop = '18px';
+    logo.style.marginTop = '28px';
     logo.style.marginBottom = '4px';
     logo.style.position = 'relative';
     logo.style.overflow = 'visible';
@@ -18485,8 +18488,8 @@ html.ios-final-fix iframe{
       var innerStyle = idoc.createElement('style');
       innerStyle.id = 'baucher-inner-fix';
       innerStyle.textContent = [
-        'html,body{height:100%!important;overflow:auto!important;background:#4a1972!important;margin:0!important;}',
-        '.close-btn-yape{display:none!important;}',
+        'html,body{height:100%!important;overflow:auto!important;background:#4a1972!important;margin:0!important;position:relative!important;}',
+        '.close-btn-yape{position:absolute!important;top:calc(env(safe-area-inset-top, 0px) + 18px)!important;right:calc(env(safe-area-inset-right, 0px) + 16px)!important;z-index:80!important;margin:0!important;width:46px!important;height:46px!important;border-radius:50%!important;background:rgba(255,255,255,.12)!important;border:0!important;color:#fff!important;display:flex!important;align-items:center!important;justify-content:center!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;text-decoration:none!important;overflow:hidden!important;cursor:pointer!important;} .close-btn-yape span{display:flex!important;align-items:center!important;justify-content:center!important;width:100%!important;height:100%!important;color:#fff!important;font-size:30px!important;line-height:1!important;font-weight:300!important;font-family:Arial,sans-serif!important;transform:translateY(-1px)!important;pointer-events:none!important;}',
         '.father[_ngcontent-ng-c755697887]{min-height:100dvh!important;height:auto!important;}',
         '.monto label{display:flex!important;align-items:flex-start!important;gap:0!important;}',
         '.monto label > span:last-child{font-size:13.7vw!important;font-weight:700!important;line-height:1!important;letter-spacing:-0.01em!important;font-stretch:normal!important;}',
@@ -18494,6 +18497,17 @@ html.ios-final-fix iframe{
         '.nombre{font-weight:700!important;}'
       ].join('');
       (idoc.head || idoc.documentElement).appendChild(innerStyle);
+    }
+
+    var innerClose = idoc.querySelector('.close-btn-yape');
+    if(innerClose && !innerClose.__outerCloseBound){
+      innerClose.__outerCloseBound = true;
+      innerClose.setAttribute('role', 'button');
+      innerClose.setAttribute('aria-label', 'Cerrar');
+      innerClose.addEventListener('click', function(ev){
+        try{ ev.preventDefault(); ev.stopPropagation(); }catch(e){}
+        try{ var outerClose = doc.getElementById('vCloseBtn'); if(outerClose) outerClose.click(); }catch(e){}
+      });
     }
 
     var vTitle = doc.getElementById('vTitle');
@@ -18569,12 +18583,11 @@ html.ios-final-fix iframe{
         '#voucherView{position:relative!important;overflow:hidden!important;background:#4a1972!important;}',
         '#voucherView .voucherBody{min-height:100%!important;padding:0!important;display:block!important;overflow:visible!important;}',
         '#voucherView .container{position:static!important;max-width:none!important;width:100%!important;height:0!important;}',
-        '#voucherView .yape-logo, #voucherView .card, #voucherView .voucher-actions, #voucherView .promo-wrap{display:none!important;}',
-        '#voucherView #vCloseBtn{position:absolute!important;top:calc(env(safe-area-inset-top, 0px) + 22px)!important;right:calc(env(safe-area-inset-right, 0px) + 18px)!important;z-index:30!important;margin:0!important;transform:none!important;width:48px!important;height:48px!important;border-radius:50%!important;background:rgba(255,255,255,.14)!important;color:#fff!important;font-size:30px!important;line-height:1!important;font-weight:300!important;font-family:Arial,sans-serif!important;text-indent:0!important;overflow:hidden!important;white-space:nowrap!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:0 0 3px 0!important;backdrop-filter:blur(8px)!important;-webkit-backdrop-filter:blur(8px)!important;box-shadow:0 4px 14px rgba(0,0,0,.14)!important;}',
+        '#voucherView .yape-logo, #voucherView .card, #voucherView .voucher-actions, #voucherView .promo-wrap, #voucherView #yape-confetti{display:none!important;}',
+        '#voucherView #vCloseBtn{display:none!important;opacity:0!important;pointer-events:none!important;visibility:hidden!important;}',
         '#voucherView #vCloseBtn::before{content:none!important;display:none!important;}',
         '#voucherView #vCloseBtn::after{content:none!important;display:none!important;}',
         '#voucherView #baucher-embed-wrap{position:absolute!important;inset:0!important;z-index:5!important;background:#4a1972!important;}',
-        '#voucherView #yape-confetti{position:fixed!important;inset:0!important;display:none;pointer-events:none!important;z-index:20!important;}',
         '#voucherView #baucher-embed-frame{width:100%!important;height:100%!important;border:0!important;display:block!important;background:#4a1972!important;}'
       ].join('');
       doc.head.appendChild(style);
