@@ -12006,10 +12006,15 @@ function maskPhoneVoucher(p){
     window.__mostrarNombreCompletoTemporal = false;
     window.__nombreDestinoActualCompleto = &quot;&quot;;
 
+    function mShouldShowFullNameDestino(){
+      const dest = String(window.__currentDestino || &quot;Yape&quot;).trim();
+      return dest === &quot;BCP&quot; || dest === &quot;Plin&quot;;
+    }
+
     function mRenderNombreDestino(){
       const base = String(window.__nombreDestinoActualCompleto || &quot;&quot;).trim();
       if(!mNameBox) return;
-      mNameBox.textContent = base ? (window.__mostrarNombreCompletoTemporal ? base : maskDisplayName(base)) : &quot;Sin nombre&quot;;
+      mNameBox.textContent = base ? ((window.__mostrarNombreCompletoTemporal || mShouldShowFullNameDestino()) ? base : maskDisplayName(base)) : &quot;Sin nombre&quot;;
     }
 
     function mAnimarToggleNombre(el){
@@ -12108,7 +12113,7 @@ function maskPhoneVoucher(p){
       const t = mSyncNombreDestinoActual();
       const fueEditadoManual = !!(mNameBox &amp;&amp; mNameBox.dataset.userEdited === &quot;1&quot;);
       mNameBox.textContent = t ? t : &quot;&quot;;
-      if(!window.__mostrarNombreCompletoTemporal &amp;&amp; t &amp;&amp; !fueEditadoManual){
+      if(!window.__mostrarNombreCompletoTemporal &amp;&amp; !mShouldShowFullNameDestino() &amp;&amp; t &amp;&amp; !fueEditadoManual){
         mNameBox.textContent = maskDisplayName(t);
       }
     }
@@ -12771,7 +12776,7 @@ const isFromMov = payload &amp;&amp; payload.fromMov;
       vAmount.textContent = String(payload.monto ?? &quot;0&quot;);
       const __voucherNombreCompleto = String(payload.nombre ?? &#x27;Sin nombre&#x27;);
       const __destinoVoucher = String(payload?.destino ?? &#x27;Yape&#x27;);
-      vName.textContent   = (window.__mostrarNombreCompletoTemporal || __destinoVoucher === &#x27;BCP&#x27; || __destinoVoucher === &#x27;BBVA&#x27;)
+      vName.textContent   = (window.__mostrarNombreCompletoTemporal || __destinoVoucher === &#x27;BCP&#x27; || __destinoVoucher === &#x27;Plin&#x27;)
         ? __voucherNombreCompleto
         : maskDisplayName(__voucherNombreCompleto);
       window.__mostrarNombreCompletoTemporal = false;
@@ -13220,7 +13225,7 @@ function maskPhoneVoucher(p){
         return `
           &lt;div class=&quot;movItem&quot; data-idx=&quot;${idx}&quot;&gt;
             &lt;div class=&quot;movLeft&quot;&gt;
-              &lt;div class=&quot;movName&quot;&gt;${((String(m.destino||&quot;Yape&quot;)===&quot;BCP&quot; || String(m.destino||&quot;Yape&quot;)===&quot;BBVA&quot;) ? (m.nombre || &quot;Sin nombre&quot;) : maskDisplayName(m.nombre || &quot;Sin nombre&quot;))}&lt;/div&gt;
+              &lt;div class=&quot;movName&quot;&gt;${((String(m.destino||&quot;Yape&quot;)===&quot;BCP&quot; || String(m.destino||&quot;Yape&quot;)===&quot;Plin&quot;) ? (m.nombre || &quot;Sin nombre&quot;) : maskDisplayName(m.nombre || &quot;Sin nombre&quot;))}&lt;/div&gt;
               &lt;div class=&quot;movDate&quot;&gt;${(String(m.kind||&quot;&quot;).toLowerCase()===&quot;in&quot; ? &quot;Te yapearon · &quot; : &quot;&quot;) + __yFmtDate(m.ts)}&lt;/div&gt;
             &lt;/div&gt;
             &lt;div class=&quot;movAmt ${isNeg ? &quot;neg&quot; : &quot;pos&quot;}&quot;&gt;${__yFmtMoney(monto)}&lt;/div&gt;
@@ -17592,7 +17597,7 @@ window.__YAPE_CONFETTI_DATA = {"v":"5.9.0","fr":40,"ip":0,"op":79,"w":375,"h":81
     function getDisplayName(m){
       const dest = String((m && m.destino) || 'Yape');
       const name = String((m && m.nombre) || 'Sin nombre');
-      if((dest === 'BCP' || dest === 'BBVA')) return name;
+      if((dest === 'BCP' || dest === 'Plin')) return name;
       return (window.maskDisplayName ? window.maskDisplayName(name) : name);
     }
     function buildRow(m, idx){
@@ -17648,7 +17653,7 @@ window.__YAPE_CONFETTI_DATA = {"v":"5.9.0","fr":40,"ip":0,"op":79,"w":375,"h":81
           ? ('Hola,%0D%0A%0D%0ATe comparto tus movimientos:%0D%0A%0D%0A' + filtered.map((m)=>{
               const monto = Number(m.monto || 0);
               const tipo = monto < 0 ? 'Salida' : 'Ingreso';
-              const nombre = ((String(m.destino||'Yape')==='BCP' || String(m.destino||'Yape')==='BBVA') ? (m.nombre || 'Sin nombre') : maskDisplayName(m.nombre || 'Sin nombre'));
+              const nombre = ((String(m.destino||'Yape')==='BCP' || String(m.destino||'Yape')==='Plin') ? (m.nombre || 'Sin nombre') : maskDisplayName(m.nombre || 'Sin nombre'));
               return '- ' + nombre + ' | ' + __yFmtDate(m.ts) + ' | ' + tipo + ' | ' + __yFmtMoney(monto);
             }).join('%0D%0A'))
           : 'Hola,%0D%0A%0D%0ANo hay movimientos para compartir.';
