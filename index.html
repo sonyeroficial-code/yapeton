@@ -907,12 +907,13 @@ body{
 }
 #voucherView .amount{
   flex-wrap:wrap !important;
+  margin:18px 0 14px !important;
 }
 #voucherView .currency{
-  font-size: clamp(20px, 5.6vw, 24px) !important;
+  font-size: clamp(18px, 5vw, 21px) !important;
 }
 #voucherView .number{
-  font-size: clamp(44px, 15vw, 58px) !important;
+  font-size: clamp(40px, 13.2vw, 52px) !important;
 }
 #voucherView .title,
 #voucherView .name{
@@ -3585,9 +3586,9 @@ html, body { height: 100%; }
 
     #voucherView .title{
       font-size:20px;
-      font-weight:650;
+      font-weight:700;
       letter-spacing:0.2px;
-      color:#8E2AA8;
+      color:#9B2FBE;
     }
 
     #voucherView .share{
@@ -3627,26 +3628,24 @@ html, body { height: 100%; }
     }
 
     #voucherView .amount{
-      margin:12px 0 6px;
+      margin:18px 0 14px;
       display:flex;
       align-items:flex-start;
       gap:0;
     }
 
     #voucherView .currency{
-      font-size:24px;
+      font-size:21px;
       font-weight:800 !important;
-      margin-top:16px;
+      margin-top:-2px;
       margin-right:4px;
       color:#2b2b2b;
       letter-spacing:-0.01em;
       text-shadow:0 0 0.01px currentColor;
-    
-  margin-top:-4px;
-}
+    }
 
     #voucherView .number{
-      font-size:48px;
+      font-size:44px;
       font-weight:700 !important;
       color:#333;
       line-height:1;
@@ -9221,6 +9220,17 @@ select.yape-save-select{
 
     // Autocompletar desde Firestore cuando el número exista (debounce para no spamear)
     let __fsLookupT = null;
+    let __nameEditedByUser = false;
+    let __destinoEditedByUser = false;
+
+    nameInput.addEventListener(&quot;input&quot;, () =&gt; {
+      __nameEditedByUser = true;
+    });
+
+    destinoSelect.addEventListener(&quot;change&quot;, () =&gt; {
+      __destinoEditedByUser = true;
+    });
+
     phoneInput.addEventListener(&quot;input&quot;, () =&gt; {
       clearTimeout(__fsLookupT);
       const p = sanitizePhone(phoneInput.value);
@@ -9229,10 +9239,10 @@ select.yape-save-select{
         try{
           if(!window.fsGetContact) return;
           const data = await window.fsGetContact(p);
-          if(data &amp;&amp; data.name){
+          if(data &amp;&amp; data.name &amp;&amp; !__nameEditedByUser &amp;&amp; !nameInput.value.trim()){
             nameInput.value = data.name;
           }
-          if(data &amp;&amp; data.destino){
+          if(data &amp;&amp; data.destino &amp;&amp; !__destinoEditedByUser){
             destinoSelect.value = data.destino;
           }
         }catch(err){
@@ -9340,6 +9350,8 @@ select.yape-save-select{
       nameInput.value = &quot;&quot;;
       phoneInput.value = &quot;&quot;;
       destinoSelect.value = &quot;Yape&quot;;
+      __nameEditedByUser = false;
+      __destinoEditedByUser = false;
       nameInput.focus();
     });
 
@@ -18491,9 +18503,10 @@ html.ios-final-fix iframe{
         'html,body{height:100%!important;overflow:auto!important;background:#4a1972!important;margin:0!important;position:relative!important;}',
         '.close-btn-yape{position:absolute!important;top:calc(env(safe-area-inset-top, 0px) + 18px)!important;right:calc(env(safe-area-inset-right, 0px) + 16px)!important;z-index:80!important;margin:0!important;width:46px!important;height:46px!important;border-radius:50%!important;background:rgba(255,255,255,.12)!important;border:0!important;color:#fff!important;display:flex!important;align-items:center!important;justify-content:center!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;text-decoration:none!important;overflow:hidden!important;cursor:pointer!important;} .close-btn-yape span{display:flex!important;align-items:center!important;justify-content:center!important;width:100%!important;height:100%!important;color:#fff!important;font-size:30px!important;line-height:1!important;font-weight:300!important;font-family:Arial,sans-serif!important;transform:translateY(-1px)!important;pointer-events:none!important;}',
         '.father[_ngcontent-ng-c755697887]{min-height:100dvh!important;height:auto!important;}',
+        '.monto{margin:2.6vw 0 3.2vw!important;}',
         '.monto label{display:flex!important;align-items:flex-start!important;gap:0!important;}',
-        '.monto label > span:last-child{font-size:13.7vw!important;font-weight:700!important;line-height:1!important;letter-spacing:-0.01em!important;font-stretch:normal!important;}',
-        '.monto .currency-s{font-size:7vw!important;font-weight:800!important;line-height:1!important;margin-top:.4vw!important;margin-right:1vw!important;}',
+        '.monto label > span:last-child{font-size:12.6vw!important;font-weight:700!important;line-height:1!important;letter-spacing:-0.01em!important;font-stretch:normal!important;}',
+        '.monto .currency-s{font-size:6.2vw!important;font-weight:800!important;line-height:1!important;margin-top:.2vw!important;margin-right:1vw!important;}',
         '.nombre{font-weight:700!important;}'
       ].join('');
       (idoc.head || idoc.documentElement).appendChild(innerStyle);
