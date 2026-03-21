@@ -12018,11 +12018,15 @@ function maskPhoneVoucher(p){
       box.innerHTML = movs.map((m,idx)=&gt;{
         const monto = Number(m.monto || 0);
         const isNeg = monto &lt; 0;
+        const isIncoming = String(m.kind||&quot;&quot;).toLowerCase() === &quot;in&quot;;
+        const displayName = ((String(m.destino||&quot;Yape&quot;)===&quot;BCP&quot; || String(m.destino||&quot;Yape&quot;)===&quot;Plin&quot;) ? (m.nombre || &quot;Sin nombre&quot;) : maskDisplayName(m.nombre || &quot;Sin nombre&quot;));
+        const title = isIncoming ? &quot;Te yapearon&quot; : displayName;
+        const sub = isIncoming ? ((displayName || &quot;Alguien&quot;) + &quot; · &quot; + __yFmtDate(m.ts)) : __yFmtDate(m.ts);
         return `
           &lt;div class=&quot;movItem&quot; data-idx=&quot;${idx}&quot;&gt;
             &lt;div class=&quot;movLeft&quot;&gt;
-              &lt;div class=&quot;movName&quot;&gt;${((String(m.destino||&quot;Yape&quot;)===&quot;BCP&quot; || String(m.destino||&quot;Yape&quot;)===&quot;Plin&quot;) ? (m.nombre || &quot;Sin nombre&quot;) : maskDisplayName(m.nombre || &quot;Sin nombre&quot;))}&lt;/div&gt;
-              &lt;div class=&quot;movDate&quot;&gt;${(String(m.kind||&quot;&quot;).toLowerCase()===&quot;in&quot; ? &quot;Te yapearon · &quot; : &quot;&quot;) + __yFmtDate(m.ts)}&lt;/div&gt;
+              &lt;div class=&quot;movName&quot;&gt;${title}&lt;/div&gt;
+              &lt;div class=&quot;movDate&quot;&gt;${sub}&lt;/div&gt;
             &lt;/div&gt;
             &lt;div class=&quot;movAmt ${isNeg ? &quot;neg&quot; : &quot;pos&quot;}&quot;&gt;${__yFmtMoney(monto)}&lt;/div&gt;
           &lt;/div&gt;
@@ -18621,7 +18625,7 @@ function setupProfileFrame(homeDoc){
     if(meta && !pdoc.getElementById("bridgePhoneWrap")){
       const wrap = pdoc.createElement("div");
       wrap.id = "bridgePhoneWrap";
-      wrap.innerHTML = '<div id="bridgePhoneLabel">Número de celular</div><input id="bridgePhoneInput" type="tel" inputmode="numeric" maxlength="9" placeholder="9XXXXXXXX"><div id="bridgePhoneHint">Este número identifica tu cuenta en users.</div>';
+      wrap.innerHTML = '<div id="bridgePhoneLabel">Número de celular</div><input id="bridgePhoneInput" type="tel" inputmode="numeric" maxlength="9" placeholder="9XXXXXXXX"><div id="bridgePhoneHint">Esta opción sirve para enviarse dinero entre usuarios. Este número identifica tu cuenta en users.</div>';
       meta.textContent = bridgeUser && bridgeUser.phone ? formatPhone(bridgeUser.phone) : "Número de celular";
       meta.insertAdjacentElement("afterend", wrap);
       const phoneInput = pdoc.getElementById("bridgePhoneInput");
@@ -19024,6 +19028,7 @@ import { getFirestore, collection, query, where, onSnapshot } from "https://www.
   let seeded = false;
   let audioEl = null;
   let audioUnlocked = false;
+  let audioIndex = 0;
   let toastTimer = null;
 
   function clean9(v){ return String(v || '').replace(/\D/g, '').slice(0, 9); }
@@ -19093,23 +19098,38 @@ import { getFirestore, collection, query, where, onSnapshot } from "https://www.
     } catch (e) {}
     return '';
   }
-  function ensureAudio(){
-    if(audioEl) return audioEl;
-    const src = extractEmbeddedMp3();
-    const a = document.createElement('audio');
-    a.preload = 'auto';
-    a.playsInline = true;
-    a.autoplay = false;
-    a.loop = false;
-    a.setAttribute('webkit-playsinline', 'true');
-    a.src = src || './notificacion.mp3';
-    audioEl = a;
+  function buildAudioCandidates(){
+    const out = [];
+    const emb = extractEmbeddedMp3();
+    if(emb) out.push(emb);
+    try {
+      const href = String(location.href || '');
+      const base = href.replace(/[^\/]*$/, '');
+      const stamp = 'v=' + Date.now();
+      out.push('notificacion.mp3?' + stamp);
+      out.push('./notificacion.mp3?' + stamp);
+      if(base) out.push(base + 'notificacion.mp3?' + stamp);
+    } catch (e) {}
+    return out.filter(Boolean);
+  }
+  function ensureAudio(forceNew){
+    const candidates = buildAudioCandidates();
+    if(forceNew || !audioEl){
+      const a = document.createElement('audio');
+      a.preload = 'auto';
+      a.playsInline = true;
+      a.autoplay = false;
+      a.loop = false;
+      a.setAttribute('webkit-playsinline', 'true');
+      a.src = candidates[audioIndex] || candidates[0] || '';
+      audioEl = a;
+    }
     return audioEl;
   }
   async function unlockAudio(){
     if(audioUnlocked) return;
     try {
-      const a = ensureAudio();
+      const a = ensureAudio(true);
       a.muted = true;
       a.currentTime = 0;
       const p = a.play();
@@ -19120,16 +19140,78 @@ import { getFirestore, collection, query, where, onSnapshot } from "https://www.
     } catch (e) {}
     audioUnlocked = true;
   }
-  ['touchstart','pointerdown','click'].forEach(evt => document.addEventListener(evt, unlockAudio, { passive: true }));
+  function bindUnlockDoc(doc){
+    try {
+      if(!doc || doc.__rtSoundBound) return;
+      doc.__rtSoundBound = true;
+      ['touchstart','pointerdown','click','keydown'].forEach(evt => doc.addEventListener(evt, unlockAudio, { passive: true }));
+    } catch (e) {}
+  }
+  bindUnlockDoc(document);
+  function bindFrameUnlock(){
+    try {
+      document.querySelectorAll('iframe').forEach((fr) => {
+        try {
+          bindUnlockDoc(fr.contentDocument || (fr.contentWindow && fr.contentWindow.document));
+          if(!fr.__rtSoundLoadBound){
+            fr.__rtSoundLoadBound = true;
+            fr.addEventListener('load', () => {
+              try { bindUnlockDoc(fr.contentDocument || (fr.contentWindow && fr.contentWindow.document)); } catch (e) {}
+            });
+          }
+        } catch (e) {}
+      });
+    } catch (e) {}
+  }
+  bindFrameUnlock();
+  setInterval(bindFrameUnlock, 3000);
   async function playSound(){
     if(!soundEnabled()) return;
+    const candidates = buildAudioCandidates();
+    for(let i = 0; i < candidates.length; i += 1){
+      try {
+        audioIndex = i;
+        const a = ensureAudio(true);
+        a.pause();
+        a.currentTime = 0;
+        a.muted = false;
+        a.volume = 1;
+        a.src = candidates[i];
+        await a.play();
+        return true;
+      } catch (e) {}
+    }
+    return false;
+  }
+  function loadMovs(){
+    try { return JSON.parse(localStorage.getItem('movimientos_v1') || '[]') || []; } catch (e) { return []; }
+  }
+  function saveMovs(arr){
+    try { localStorage.setItem('movimientos_v1', JSON.stringify((arr || []).slice(0, 30))); } catch (e) {}
+  }
+  function syncIncomingMovement(id, data){
     try {
-      const a = ensureAudio();
-      a.pause();
-      a.currentTime = 0;
-      a.muted = false;
-      a.volume = 1;
-      await a.play().catch(() => {});
+      const arr = loadMovs();
+      if(arr.some((m) => String(m.transferId || '') === String(id))) return;
+      const created = normalizeDateValue(data.createdAt);
+      arr.unshift({
+        transferId: String(id),
+        nombre: String(data.fromName || 'Alguien'),
+        monto: Math.abs(safeMoney(data.monto || 0)),
+        kind: 'in',
+        ts: created.getTime(),
+        phone: clean9(data.fromPhone || ''),
+        destino: String(data.destino || 'Yape'),
+        op8: String(data.op8 || ''),
+        code3: String(data.code3 || ''),
+        msg: String(data.msg || ''),
+        tipo: 'transfer'
+      });
+      saveMovs(arr);
+      try {
+        const fw = document.getElementById('homeFrame')?.contentWindow;
+        if(fw && typeof fw.renderMovs === 'function') fw.renderMovs();
+      } catch (e) {}
     } catch (e) {}
   }
   function ensureToast(){
@@ -19244,13 +19326,14 @@ import { getFirestore, collection, query, where, onSnapshot } from "https://www.
         if(change.type === 'added' && !isSeen(id)) fresh.push(msg);
       });
       if(!seeded){
-        idsToSeed.forEach(([id, ms]) => markSeen(id, ms));
+        idsToSeed.forEach(([id, ms]) => { markSeen(id, ms); const seededDoc = snap.docs.find(d => d.id === id); if(seededDoc){ try { syncIncomingMovement(id, seededDoc.data() || {}); } catch (e) {} } });
         seeded = true;
         dispatchUpdate();
         return;
       }
       fresh.sort((a,b) => (a.createdAtMs || 0) - (b.createdAtMs || 0)).forEach(async (msg) => {
         markSeen(msg.id, msg.createdAtMs);
+        try { const rawDoc = snap.docs.find(d => d.id === msg.id); if(rawDoc) syncIncomingMovement(msg.id, rawDoc.data() || {}); } catch (e) {}
         dispatchUpdate();
         if(document.visibilityState === 'visible'){
           showForegroundToast(msg);
