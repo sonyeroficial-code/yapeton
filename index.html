@@ -12018,15 +12018,11 @@ function maskPhoneVoucher(p){
       box.innerHTML = movs.map((m,idx)=&gt;{
         const monto = Number(m.monto || 0);
         const isNeg = monto &lt; 0;
-        const isIncoming = String(m.kind||&quot;&quot;).toLowerCase() === &quot;in&quot;;
-        const displayName = ((String(m.destino||&quot;Yape&quot;)===&quot;BCP&quot; || String(m.destino||&quot;Yape&quot;)===&quot;Plin&quot;) ? (m.nombre || &quot;Sin nombre&quot;) : maskDisplayName(m.nombre || &quot;Sin nombre&quot;));
-        const title = isIncoming ? &quot;Te yapearon&quot; : displayName;
-        const sub = isIncoming ? ((displayName || &quot;Alguien&quot;) + &quot; · &quot; + __yFmtDate(m.ts)) : __yFmtDate(m.ts);
         return `
           &lt;div class=&quot;movItem&quot; data-idx=&quot;${idx}&quot;&gt;
             &lt;div class=&quot;movLeft&quot;&gt;
-              &lt;div class=&quot;movName&quot;&gt;${title}&lt;/div&gt;
-              &lt;div class=&quot;movDate&quot;&gt;${sub}&lt;/div&gt;
+              &lt;div class=&quot;movName&quot;&gt;${((String(m.destino||&quot;Yape&quot;)===&quot;BCP&quot; || String(m.destino||&quot;Yape&quot;)===&quot;Plin&quot;) ? (m.nombre || &quot;Sin nombre&quot;) : maskDisplayName(m.nombre || &quot;Sin nombre&quot;))}&lt;/div&gt;
+              &lt;div class=&quot;movDate&quot;&gt;${(String(m.kind||&quot;&quot;).toLowerCase()===&quot;in&quot; ? &quot;Te yapearon · &quot; : &quot;&quot;) + __yFmtDate(m.ts)}&lt;/div&gt;
             &lt;/div&gt;
             &lt;div class=&quot;movAmt ${isNeg ? &quot;neg&quot; : &quot;pos&quot;}&quot;&gt;${__yFmtMoney(monto)}&lt;/div&gt;
           &lt;/div&gt;
@@ -17206,170 +17202,120 @@ window.__YAPE_CONFETTI_DATA = {"v":"5.9.0","fr":40,"ip":0,"op":79,"w":375,"h":81
 <script>
 (function(){
   const NOTIF_CSS = `
-  #yNotifScreen{position:fixed;inset:0;z-index:99999999;display:none;flex-direction:column;font-family:inherit;background:linear-gradient(180deg,#9b4bb7 0%,#8150a5 45%,#6f3b93 100%)}
+  #yNotifScreen{position:fixed;inset:0;background:#f3f1f7;z-index:99999999;display:none;flex-direction:column;font-family:inherit}
   #yNotifScreen.show{display:flex}
-  .yNotifTop{padding:calc(env(safe-area-inset-top,0px) + 12px) 16px 10px;display:flex;align-items:center;gap:10px;color:#fff;flex:0 0 auto}
-  .yNotifBack{width:42px;height:42px;border:0;border-radius:999px;background:rgba(255,255,255,.12);color:#fff;font-size:28px;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;backdrop-filter:blur(8px)}
-  .yNotifTitle{font-size:18px;font-weight:700;letter-spacing:.2px}
-  .yNotifBody{flex:1;overflow:auto;padding:4px 14px calc(env(safe-area-inset-bottom,0px) + 26px)}
-  .yNotifToolbar{display:flex;align-items:center;gap:10px;margin:8px 0 12px;color:#fff}
-  .yNotifSectionTitle{font-size:26px;font-weight:800;flex:1;letter-spacing:-.3px}
-  .yNotifToggle{border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.10);color:#fff;border-radius:999px;padding:10px 16px;font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;backdrop-filter:blur(10px)}
-  .yNotifClose{width:42px;height:42px;border-radius:999px;border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.08);color:#fff;font-size:28px;line-height:1;display:flex;align-items:center;justify-content:center}
-  .yNotifList{display:flex;flex-direction:column;gap:12px}
-  .yNotifCard{display:flex;gap:12px;align-items:flex-start;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.12);border-radius:22px;padding:14px 14px;box-shadow:0 10px 28px rgba(39,7,66,.16), inset 0 1px 0 rgba(255,255,255,.08);backdrop-filter:blur(8px);position:relative}
-  .yNotifCard.unread::after{content:"";position:absolute;right:12px;top:12px;width:9px;height:9px;border-radius:999px;background:#fff;opacity:.92}
-  .yNotifAppIcon{width:56px;height:56px;flex:0 0 56px;border-radius:16px;background:linear-gradient(135deg,#9b00d9,#6e1df1);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 22px rgba(74,16,117,.28);overflow:hidden}
-  .yNotifAppIcon span{font-size:14px;font-weight:800;color:#fff;letter-spacing:.2px;text-transform:lowercase}
-  .yNotifMain{min-width:0;flex:1;padding-right:8px}
-  .yNotifHeadRow{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-  .yNotifHead{font-size:15px;font-weight:800;color:#fff;line-height:1.15}
-  .yNotifTime{font-size:14px;color:rgba(255,255,255,.82);white-space:nowrap;font-weight:600}
-  .yNotifText{font-size:15px;line-height:1.26;color:rgba(255,255,255,.96);margin-top:3px;word-break:break-word}
-  .yNotifEmpty{margin-top:12px;padding:20px 18px;border-radius:22px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.12);color:#fff;line-height:1.35}
-  .yNotifHint{font-size:13px;color:rgba(255,255,255,.78);margin-top:6px}
-  .yNotifLoading{padding:18px;color:#fff;font-size:15px}
+  .yNotifTop{height:88px;background:#7b1b87;color:#fff;display:flex;align-items:flex-end;padding:0 18px 16px;box-sizing:border-box;flex:0 0 auto}
+  .yNotifBack{width:34px;height:34px;margin-right:10px;border:0;background:transparent;color:#fff;font-size:34px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer}
+  .yNotifTitle{flex:1;text-align:center;font-size:18px;font-weight:500;transform:translateX(-22px)}
+  .yNotifBody{flex:1;overflow:auto;background:#f3f1f7}
+  .yNotifSection{padding:15px 16px 9px;color:#7b1b87;font-size:16px;font-weight:500;background:#fff}
+  .yNotifCard{display:flex;gap:12px;padding:14px;border-top:1px solid #ebe7f0;background:#fff;position:relative}
+  .yNotifCard.featured{background:#f2e8f7}
+  .yNotifIcon{width:60px;height:60px;border-radius:15px;flex:0 0 60px;background:linear-gradient(135deg,#c38aff,#a35df6);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(123,27,135,.16)}
+  .yNotifIcon svg{width:34px;height:34px;fill:#fff}
+  .yNotifMain{min-width:0;flex:1}
+  .yNotifHead{font-size:16px;line-height:1.12;font-weight:500;color:#24163f}
+  .yNotifText{font-size:14px;line-height:1.18;color:#40374b;margin-top:2px}
+  .yNotifDate{font-size:13px;line-height:1.18;color:#7f7788;margin-top:2px}
+  .yNotifDot{position:absolute;right:14px;top:50%;transform:translateY(-50%);width:11px;height:11px;border-radius:50%;background:#ff0d78}
+  .yNotifSpacer{height:12px;background:#f3f1f7;border-top:1px solid #ebe7f0;border-bottom:1px solid #ebe7f0}
+  .yNotifMini{display:flex;gap:12px;padding:16px;background:#fff;border-top:1px solid #ebe7f0}
+  .yNotifMiniIcon{width:40px;height:40px;border-radius:999px;background:#f3eef8;display:flex;align-items:center;justify-content:center;color:#7a6e85;flex:0 0 40px}
+  .yNotifMiniIcon svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2}
+  .yNotifMiniTitle{font-size:14px;font-weight:500;color:#24163f;line-height:1.12}
+  .yNotifMiniText{font-size:13px;color:#7f7788;line-height:1.15;margin-top:2px}
   `;
   const NOTIF_JS = `
   (function(){
-    let expanded = false;
-    let pollTimer = null;
-
-    function timeLower(date){
-      let h = date.getHours();
-      const m = String(date.getMinutes()).padStart(2, '0');
-      const ap = h >= 12 ? 'p. m.' : 'a. m.';
-      h = h % 12; if(h === 0) h = 12;
-      return h + ':' + m + ' ' + ap;
+    function fmtTime(d){
+      let h=d.getHours(), m=String(d.getMinutes()).padStart(2,'0');
+      const ap=h>=12?'pm':'am';
+      h=h%12; if(h===0) h=12;
+      return h+':'+m+' '+ap;
     }
-    function timeShort(date){
-      let h = date.getHours();
-      const m = String(date.getMinutes()).padStart(2, '0');
-      const ap = h >= 12 ? 'p. m.' : 'a. m.';
-      h = h % 12; if(h === 0) h = 12;
-      return h + ':' + m + ap;
-    }
-    function relativeLabel(date){
-      const now = new Date();
-      const diffMs = now - date;
-      const diffMin = Math.max(0, Math.round(diffMs / 60000));
-      const sameDay = now.toDateString() === date.toDateString();
-      const yesterday = new Date(now); yesterday.setDate(now.getDate() - 1);
-      if(diffMin < 180){
-        const hrs = Math.max(1, Math.floor(diffMin / 60) || 1);
-        return hrs <= 1 ? 'Hace 1 h' : ('Hace ' + hrs + ' h');
-      }
-      if(sameDay) return timeLower(date);
-      if(yesterday.toDateString() === date.toDateString()) return 'ayer, ' + timeShort(date);
-      return date.getDate() + '/' + String(date.getMonth() + 1).padStart(2, '0') + ', ' + timeShort(date);
-    }
-    function escapeHtml(str){
-      return String(str || '').replace(/[&<>"]/g, function(ch){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[ch] || ch); });
+    function fmtDate(d){
+      const months=['ene.','feb.','mar.','abr.','may.','jun.','jul.','ago.','set.','oct.','nov.','dic.'];
+      let h=d.getHours(), m=String(d.getMinutes()).padStart(2,'0');
+      const ap=h>=12?'pm':'am';
+      h=h%12; if(h===0) h=12;
+      return String(d.getDate()).padStart(2,'0')+' '+months[d.getMonth()]+' '+d.getFullYear()+' - '+h+':'+m+' '+ap;
     }
     function ensureNotif(){
       if(document.getElementById('yNotifScreen')) return;
-      const wrap = document.createElement('div');
-      wrap.id = 'yNotifScreen';
-      wrap.innerHTML =
+      const wrap=document.createElement('div');
+      wrap.id='yNotifScreen';
+      wrap.innerHTML=
         '<div class="yNotifTop">'+
           '<button class="yNotifBack" id="yNotifBackBtn" aria-label="Volver">←</button>'+
           '<div class="yNotifTitle">Notificaciones</div>'+
         '</div>'+
         '<div class="yNotifBody" id="yNotifBody"></div>';
       document.body.appendChild(wrap);
-      document.getElementById('yNotifBackBtn').onclick = closeNotif;
+      document.getElementById('yNotifBackBtn').onclick=closeNotif;
     }
-    async function getItems(){
-      try {
-        if(parent && typeof parent.__bridgeFetchNotifications === 'function'){
-          return await parent.__bridgeFetchNotifications(30);
-        }
-      } catch (e) {}
-      return [];
+    function bellSvg(){
+      return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22Zm6-6V11a6 6 0 0 0-5-5.91V4a1 1 0 1 0-2 0v1.09A6 6 0 0 0 6 11v5l-2 2v1h16v-1l-2-2Z"/></svg>';
     }
-    function appIcon(){
-      return '<div class="yNotifAppIcon"><span>yape</span></div>';
+    function starSvg(){
+      return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>';
     }
-    function buildCard(item, idx){
-      const created = item && item.createdAtISO ? new Date(item.createdAtISO) : new Date();
-      const time = relativeLabel(created);
-      const unread = idx < 4 ? ' unread' : '';
-      return '<div class="yNotifCard' + unread + '">' +
-        appIcon() +
-        '<div class="yNotifMain">' +
-          '<div class="yNotifHeadRow">' +
-            '<div class="yNotifHead">' + escapeHtml(item.title || 'Confirmación de Pago') + '</div>' +
-            '<div class="yNotifTime">' + escapeHtml(time) + '</div>' +
-          '</div>' +
-          '<div class="yNotifText">' + escapeHtml(item.text || '') + '</div>' +
-        '</div>' +
-      '</div>';
-    }
-    async function renderNotif(){
+    function renderNotif(){
       ensureNotif();
-      const body = document.getElementById('yNotifBody');
-      if(!body) return;
-      body.innerHTML = '<div class="yNotifToolbar"><div class="yNotifSectionTitle">Yape</div><button class="yNotifToggle" id="yNotifToggleBtn">⌄ <span>Cargando...</span></button><button class="yNotifClose" id="yNotifCloseX" aria-label="Cerrar">×</button></div><div class="yNotifLoading">Cargando notificaciones...</div>';
-      let items = [];
-      try { items = await getItems(); } catch (e) { items = []; }
-      const visible = expanded ? items : items.slice(0, 5);
-      const listHtml = visible.length
-        ? '<div class="yNotifList">' + visible.map(buildCard).join('') + '</div>'
-        : '<div class="yNotifEmpty"><div style="font-size:17px;font-weight:800;margin-bottom:4px">Aún no hay notificaciones</div><div>Cuando hagas o recibas un yapeo, aquí aparecerán con el estilo del aviso de pago.</div><div class="yNotifHint">Necesitas usuarios guardados en <b>users</b> y transferencias en <b>transfers</b>.</div></div>';
-      body.innerHTML =
-        '<div class="yNotifToolbar">' +
-          '<div class="yNotifSectionTitle">Yape</div>' +
-          '<button class="yNotifToggle" id="yNotifToggleBtn">⌄ <span>' + (expanded ? 'Mostrar menos' : 'Ver más') + '</span></button>' +
-          '<button class="yNotifClose" id="yNotifCloseX" aria-label="Cerrar">×</button>' +
-        '</div>' +
-        listHtml;
-      const toggleBtn = document.getElementById('yNotifToggleBtn');
-      const closeBtn = document.getElementById('yNotifCloseX');
-      if(toggleBtn) toggleBtn.onclick = function(){ expanded = !expanded; renderNotif(); };
-      if(closeBtn) closeBtn.onclick = closeNotif;
+      const body=document.getElementById('yNotifBody');
+      const now=new Date();
+      const today=new Date(now);
+      const d2=new Date(now); d2.setDate(d2.getDate()-3); d2.setHours(18,30,0,0);
+      const d3=new Date(now); d3.setDate(d3.getDate()-7); d3.setHours(20,0,0,0);
+      body.innerHTML=
+        '<div class="yNotifSection">Yape para ti</div>'+
+        '<div class="yNotifCard featured">'+
+          '<div class="yNotifIcon">'+bellSvg()+'</div>'+
+          '<div class="yNotifMain">'+
+            '<div class="yNotifHead">Paga online con Yape 📲💜</div>'+
+            '<div class="yNotifText">Compra todo lo que necesites en la web de tu comercio favorito y paga al toque con Yape. 😉</div>'+
+            '<div class="yNotifDate">Hoy - '+fmtTime(today)+'</div>'+
+          '</div>'+
+          '<div class="yNotifDot"></div>'+
+        '</div>'+
+        '<div class="yNotifCard">'+
+          '<div class="yNotifIcon">'+bellSvg()+'</div>'+
+          '<div class="yNotifMain">'+
+            '<div class="yNotifHead">La notificación que faltaba</div>'+
+            '<div class="yNotifText">Aún existe una brecha salarial en promedio. Revisa más cifras aquí. #8M ✊</div>'+
+            '<div class="yNotifDate">'+fmtDate(d2)+'</div>'+
+          '</div>'+
+        '</div>'+
+        '<div class="yNotifCard">'+
+          '<div class="yNotifIcon">'+bellSvg()+'</div>'+
+          '<div class="yNotifMain">'+
+            '<div class="yNotifHead">Diamantes desde S/3.50 😎</div>'+
+            '<div class="yNotifText">+10% bonus 🤩 ¡HOY Ruleta Mágica! Recarga YA en Yape Gaming.</div>'+
+            '<div class="yNotifDate">'+fmtDate(d3)+'</div>'+
+          '</div>'+
+        '</div>'+
+        '<div class="yNotifSpacer"></div>'+
+        '<div class="yNotifSection">Comunicados</div>'+
+        '<div class="yNotifMini">'+
+          '<div class="yNotifMiniIcon">'+starSvg()+'</div>'+
+          '<div class="yNotifMain">'+
+            '<div class="yNotifMiniTitle">Novedades al instante</div>'+
+            '<div class="yNotifMiniText">Únete a Yape al Día</div>'+
+          '</div>'+
+        '</div>';
     }
-    function startPolling(){
-      stopPolling();
-      pollTimer = setInterval(function(){
-        var el = document.getElementById('yNotifScreen');
-        if(el && el.classList.contains('show')) renderNotif();
-      }, 12000);
-    }
-    function stopPolling(){
-      if(pollTimer){ clearInterval(pollTimer); pollTimer = null; }
-    }
-    function openNotif(){
-      ensureNotif();
-      document.getElementById('yNotifScreen').classList.add('show');
-      document.body.style.overflow = 'hidden';
-      renderNotif();
-      startPolling();
-    }
-    function closeNotif(){
-      var el = document.getElementById('yNotifScreen');
-      if(el) el.classList.remove('show');
-      document.body.style.overflow = '';
-      stopPolling();
-    }
+    function openNotif(){ renderNotif(); document.getElementById('yNotifScreen').classList.add('show'); document.body.style.overflow='hidden'; }
+    function closeNotif(){ var el=document.getElementById('yNotifScreen'); if(el) el.classList.remove('show'); document.body.style.overflow=''; }
     window.openNotifScreen = openNotif;
     window.closeNotifScreen = closeNotif;
 
     function bindBell(){
-      var btn = document.getElementById('notifBtn');
-      var hotspot = document.getElementById('notifHotspot');
-      if(btn && !btn.dataset.notifBound){ btn.dataset.notifBound = '1'; btn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); openNotif(); }, true); }
-      if(hotspot && !hotspot.dataset.notifBound){ hotspot.dataset.notifBound = '1'; hotspot.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); openNotif(); }, true); }
+      var btn=document.getElementById('notifBtn');
+      var hotspot=document.getElementById('notifHotspot');
+      if(btn && !btn.dataset.notifBound){ btn.dataset.notifBound='1'; btn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); openNotif(); }, true); }
+      if(hotspot && !hotspot.dataset.notifBound){ hotspot.dataset.notifBound='1'; hotspot.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); openNotif(); }, true); }
     }
     bindBell();
     setInterval(bindBell, 1500);
-    try {
-      if(parent && parent.addEventListener){
-        parent.addEventListener('bridgeNotificationsUpdated', function(){
-          var el = document.getElementById('yNotifScreen');
-          if(el && el.classList.contains('show')) renderNotif();
-        });
-      }
-    } catch (e) {}
   })();
   `;
 
@@ -18441,942 +18387,6 @@ html.ios-final-fix iframe{
   } else {
     boot();
   }
-})();
-</script>
-
-
-<script type="module" id="users-transfer-bridge">
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs, serverTimestamp, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const DATA_CONFIG = {
-  apiKey: "AIzaSyC89Qpf_Ie85lVkm5V5wi_xBC5fajPngj8",
-  authDomain: "yapeton.firebaseapp.com",
-  projectId: "yapeton",
-  storageBucket: "yapeton.firebasestorage.app",
-  messagingSenderId: "550981729513",
-  appId: "1:550981729513:web:1048656e03ec1a54410478",
-  measurementId: "G-CXZSJB540K"
-};
-
-const SESSION_KEY = "yapeton_session";
-const USER_PHONE_KEY = "yapeton_user_phone";
-const USERS_COLLECTION = "users";
-const TRANSFERS_COLLECTION = "transfers";
-
-const bridgeApp = getApps().find(a => a.name === "users-transfer-bridge") || initializeApp(DATA_CONFIG, "users-transfer-bridge");
-const db = getFirestore(bridgeApp);
-
-let bridgeUser = null;
-
-function clean9(value){
-  return String(value || "").replace(/\D/g, "").slice(0, 9);
-}
-
-function digitsOnly(value){
-  return String(value || "").replace(/[^\d]/g, "");
-}
-
-function safeMoney(value){
-  const num = Number(value || 0);
-  return Number.isFinite(num) ? Math.max(0, num) : 0;
-}
-
-function formatMoney(value){
-  return "S/ " + safeMoney(value).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
-function formatPhone(value){
-  const p = clean9(value);
-  if(p.length !== 9) return p || "Número de celular";
-  return p.replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3");
-}
-
-function readSession(){
-  try {
-    const raw = localStorage.getItem(SESSION_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch (e) {
-    return null;
-  }
-}
-
-function normalizeUserSnap(snap){
-  if(!snap || !snap.exists()) return null;
-  const data = snap.data() || {};
-  return {
-    id: snap.id,
-    phone: clean9(data.phone || snap.id),
-    name: String(data.name || "").trim() || "Sin nombre",
-    saldo: safeMoney(data.saldo || 0),
-    yapeos: Number(data.yapeos || 0) || 0,
-    loginUid: String(data.loginUid || "").trim()
-  };
-}
-
-async function findCurrentUser(){
-  const session = readSession();
-  if(!(session && session.uid)) return null;
-
-  const savedPhone = clean9(localStorage.getItem(USER_PHONE_KEY) || "");
-  if(savedPhone){
-    try {
-      const snap = await getDoc(doc(db, USERS_COLLECTION, savedPhone));
-      const user = normalizeUserSnap(snap);
-      if(user){
-        bridgeUser = user;
-        return user;
-      }
-    } catch (e) {
-      console.warn("No se pudo cargar users/" + savedPhone, e);
-    }
-  }
-
-  const res = await getDocs(query(collection(db, USERS_COLLECTION), where("loginUid", "==", session.uid)));
-  if(res.empty) return null;
-
-  const user = normalizeUserSnap(res.docs[0]);
-  if(user){
-    bridgeUser = user;
-    persistLegacyUser(user);
-  }
-  return user;
-}
-
-function persistLegacyUser(user){
-  if(!user) return;
-  try { localStorage.setItem(USER_PHONE_KEY, clean9(user.phone)); } catch (e) {}
-  try { localStorage.setItem("yapeton_nombre", String(user.name || "").trim()); } catch (e) {}
-  try { localStorage.setItem("yapeton_saldo", String(safeMoney(user.saldo))); } catch (e) {}
-}
-
-async function saveUserProfile(payload){
-  const session = readSession();
-  if(!(session && session.uid)) throw new Error("Primero inicia sesión.");
-
-  const phone = clean9(payload.phone);
-  if(phone.length !== 9) throw new Error("Ingresa un número de 9 dígitos.");
-
-  const ref = doc(db, USERS_COLLECTION, phone);
-  const existingSnap = await getDoc(ref);
-  const existing = existingSnap.exists() ? (existingSnap.data() || {}) : {};
-
-  const data = {
-    phone,
-    name: String(payload.name || "").trim() || "Sin nombre",
-    saldo: safeMoney(payload.saldo),
-    yapeos: Number(existing.yapeos || payload.yapeos || 0) || 0,
-    loginUid: session.uid,
-    updatedAt: serverTimestamp()
-  };
-
-  if(!existingSnap.exists()){
-    data.createdAt = serverTimestamp();
-  }
-
-  await setDoc(ref, data, { merge: true });
-  bridgeUser = {
-    id: phone,
-    phone,
-    name: data.name,
-    saldo: data.saldo,
-    yapeos: data.yapeos,
-    loginUid: session.uid
-  };
-  persistLegacyUser(bridgeUser);
-  return bridgeUser;
-}
-
-async function findUserByPhone(phone){
-  const p = clean9(phone);
-  if(p.length !== 9) return null;
-  const snap = await getDoc(doc(db, USERS_COLLECTION, p));
-  return normalizeUserSnap(snap);
-}
-
-function randomDigits(len){
-  let out = "";
-  for(let i = 0; i < len; i += 1){
-    out += Math.floor(Math.random() * 10);
-  }
-  return out;
-}
-
-function injectProfileStyles(pdoc){
-  if(!pdoc || pdoc.getElementById("bridgePhoneStyles")) return;
-  const style = pdoc.createElement("style");
-  style.id = "bridgePhoneStyles";
-  style.textContent = "#bridgePhoneWrap{margin-top:8px;}#bridgePhoneLabel{font-size:13px;color:rgba(248,250,252,.75);font-weight:500;margin-bottom:6px;}#bridgePhoneInput{width:100%;max-width:220px;border:none;outline:none;background:rgba(255,255,255,.16);color:#fff;padding:10px 12px;border-radius:14px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);}#bridgePhoneInput::placeholder{color:rgba(255,255,255,.55);}#bridgePhoneHint{margin-top:6px;font-size:11px;color:rgba(248,250,252,.66);} ";
-  (pdoc.head || pdoc.documentElement).appendChild(style);
-}
-
-function setupProfileFrame(homeDoc){
-  const profileFrame = homeDoc.getElementById("perfilEditarFrame");
-  if(!profileFrame) return;
-
-  const apply = async () => {
-    let pdoc = null;
-    try { pdoc = profileFrame.contentDocument || (profileFrame.contentWindow && profileFrame.contentWindow.document); } catch (e) {}
-    if(!pdoc || !pdoc.body) return;
-
-    injectProfileStyles(pdoc);
-
-    const meta = pdoc.querySelector("#datosView .welcomeMeta");
-    if(meta && !pdoc.getElementById("bridgePhoneWrap")){
-      const wrap = pdoc.createElement("div");
-      wrap.id = "bridgePhoneWrap";
-      wrap.innerHTML = '<div id="bridgePhoneLabel">Número de celular</div><input id="bridgePhoneInput" type="tel" inputmode="numeric" maxlength="9" placeholder="9XXXXXXXX"><div id="bridgePhoneHint">Esta opción sirve para enviarse dinero entre usuarios. Este número identifica tu cuenta en users.</div>';
-      meta.textContent = bridgeUser && bridgeUser.phone ? formatPhone(bridgeUser.phone) : "Número de celular";
-      meta.insertAdjacentElement("afterend", wrap);
-      const phoneInput = pdoc.getElementById("bridgePhoneInput");
-      phoneInput.addEventListener("input", () => {
-        phoneInput.value = clean9(phoneInput.value);
-      });
-    }
-
-    if(bridgeUser){
-      const nameInput = pdoc.getElementById("nameInput");
-      const saldoInput = pdoc.getElementById("saldoInput");
-      const phoneInput = pdoc.getElementById("bridgePhoneInput");
-      const total = pdoc.getElementById("registros_total");
-      const metaLabel = pdoc.querySelector("#datosView .welcomeMeta");
-      if(nameInput && pdoc.activeElement !== nameInput && !String(nameInput.value || "").trim()) nameInput.value = bridgeUser.name || "";
-      if(saldoInput && pdoc.activeElement !== saldoInput && !String(saldoInput.value || "").trim()) saldoInput.value = String(Math.trunc(bridgeUser.saldo || 0));
-      if(phoneInput) phoneInput.value = bridgeUser.phone || "";
-      if(total) total.textContent = String(bridgeUser.yapeos || 0);
-      if(metaLabel) metaLabel.textContent = bridgeUser.phone ? formatPhone(bridgeUser.phone) : "Número de celular";
-      const avatar = pdoc.getElementById("datosAvatar");
-      if(avatar){
-        const ch = String(bridgeUser.name || "?").trim().charAt(0).toUpperCase() || "?";
-        avatar.textContent = ch;
-      }
-    }
-
-    const saveBtn = pdoc.getElementById("saveBtn");
-    if(saveBtn && !saveBtn.dataset.bridgeUsersBound){
-      saveBtn.dataset.bridgeUsersBound = "1";
-      saveBtn.addEventListener("click", async () => {
-        const name = (pdoc.getElementById("nameInput")?.value || "").trim();
-        const saldo = Number(digitsOnly(pdoc.getElementById("saldoInput")?.value || "0") || 0);
-        const phone = clean9(pdoc.getElementById("bridgePhoneInput")?.value || "");
-        try {
-          const user = await saveUserProfile({ name, saldo, phone, yapeos: bridgeUser?.yapeos || 0 });
-          bridgeUser = user;
-          syncHomeFrame(homeDoc);
-          const metaLabel = pdoc.querySelector("#datosView .welcomeMeta");
-          if(metaLabel) metaLabel.textContent = user.phone ? formatPhone(user.phone) : "Número de celular";
-        } catch (err) {
-          console.error(err);
-          const msg = err && err.message ? err.message : "No se pudo guardar el usuario.";
-          try {
-            const toast = pdoc.getElementById("toast");
-            if(toast){
-              toast.textContent = msg;
-              toast.classList.add("show");
-              setTimeout(() => toast.classList.remove("show"), 2200);
-            } else {
-              alert(msg);
-            }
-          } catch (e) {}
-        }
-      }, true);
-    }
-  };
-
-  profileFrame.addEventListener("load", () => { setTimeout(apply, 80); });
-  setTimeout(apply, 300);
-}
-
-function patchContactLookup(frameWin){
-  if(!frameWin || !frameWin.fsGetContact || frameWin.fsGetContact.__bridgeWrapped) return;
-  const original = frameWin.fsGetContact.bind(frameWin);
-  const wrapped = async (phone) => {
-    const contact = await original(phone);
-    if(contact) return contact;
-    const user = await findUserByPhone(phone);
-    if(!user) return null;
-    return { name: user.name, phone: user.phone, destino: "Yape" };
-  };
-  wrapped.__bridgeWrapped = true;
-  frameWin.fsGetContact = wrapped;
-}
-
-function setupAgregarContactoFrame(homeDoc){
-  const frame = homeDoc.getElementById("agregarContactoFrame");
-  if(!frame) return;
-  const apply = () => {
-    try {
-      const fwin = frame.contentWindow;
-      if(fwin) patchContactLookup(fwin);
-    } catch (e) {}
-  };
-  frame.addEventListener("load", () => { setTimeout(apply, 120); });
-  setTimeout(apply, 600);
-}
-
-function syncHomeFrame(homeDoc){
-  if(!homeDoc || !bridgeUser) return;
-  persistLegacyUser(bridgeUser);
-  const hello = homeDoc.getElementById("helloText");
-  const saldo = homeDoc.getElementById("saldoAmount");
-  if(hello) hello.textContent = "Hola, " + (bridgeUser.name || "Usuario");
-  if(saldo) saldo.textContent = formatMoney(bridgeUser.saldo || 0);
-  setupProfileFrame(homeDoc);
-}
-
-async function handleTransfer(homeWin, homeDoc){
-  const sender = bridgeUser || await findCurrentUser();
-  if(!sender || !sender.phone) throw new Error("Primero registra tu número en Datos de mi cuenta.");
-
-  const destino = String(homeWin.__currentDestino || "Yape").trim();
-  if(destino !== "Yape") return false;
-
-  const receiverPhone = clean9(homeWin.__bridgeRecipientPhone || "");
-  if(receiverPhone.length !== 9) throw new Error("No se encontró el celular del destinatario.");
-  if(receiverPhone === sender.phone) throw new Error("No puedes yapearte a ti mismo.");
-
-  const amountText = (homeDoc.getElementById("mAmountInput")?.value || "0").trim();
-  const amount = Number(amountText);
-  if(!(amount > 0)) throw new Error("Ingresa un monto válido.");
-
-  const msg = (homeDoc.getElementById("mMsgInput")?.value || "").trim();
-  const now = new Date();
-  const op8 = randomDigits(8);
-  const code3 = randomDigits(3);
-  const session = readSession();
-
-  const senderRef = doc(db, USERS_COLLECTION, sender.phone);
-  const receiverRef = doc(db, USERS_COLLECTION, receiverPhone);
-  const transferRef = doc(collection(db, TRANSFERS_COLLECTION));
-
-  const result = await runTransaction(db, async (tx) => {
-    const senderSnap = await tx.get(senderRef);
-    const receiverSnap = await tx.get(receiverRef);
-
-    if(!senderSnap.exists()) throw new Error("Tu usuario no existe en la colección users.");
-    if(!receiverSnap.exists()) throw new Error("El número destino no existe en users.");
-
-    const senderData = normalizeUserSnap(senderSnap);
-    const receiverData = normalizeUserSnap(receiverSnap);
-
-    if(senderData.saldo < amount) throw new Error("Saldo insuficiente.");
-
-    const newSenderSaldo = Number((senderData.saldo - amount).toFixed(2));
-    const newReceiverSaldo = Number((receiverData.saldo + amount).toFixed(2));
-
-    tx.set(senderRef, {
-      phone: senderData.phone,
-      name: senderData.name,
-      saldo: newSenderSaldo,
-      yapeos: (Number(senderData.yapeos || 0) + 1),
-      loginUid: session && session.uid ? session.uid : senderData.loginUid || "",
-      updatedAt: new Date()
-    }, { merge: true });
-
-    tx.set(receiverRef, {
-      phone: receiverData.phone,
-      name: receiverData.name,
-      saldo: newReceiverSaldo,
-      yapeos: Number(receiverData.yapeos || 0),
-      updatedAt: new Date()
-    }, { merge: true });
-
-    tx.set(transferRef, {
-      fromPhone: senderData.phone,
-      toPhone: receiverData.phone,
-      fromName: senderData.name,
-      toName: receiverData.name,
-      monto: amount,
-      destino: "Yape",
-      op8,
-      code3,
-      msg,
-      createdAt: now,
-      type: "transfer"
-    });
-
-    return {
-      sender: { ...senderData, saldo: newSenderSaldo, yapeos: Number(senderData.yapeos || 0) + 1 },
-      receiver: { ...receiverData, saldo: newReceiverSaldo },
-      payload: {
-        nombre: receiverData.name || "Sin nombre",
-        phone: receiverData.phone,
-        monto: amountText,
-        msg,
-        code3,
-        op8,
-        dateObj: now,
-        destino: "Yape",
-        kind: "out"
-      }
-    };
-  });
-
-  bridgeUser = result.sender;
-  persistLegacyUser(bridgeUser);
-  syncHomeFrame(homeDoc);
-  try { window.dispatchEvent(new CustomEvent("bridgeNotificationsUpdated", { detail: result.payload })); } catch (e) {}
-  return result.payload;
-}
-
-function bindTransferBridge(homeWin, homeDoc){
-  const button = homeDoc.getElementById("mYapearBtn");
-  if(!button || button.dataset.bridgeTransferBound === "1") return;
-  button.dataset.bridgeTransferBound = "1";
-
-  if(typeof homeWin.goMonto === "function" && !homeWin.goMonto.__bridgeWrapped){
-    const originalGoMonto = homeWin.goMonto.bind(homeWin);
-    const wrappedGoMonto = function(nombre, phone9){
-      homeWin.__bridgeRecipientPhone = clean9(phone9);
-      return originalGoMonto(nombre, phone9);
-    };
-    wrappedGoMonto.__bridgeWrapped = true;
-    homeWin.goMonto = wrappedGoMonto;
-  }
-
-  button.addEventListener("click", async (ev) => {
-    const destino = String(homeWin.__currentDestino || "Yape").trim();
-    const msg = (homeDoc.getElementById("mMsgInput")?.value || "").trim().toLowerCase();
-    if(destino !== "Yape" || msg === "auto") return;
-    if(!button.classList.contains("active")) return;
-
-    ev.preventDefault();
-    ev.stopImmediatePropagation();
-
-    const modal = homeDoc.getElementById("mModal");
-    if(modal) modal.style.display = "flex";
-
-    try {
-      const voucherPayload = await handleTransfer(homeWin, homeDoc);
-      setTimeout(() => {
-        if(modal) modal.style.display = "none";
-        try { homeWin.__confettiAllowNext = true; } catch (e) {}
-        if(typeof homeWin.goVoucher === "function"){
-          homeWin.goVoucher(voucherPayload);
-        }
-      }, 1200);
-    } catch (err) {
-      if(modal) modal.style.display = "none";
-      const msgText = err && err.message ? err.message : "No se pudo completar el yapeo.";
-      if(typeof homeWin.showToast === "function") homeWin.showToast(msgText);
-      else alert(msgText);
-    }
-  }, true);
-}
-
-function normalizeDateValue(value){
-  if(!value) return null;
-  try {
-    if(value instanceof Date) return value;
-    if(typeof value.toDate === "function") return value.toDate();
-  } catch (e) {}
-  const num = Number(value);
-  return Number.isFinite(num) && num > 0 ? new Date(num) : null;
-}
-
-function formatMoneyCompact(value){
-  const num = safeMoney(value);
-  if(Math.abs(num - Math.round(num)) < 0.001){
-    return "S/ " + Math.round(num).toLocaleString("en-US");
-  }
-  return "S/ " + num.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
-function shortName(name, phone){
-  const clean = String(name || "").trim();
-  if(clean){
-    const parts = clean.split(/\s+/).filter(Boolean);
-    let base = parts.slice(0, 2).join(" ");
-    if(base.length > 18) base = base.slice(0, 18).trim();
-    return base + (clean.length > base.length ? "*" : "");
-  }
-  const p = clean9(phone);
-  return p ? ("*** " + p.slice(-3)) : "Alguien";
-}
-
-async function fetchTransferNotifications(limitCount = 18){
-  const user = bridgeUser || await findCurrentUser();
-  if(!(user && user.phone)) return [];
-
-  const base = collection(db, TRANSFERS_COLLECTION);
-  const phone = clean9(user.phone);
-  const [incomingSnap, outgoingSnap] = await Promise.all([
-    getDocs(query(base, where("toPhone", "==", phone))),
-    getDocs(query(base, where("fromPhone", "==", phone)))
-  ]);
-
-  const merged = new Map();
-
-  function consume(snap){
-    snap.forEach((item) => {
-      const data = item.data() || {};
-      const createdAt = normalizeDateValue(data.createdAt) || new Date();
-      const incoming = clean9(data.toPhone) === phone;
-      const otherName = incoming ? shortName(data.fromName, data.fromPhone) : shortName(data.toName, data.toPhone);
-      const amount = safeMoney(data.monto || 0);
-      const code3 = String(data.code3 || "").replace(/\D/g, "").slice(0, 3) || randomDigits(3);
-      merged.set(item.id, {
-        id: item.id,
-        title: "Confirmación de Pago",
-        text: incoming
-          ? (otherName + " te envió un pago por " + formatMoneyCompact(amount) + ". El cód. de seguridad es: " + code3)
-          : ("Enviaste un pago a " + otherName + " por " + formatMoneyCompact(amount) + ". El cód. de seguridad es: " + code3),
-        direction: incoming ? "in" : "out",
-        amount,
-        code3,
-        createdAtISO: createdAt.toISOString(),
-        createdAtMs: createdAt.getTime(),
-        otherName,
-        otherPhone: incoming ? clean9(data.fromPhone) : clean9(data.toPhone)
-      });
-    });
-  }
-
-  consume(incomingSnap);
-  consume(outgoingSnap);
-
-  return Array.from(merged.values())
-    .sort((a, b) => (b.createdAtMs || 0) - (a.createdAtMs || 0))
-    .slice(0, Math.max(1, limitCount));
-}
-
-window.__bridgeFetchNotifications = fetchTransferNotifications;
-window.__bridgeGetCurrentUser = async () => bridgeUser || await findCurrentUser();
-
-async function patchHomeFrame(){
-  const frame = document.getElementById("homeFrame");
-  if(!frame) return;
-
-  let homeDoc = null;
-  let homeWin = null;
-  try {
-    homeDoc = frame.contentDocument || (frame.contentWindow && frame.contentWindow.document);
-    homeWin = frame.contentWindow;
-  } catch (e) {}
-  if(!homeDoc || !homeDoc.body || !homeWin) return;
-
-  if(!bridgeUser){
-    try { await findCurrentUser(); } catch (e) { console.warn(e); }
-  }
-
-  if(typeof homeWin.refreshHomeFromStorage === "function" && !homeWin.refreshHomeFromStorage.__bridgeWrapped){
-    const originalRefresh = homeWin.refreshHomeFromStorage.bind(homeWin);
-    const wrappedRefresh = function(){
-      if(bridgeUser) persistLegacyUser(bridgeUser);
-      return originalRefresh();
-    };
-    wrappedRefresh.__bridgeWrapped = true;
-    homeWin.refreshHomeFromStorage = wrappedRefresh;
-  }
-
-  patchContactLookup(homeWin);
-  bindTransferBridge(homeWin, homeDoc);
-  syncHomeFrame(homeDoc);
-  setupProfileFrame(homeDoc);
-  setupAgregarContactoFrame(homeDoc);
-}
-
-window.addEventListener("message", async (event) => {
-  const data = event && event.data ? event.data : {};
-  if(data.type === "profileUpdated"){
-    setTimeout(() => { patchHomeFrame(); }, 120);
-  }
-  if(data.type === "LOGIN_OK"){
-    setTimeout(() => { patchHomeFrame(); }, 350);
-  }
-});
-
-const boot = async () => {
-  try { await findCurrentUser(); } catch (e) { console.warn(e); }
-  await patchHomeFrame();
-};
-
-window.addEventListener("load", boot, { once: true });
-setTimeout(() => { patchHomeFrame(); }, 1200);
-setInterval(() => { patchHomeFrame(); }, 3000);
-</script>
-
-
-<script type="module" id="bridge-realtime-notify">
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-(function(){
-  if(window.__bridgeRealtimeInstalled) return;
-  window.__bridgeRealtimeInstalled = true;
-
-  const DATA_CONFIG = {
-    apiKey: "AIzaSyC89Qpf_Ie85lVkm5V5wi_xBC5fajPngj8",
-    authDomain: "yapeton.firebaseapp.com",
-    projectId: "yapeton",
-    storageBucket: "yapeton.firebasestorage.app",
-    messagingSenderId: "550981729513",
-    appId: "1:550981729513:web:1048656e03ec1a54410478",
-    measurementId: "G-CXZSJB540K"
-  };
-
-  const app = getApps().find(a => a.name === 'bridge-realtime-notify') || initializeApp(DATA_CONFIG, 'bridge-realtime-notify');
-  const db = getFirestore(app);
-  const LS_PREFIX = 'yapeton_rt_notify_';
-  const LS_SOUND = 'yapeton_rt_sound_on';
-  const LS_SEEN = 'yapeton_rt_seen_ids';
-  const LS_PHONE = 'yapeton_rt_phone';
-  const LS_LAST = 'yapeton_rt_last_ms';
-
-  let currentPhone = '';
-  let unsubscribe = null;
-  let seeded = false;
-  let audioEl = null;
-  let audioUnlocked = false;
-  let audioIndex = 0;
-  let toastTimer = null;
-
-  function clean9(v){ return String(v || '').replace(/\D/g, '').slice(0, 9); }
-  function safeMoney(v){ const n = Number(v || 0); return Number.isFinite(n) ? Math.max(0, n) : 0; }
-  function formatMoneyCompact(v){ return 'S/ ' + safeMoney(v).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 }); }
-  function shortName(name, phone){
-    const clean = String(name || '').trim();
-    if(clean){
-      const parts = clean.split(/\s+/).filter(Boolean);
-      let base = parts.slice(0, 2).join(' ');
-      if(base.length > 18) base = base.slice(0, 18).trim();
-      return base + (clean.length > base.length ? '*' : '');
-    }
-    const p = clean9(phone);
-    return p ? ('*** ' + p.slice(-3)) : 'Alguien';
-  }
-  function normalizeDateValue(v){
-    try {
-      if(!v) return new Date();
-      if(v instanceof Date) return v;
-      if(typeof v.toDate === 'function') return v.toDate();
-      if(typeof v.seconds === 'number') return new Date(v.seconds * 1000);
-      const d = new Date(v);
-      return isNaN(d.getTime()) ? new Date() : d;
-    } catch (e) { return new Date(); }
-  }
-  function relTime(d){
-    const now = new Date();
-    const diffMin = Math.max(0, Math.round((now - d) / 60000));
-    if(diffMin < 1) return 'ahora';
-    if(diffMin < 60) return 'Hace ' + diffMin + ' min';
-    const h = Math.floor(diffMin / 60);
-    if(h < 24) return h === 1 ? 'Hace 1 h' : ('Hace ' + h + ' h');
-    return d.toLocaleString();
-  }
-  function getSeen(){
-    try { return JSON.parse(localStorage.getItem(LS_SEEN) || '[]'); } catch (e) { return []; }
-  }
-  function markSeen(id, ms){
-    try {
-      const arr = getSeen().filter(Boolean);
-      if(!arr.includes(id)) arr.unshift(id);
-      localStorage.setItem(LS_SEEN, JSON.stringify(arr.slice(0, 200)));
-      if(ms) localStorage.setItem(LS_LAST, String(ms));
-    } catch (e) {}
-  }
-  function isSeen(id){ return getSeen().includes(id); }
-  function soundEnabled(){
-    try {
-      const host = document.getElementById('homeFrame')?.contentWindow || window;
-      const v = host.localStorage.getItem('yapeton_sms_on');
-      if(v != null) return v === '1';
-    } catch (e) {}
-    try {
-      const v = localStorage.getItem(LS_SOUND);
-      if(v != null) return v === '1';
-    } catch (e) {}
-    return true;
-  }
-  function extractEmbeddedMp3(){
-    try {
-      for(const s of Array.from(document.scripts || [])){
-        const txt = String(s.textContent || '');
-        const m = txt.match(/const\s+EMBEDDED_MP3\s*=\s*'([^']+)'/);
-        if(m && m[1]) return m[1];
-      }
-    } catch (e) {}
-    return '';
-  }
-  function buildAudioCandidates(){
-    const out = [];
-    const emb = extractEmbeddedMp3();
-    if(emb) out.push(emb);
-    try {
-      const href = String(location.href || '');
-      const base = href.replace(/[^\/]*$/, '');
-      const stamp = 'v=' + Date.now();
-      out.push('notificacion.mp3?' + stamp);
-      out.push('./notificacion.mp3?' + stamp);
-      if(base) out.push(base + 'notificacion.mp3?' + stamp);
-    } catch (e) {}
-    return out.filter(Boolean);
-  }
-  function ensureAudio(forceNew){
-    const candidates = buildAudioCandidates();
-    if(forceNew || !audioEl){
-      const a = document.createElement('audio');
-      a.preload = 'auto';
-      a.playsInline = true;
-      a.autoplay = false;
-      a.loop = false;
-      a.setAttribute('webkit-playsinline', 'true');
-      a.src = candidates[audioIndex] || candidates[0] || '';
-      audioEl = a;
-    }
-    return audioEl;
-  }
-  async function unlockAudio(){
-    if(audioUnlocked) return;
-    try {
-      const a = ensureAudio(true);
-      a.muted = true;
-      a.currentTime = 0;
-      const p = a.play();
-      if(p && typeof p.then === 'function') await p.catch(() => {});
-      a.pause();
-      a.currentTime = 0;
-      a.muted = false;
-    } catch (e) {}
-    audioUnlocked = true;
-  }
-  function bindUnlockDoc(doc){
-    try {
-      if(!doc || doc.__rtSoundBound) return;
-      doc.__rtSoundBound = true;
-      ['touchstart','pointerdown','click','keydown'].forEach(evt => doc.addEventListener(evt, unlockAudio, { passive: true }));
-    } catch (e) {}
-  }
-  bindUnlockDoc(document);
-  function bindFrameUnlock(){
-    try {
-      document.querySelectorAll('iframe').forEach((fr) => {
-        try {
-          bindUnlockDoc(fr.contentDocument || (fr.contentWindow && fr.contentWindow.document));
-          if(!fr.__rtSoundLoadBound){
-            fr.__rtSoundLoadBound = true;
-            fr.addEventListener('load', () => {
-              try { bindUnlockDoc(fr.contentDocument || (fr.contentWindow && fr.contentWindow.document)); } catch (e) {}
-            });
-          }
-        } catch (e) {}
-      });
-    } catch (e) {}
-  }
-  bindFrameUnlock();
-  setInterval(bindFrameUnlock, 3000);
-  async function playSound(){
-    if(!soundEnabled()) return;
-    const candidates = buildAudioCandidates();
-    for(let i = 0; i < candidates.length; i += 1){
-      try {
-        audioIndex = i;
-        const a = ensureAudio(true);
-        a.pause();
-        a.currentTime = 0;
-        a.muted = false;
-        a.volume = 1;
-        a.src = candidates[i];
-        await a.play();
-        return true;
-      } catch (e) {}
-    }
-    return false;
-  }
-  function loadMovs(){
-    try { return JSON.parse(localStorage.getItem('movimientos_v1') || '[]') || []; } catch (e) { return []; }
-  }
-  function saveMovs(arr){
-    try { localStorage.setItem('movimientos_v1', JSON.stringify((arr || []).slice(0, 30))); } catch (e) {}
-  }
-  function syncIncomingMovement(id, data){
-    try {
-      const arr = loadMovs();
-      if(arr.some((m) => String(m.transferId || '') === String(id))) return;
-      const created = normalizeDateValue(data.createdAt);
-      arr.unshift({
-        transferId: String(id),
-        nombre: String(data.fromName || 'Alguien'),
-        monto: Math.abs(safeMoney(data.monto || 0)),
-        kind: 'in',
-        ts: created.getTime(),
-        phone: clean9(data.fromPhone || ''),
-        destino: String(data.destino || 'Yape'),
-        op8: String(data.op8 || ''),
-        code3: String(data.code3 || ''),
-        msg: String(data.msg || ''),
-        tipo: 'transfer'
-      });
-      saveMovs(arr);
-      try {
-        const fw = document.getElementById('homeFrame')?.contentWindow;
-        if(fw && typeof fw.renderMovs === 'function') fw.renderMovs();
-      } catch (e) {}
-    } catch (e) {}
-  }
-  function ensureToast(){
-    let toast = document.getElementById('pnGlobalToast');
-    if(toast) return toast;
-    toast = document.createElement('div');
-    toast.id = 'pnGlobalToast';
-    toast.innerHTML = '<div class="t1">Yape · Confirmación de Pago</div><div class="t2" id="pnToastText"></div>';
-    document.body.appendChild(toast);
-    return toast;
-  }
-  function showForegroundToast(msg){
-    const toast = ensureToast();
-    const txt = toast.querySelector('#pnToastText') || toast;
-    txt.textContent = msg.text;
-    toast.style.display = 'block';
-    toast.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => {
-      toast.classList.remove('show');
-      setTimeout(() => { toast.style.display = 'none'; }, 220);
-    }, 4200);
-    playSound();
-  }
-  async function ensurePermission(){
-    try {
-      if(!('Notification' in window)) return false;
-      if(Notification.permission === 'granted') return true;
-      if(Notification.permission === 'denied') return false;
-      return false;
-    } catch (e) { return false; }
-  }
-  async function tryRequestPermission(){
-    try {
-      if(!('Notification' in window)) return false;
-      if(Notification.permission === 'granted') return true;
-      if(Notification.permission === 'denied') return false;
-      const res = await Notification.requestPermission();
-      return res === 'granted';
-    } catch (e) { return false; }
-  }
-  ['touchstart','pointerdown','click'].forEach(evt => document.addEventListener(evt, () => { tryRequestPermission(); }, { passive: true }));
-  async function showSystemNotification(msg){
-    try {
-      const ok = await ensurePermission();
-      if(!ok) return false;
-      const opts = {
-        body: msg.text,
-        icon: './icon-192.png',
-        badge: './icon-192.png',
-        tag: 'yape-real-' + msg.id,
-        renotify: true,
-        requireInteraction: false,
-        data: { url: location.href },
-        vibrate: [180,80,180]
-      };
-      try {
-        const reg = await navigator.serviceWorker.getRegistration();
-        if(reg && reg.showNotification){
-          await reg.showNotification(msg.title, opts);
-          return true;
-        }
-      } catch (e) {}
-      try {
-        const n = new Notification(msg.title, opts);
-        n.onclick = function(){ try { window.focus(); } catch (e) {} };
-        return true;
-      } catch (e) {}
-    } catch (e) {}
-    return false;
-  }
-  async function dispatchUpdate(){
-    try {
-      if(typeof window.__bridgeFetchNotifications === 'function'){
-        const payload = await window.__bridgeFetchNotifications(30);
-        window.dispatchEvent(new CustomEvent('bridgeNotificationsUpdated', { detail: payload }));
-      } else {
-        window.dispatchEvent(new CustomEvent('bridgeNotificationsUpdated'));
-      }
-    } catch (e) {
-      try { window.dispatchEvent(new CustomEvent('bridgeNotificationsUpdated')); } catch (err) {}
-    }
-  }
-  function buildIncomingMsg(id, data){
-    const created = normalizeDateValue(data.createdAt);
-    const otherName = shortName(data.fromName, data.fromPhone);
-    const amount = safeMoney(data.monto || 0);
-    const code3 = String(data.code3 || '').replace(/\D/g, '').slice(0, 3) || '000';
-    return {
-      id,
-      title: 'Confirmación de Pago',
-      text: otherName + ' te envió un pago por ' + formatMoneyCompact(amount) + '. El cód. de seguridad es: ' + code3,
-      time: relTime(created),
-      createdAtMs: created.getTime()
-    };
-  }
-  function subscribe(phone){
-    if(unsubscribe){ try { unsubscribe(); } catch (e) {} unsubscribe = null; }
-    seeded = false;
-    currentPhone = clean9(phone);
-    if(!currentPhone) return;
-    try { localStorage.setItem(LS_PHONE, currentPhone); } catch (e) {}
-    const q = query(collection(db, 'transfers'), where('toPhone', '==', currentPhone));
-    unsubscribe = onSnapshot(q, (snap) => {
-      const idsToSeed = [];
-      const fresh = [];
-      snap.docChanges().forEach((change) => {
-        const id = change.doc.id;
-        const data = change.doc.data() || {};
-        const msg = buildIncomingMsg(id, data);
-        if(!seeded){ idsToSeed.push([id, msg.createdAtMs]); return; }
-        if(change.type === 'added' && !isSeen(id)) fresh.push(msg);
-      });
-      if(!seeded){
-        idsToSeed.forEach(([id, ms]) => { markSeen(id, ms); const seededDoc = snap.docs.find(d => d.id === id); if(seededDoc){ try { syncIncomingMovement(id, seededDoc.data() || {}); } catch (e) {} } });
-        seeded = true;
-        dispatchUpdate();
-        return;
-      }
-      fresh.sort((a,b) => (a.createdAtMs || 0) - (b.createdAtMs || 0)).forEach(async (msg) => {
-        markSeen(msg.id, msg.createdAtMs);
-        try { const rawDoc = snap.docs.find(d => d.id === msg.id); if(rawDoc) syncIncomingMovement(msg.id, rawDoc.data() || {}); } catch (e) {}
-        dispatchUpdate();
-        if(document.visibilityState === 'visible'){
-          showForegroundToast(msg);
-        } else {
-          await showSystemNotification(msg);
-        }
-      });
-    }, (err) => {
-      console.warn('Realtime transfers watch failed', err);
-    });
-  }
-  async function resolveUserPhone(){
-    try {
-      if(typeof window.__bridgeGetCurrentUser === 'function'){
-        const user = await window.__bridgeGetCurrentUser();
-        const p = clean9(user && user.phone);
-        if(p) return p;
-      }
-    } catch (e) {}
-    try {
-      const p = clean9(localStorage.getItem('yapeton_user_phone') || localStorage.getItem(LS_PHONE) || '');
-      if(p) return p;
-    } catch (e) {}
-    return '';
-  }
-  async function boot(){
-    const phone = await resolveUserPhone();
-    if(phone) subscribe(phone);
-  }
-  window.addEventListener('message', async (event) => {
-    const data = event && event.data ? event.data : {};
-    if(data.type === 'LOGIN_OK' || data.type === 'profileUpdated'){
-      setTimeout(boot, 500);
-    }
-  });
-  window.addEventListener('storage', (e) => {
-    if(e && e.key === 'yapeton_user_phone') setTimeout(boot, 120);
-  });
-  document.addEventListener('visibilitychange', () => {
-    if(document.visibilityState === 'visible'){ dispatchUpdate(); }
-  });
-  setTimeout(boot, 1200);
-  setInterval(boot, 10000);
 })();
 </script>
 
