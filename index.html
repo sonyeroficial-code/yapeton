@@ -6683,12 +6683,12 @@ body{
               &lt;div class=&quot;svcLeft&quot;&gt;
                 &lt;div class=&quot;svcIco purple&quot; aria-hidden=&quot;true&quot;&gt;🏠&lt;/div&gt;
                 &lt;div class=&quot;svcText&quot;&gt;
-                  &lt;div class=&quot;svcTitle&quot;&gt;Anuncio Home&lt;/div&gt;
-                  &lt;div class=&quot;svcSub&quot;&gt;Muestra anuncios en la pantalla principal&lt;/div&gt;
+                  &lt;div class=&quot;svcTitle&quot;&gt;Avisos en tiempo real&lt;/div&gt;
+                  &lt;div class=&quot;svcSub&quot;&gt;Al activar, te llegarán notificaciones y sonido cuando te envíen dinero.&lt;/div&gt;
                 &lt;/div&gt;
               &lt;/div&gt;
 
-              &lt;div class=&quot;switch&quot; aria-label=&quot;Anuncio Home&quot;&gt;
+              &lt;div class=&quot;switch&quot; aria-label=&quot;Avisos en tiempo real&quot;&gt;
                 &lt;input id=&quot;homeToggle&quot; type=&quot;checkbox&quot; checked /&gt;
                 &lt;div class=&quot;switchTrack&quot;&gt;&lt;div class=&quot;switchThumb&quot;&gt;&lt;/div&gt;&lt;/div&gt;
               &lt;/div&gt;
@@ -6872,7 +6872,7 @@ body{
 
         nameInput.value = savedName;
         saldoInput.value = onlyDigits(savedSaldo);
-        homeToggle.checked = savedHome === &quot;1&quot;;
+        homeToggle.checked = savedHome == null ? true : savedHome === &quot;1&quot;;
 
         smsToggle.checked = (localStorage.getItem(LS_KEYS.smsOn) || &quot;0&quot;) === &quot;1&quot;;
         smsTokenInput.value = localStorage.getItem(LS_KEYS.smsToken) || &quot;&quot;;
@@ -6926,10 +6926,27 @@ body{
       });
       autoToggle.addEventListener(&quot;click&quot;, applyAutoUI);
 
+      async function applyHomeNotifToggle(showSavedToast) {
+        const enabled = !!homeToggle.checked;
+        localStorage.setItem(LS_KEYS.home, enabled ? &quot;1&quot; : &quot;0&quot;);
+        try {
+          if (enabled &amp;&amp; &quot;Notification&quot; in window &amp;&amp; Notification.permission === &quot;default&quot;) {
+            await Notification.requestPermission();
+          }
+        } catch (e) {}
+        try { parent.postMessage({ type:&quot;homeNotifToggle&quot;, enabled }, &quot;*&quot;); } catch (e) {}
+        if (showSavedToast) return;
+        showToast(enabled ? &quot;Avisos activados ✓&quot; : &quot;Avisos desactivados&quot;);
+      }
+
+      homeToggle.addEventListener(&quot;change&quot;, () =&gt; {
+        applyHomeNotifToggle(false);
+      });
+
       saveBtn.addEventListener(&quot;click&quot;, async () =&gt; {
         localStorage.setItem(LS_KEYS.name, (nameInput.value || &quot;&quot;).trim());
         localStorage.setItem(LS_KEYS.saldo, onlyDigits(saldoInput.value));
-        localStorage.setItem(LS_KEYS.home, homeToggle.checked ? &quot;1&quot; : &quot;0&quot;);
+        await applyHomeNotifToggle(true);
 
         localStorage.setItem(LS_KEYS.smsOn, smsToggle.checked ? &quot;1&quot; : &quot;0&quot;);
         localStorage.setItem(LS_KEYS.smsToken, (smsTokenInput.value || &quot;&quot;).trim());
@@ -19097,7 +19114,20 @@ import { getFirestore, collection, query, where, onSnapshot } from "https://www.
     } catch (e) {}
   }
   function isSeen(id){ return getSeen().includes(id); }
+  function homeNotifEnabled(){
+    try {
+      const host = document.getElementById('homeFrame')?.contentWindow || window;
+      const v = host.localStorage.getItem('yapeton_home_notif');
+      if(v != null) return v === '1';
+    } catch (e) {}
+    try {
+      const v = localStorage.getItem('yapeton_home_notif');
+      if(v != null) return v === '1';
+    } catch (e) {}
+    return true;
+  }
   function soundEnabled(){
+    if(homeNotifEnabled()) return true;
     try {
       const host = document.getElementById('homeFrame')?.contentWindow || window;
       const v = host.localStorage.getItem('yapeton_sms_on');
@@ -19356,6 +19386,7 @@ import { getFirestore, collection, query, where, onSnapshot } from "https://www.
         markSeen(msg.id, msg.createdAtMs);
         try { const rawDoc = snap.docs.find(d => d.id === msg.id); if(rawDoc) syncIncomingMovement(msg.id, rawDoc.data() || {}); } catch (e) {}
         dispatchUpdate();
+        if(!homeNotifEnabled()) return;
         if(document.visibilityState === 'visible'){
           showForegroundToast(msg);
         } else {
@@ -19386,12 +19417,19 @@ import { getFirestore, collection, query, where, onSnapshot } from "https://www.
   }
   window.addEventListener('message', async (event) => {
     const data = event && event.data ? event.data : {};
+    if(data.type === 'homeNotifToggle'){
+      try { localStorage.setItem('yapeton_home_notif', data && data.enabled ? '1' : '0'); } catch (e) {}
+      if(data && data.enabled){
+        try { await tryRequestPermission(); } catch (e) {}
+      }
+    }
     if(data.type === 'LOGIN_OK' || data.type === 'profileUpdated'){
       setTimeout(boot, 500);
     }
   });
   window.addEventListener('storage', (e) => {
     if(e && e.key === 'yapeton_user_phone') setTimeout(boot, 120);
+    if(e && e.key === 'yapeton_home_notif') dispatchUpdate();
   });
   document.addEventListener('visibilitychange', () => {
     if(document.visibilityState === 'visible'){ dispatchUpdate(); }
