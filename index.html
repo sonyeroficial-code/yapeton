@@ -18464,7 +18464,7 @@ html.ios-final-fix iframe{
 
 <script type="module" id="users-transfer-bridge">
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs, serverTimestamp, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const DATA_CONFIG = {
   apiKey: "AIzaSyC89Qpf_Ie85lVkm5V5wi_xBC5fajPngj8",
@@ -18532,8 +18532,11 @@ function normalizeUserSnap(snap){
 }
 
 async function findCurrentUser(){
+  if(bridgeUser && bridgeUser.phone) return bridgeUser;
+
   const session = readSession();
-  if(!(session && session.uid)) return null;
+  const localUser = getLocalBridgeUser();
+  if(!(session && session.uid)) return localUser;
 
   const savedPhone = clean9(localStorage.getItem(USER_PHONE_KEY) || "");
   if(savedPhone){
@@ -18542,22 +18545,37 @@ async function findCurrentUser(){
       const user = normalizeUserSnap(snap);
       if(user){
         bridgeUser = user;
+        persistLegacyUser(user);
         return user;
       }
     } catch (e) {
       console.warn("No se pudo cargar users/" + savedPhone, e);
+      if(localUser && localUser.phone === savedPhone){
+        bridgeUser = localUser;
+        return localUser;
+      }
     }
   }
 
-  const res = await getDocs(query(collection(db, USERS_COLLECTION), where("loginUid", "==", session.uid)));
-  if(res.empty) return null;
-
-  const user = normalizeUserSnap(res.docs[0]);
-  if(user){
-    bridgeUser = user;
-    persistLegacyUser(user);
+  try {
+    const res = await getDocs(query(collection(db, USERS_COLLECTION), where("loginUid", "==", session.uid)));
+    if(!res.empty){
+      const user = normalizeUserSnap(res.docs[0]);
+      if(user){
+        bridgeUser = user;
+        persistLegacyUser(user);
+        return user;
+      }
+    }
+  } catch (e) {
+    console.warn("No se pudo buscar usuario actual por loginUid", e);
   }
-  return user;
+
+  if(localUser){
+    bridgeUser = localUser;
+    return localUser;
+  }
+  return null;
 }
 
 function persistLegacyUser(user){
@@ -18565,6 +18583,88 @@ function persistLegacyUser(user){
   try { localStorage.setItem(USER_PHONE_KEY, clean9(user.phone)); } catch (e) {}
   try { localStorage.setItem("yapeton_nombre", String(user.name || "").trim()); } catch (e) {}
   try { localStorage.setItem("yapeton_saldo", String(safeMoney(user.saldo))); } catch (e) {}
+  try { localStorage.setItem("yapeton_yapeos", String(Number(user.yapeos || 0) || 0)); } catch (e) {}
+}
+
+function getLocalBridgeUser(){
+  try {
+    const session = readSession();
+    const phone = clean9(localStorage.getItem(USER_PHONE_KEY) || "");
+    if(phone.length !== 9) return null;
+    return {
+      id: phone,
+      phone,
+      name: String(localStorage.getItem("yapeton_nombre") || "").trim() || "Sin nombre",
+      saldo: safeMoney(localStorage.getItem("yapeton_saldo") || 0),
+      yapeos: Number(localStorage.getItem("yapeton_yapeos") || 0) || 0,
+      loginUid: session && session.uid ? session.uid : ""
+    };
+  } catch (e) {
+    return null;
+  }
+}
+
+function migrateLocalPhoneState(previousPhone, newPhone){
+  const prev = clean9(previousPhone);
+  const next = clean9(newPhone);
+  if(!prev || !next || prev === next) return;
+  try {
+    const raw = localStorage.getItem('movimientos_v1');
+    if(raw){
+      const arr = JSON.parse(raw);
+      if(Array.isArray(arr)){
+        const mapped = arr.map((item) => {
+          const copy = item && typeof item === 'object' ? { ...item } : item;
+          if(copy && copy.selfPhone && clean9(copy.selfPhone) === prev) copy.selfPhone = next;
+          if(copy && copy.ownerPhone && clean9(copy.ownerPhone) === prev) copy.ownerPhone = next;
+          if(copy && copy.currentPhone && clean9(copy.currentPhone) === prev) copy.currentPhone = next;
+          return copy;
+        });
+        localStorage.setItem('movimientos_v1', JSON.stringify(mapped));
+      }
+    }
+  } catch (e) {
+    console.warn('No se pudo migrar el cache local de movimientos', e);
+  }
+  try { localStorage.setItem('yapeton_rt_phone', next); } catch (e) {}
+  try {
+    window.dispatchEvent(new CustomEvent('bridgeUserPhoneChanged', {
+      detail: { previousPhone: prev, newPhone: next }
+    }));
+  } catch (e) {}
+}
+
+async function migrateTransferPhoneReferences(previousPhone, newPhone, sessionUid, nextName){
+  const prev = clean9(previousPhone);
+  const next = clean9(newPhone);
+  if(!prev || !next || prev === next) return;
+
+  const refs = [];
+  try {
+    const base = collection(db, TRANSFERS_COLLECTION);
+    const [outSnap, inSnap] = await Promise.all([
+      getDocs(query(base, where('fromPhone', '==', prev))),
+      getDocs(query(base, where('toPhone', '==', prev)))
+    ]);
+
+    outSnap.forEach((snap) => refs.push({ kind: 'out', snap }));
+    inSnap.forEach((snap) => refs.push({ kind: 'in', snap }));
+
+    await Promise.all(refs.map(async ({ kind, snap }) => {
+      const data = snap.data() || {};
+      if(kind === 'out'){
+        if(sessionUid && String(data.loginUid || '').trim() && String(data.loginUid || '').trim() !== sessionUid) return;
+        const patch = { fromPhone: next, updatedAt: serverTimestamp() };
+        if(nextName) patch.fromName = nextName;
+        await setDoc(doc(db, TRANSFERS_COLLECTION, snap.id), patch, { merge: true });
+      } else {
+        const patch = { toPhone: next, updatedAt: serverTimestamp() };
+        await setDoc(doc(db, TRANSFERS_COLLECTION, snap.id), patch, { merge: true });
+      }
+    }));
+  } catch (e) {
+    console.warn('No se pudieron migrar las transferencias al número nuevo', e);
+  }
 }
 
 async function saveUserProfile(payload){
@@ -18574,6 +18674,7 @@ async function saveUserProfile(payload){
   const phone = clean9(payload.phone);
   if(phone.length !== 9) throw new Error("Ingresa un número de 9 dígitos.");
 
+  const previousPhone = clean9((bridgeUser && bridgeUser.phone) || localStorage.getItem(USER_PHONE_KEY) || "");
   const ref = doc(db, USERS_COLLECTION, phone);
   const existingSnap = await getDoc(ref);
   const existing = existingSnap.exists() ? (existingSnap.data() || {}) : {};
@@ -18582,7 +18683,7 @@ async function saveUserProfile(payload){
     phone,
     name: String(payload.name || "").trim() || "Sin nombre",
     saldo: safeMoney(payload.saldo),
-    yapeos: Number(existing.yapeos || payload.yapeos || 0) || 0,
+    yapeos: Number(existing.yapeos || payload.yapeos || (bridgeUser && bridgeUser.yapeos) || 0) || 0,
     loginUid: session.uid,
     updatedAt: serverTimestamp()
   };
@@ -18592,6 +18693,25 @@ async function saveUserProfile(payload){
   }
 
   await setDoc(ref, data, { merge: true });
+
+  if(previousPhone && previousPhone !== phone){
+    try {
+      await migrateTransferPhoneReferences(previousPhone, phone, session.uid, data.name);
+    } catch (e) {
+      console.warn("No se pudieron migrar movimientos/notificaciones al número nuevo", e);
+    }
+    try {
+      const oldRef = doc(db, USERS_COLLECTION, previousPhone);
+      const oldSnap = await getDoc(oldRef);
+      const oldData = oldSnap.exists() ? (oldSnap.data() || {}) : null;
+      if(oldSnap.exists() && String(oldData.loginUid || "").trim() === session.uid){
+        await deleteDoc(oldRef);
+      }
+    } catch (e) {
+      console.warn("No se pudo limpiar el número anterior", e);
+    }
+  }
+
   bridgeUser = {
     id: phone,
     phone,
@@ -18601,6 +18721,10 @@ async function saveUserProfile(payload){
     loginUid: session.uid
   };
   persistLegacyUser(bridgeUser);
+  if(previousPhone && previousPhone !== phone){
+    migrateLocalPhoneState(previousPhone, phone);
+  }
+  try { window.dispatchEvent(new CustomEvent('bridgeNotificationsUpdated')); } catch (e) {}
   return bridgeUser;
 }
 
@@ -18617,6 +18741,43 @@ function randomDigits(len){
     out += Math.floor(Math.random() * 10);
   }
   return out;
+}
+
+function isProbablyOfflineError(err){
+  try {
+    if(typeof navigator !== "undefined" && navigator.onLine === false) return true;
+  } catch (e) {}
+  const code = String(err && err.code || "").toLowerCase();
+  const msg = String(err && (err.message || err.name || err.code) || "").toLowerCase();
+  return code.includes("unavailable") || code.includes("network") || code.includes("failed-precondition") || code.includes("deadline-exceeded")
+    || msg.includes("connection failed") || msg.includes("network") || msg.includes("offline") || msg.includes("unavailable")
+    || msg.includes("client is offline") || msg.includes("failed to get document");
+}
+
+function queueOfflineTransfer(entry){
+  try {
+    const key = "yapeton_pending_transfers";
+    const arr = JSON.parse(localStorage.getItem(key) || "[]");
+    arr.unshift(entry);
+    localStorage.setItem(key, JSON.stringify(arr.slice(0, 50)));
+  } catch (e) {}
+}
+
+function applyLocalSenderTransfer(sender, amount, session){
+  const saldoActual = safeMoney(sender && sender.saldo);
+  if(saldoActual < amount) throw new Error("Saldo insuficiente.");
+  const updated = {
+    ...(sender || {}),
+    id: clean9(sender && sender.phone),
+    phone: clean9(sender && sender.phone),
+    name: String(sender && sender.name || "").trim() || "Sin nombre",
+    saldo: Number((saldoActual - amount).toFixed(2)),
+    yapeos: (Number(sender && sender.yapeos || 0) || 0) + 1,
+    loginUid: session && session.uid ? session.uid : String(sender && sender.loginUid || "")
+  };
+  bridgeUser = updated;
+  persistLegacyUser(updated);
+  return updated;
 }
 
 function injectProfileStyles(pdoc){
@@ -18648,6 +18809,13 @@ function setupProfileFrame(homeDoc){
       const phoneInput = pdoc.getElementById("bridgePhoneInput");
       phoneInput.addEventListener("input", () => {
         phoneInput.value = clean9(phoneInput.value);
+        phoneInput.dataset.dirty = "1";
+      });
+      phoneInput.addEventListener("focus", () => {
+        phoneInput.dataset.editing = "1";
+      });
+      phoneInput.addEventListener("blur", () => {
+        phoneInput.dataset.editing = "0";
       });
     }
 
@@ -18657,9 +18825,41 @@ function setupProfileFrame(homeDoc){
       const phoneInput = pdoc.getElementById("bridgePhoneInput");
       const total = pdoc.getElementById("registros_total");
       const metaLabel = pdoc.querySelector("#datosView .welcomeMeta");
-      if(nameInput && pdoc.activeElement !== nameInput && !String(nameInput.value || "").trim()) nameInput.value = bridgeUser.name || "";
-      if(saldoInput && pdoc.activeElement !== saldoInput && !String(saldoInput.value || "").trim()) saldoInput.value = String(Math.trunc(bridgeUser.saldo || 0));
-      if(phoneInput) phoneInput.value = bridgeUser.phone || "";
+
+      if(nameInput && !nameInput.dataset.bridgeDirtyBound){
+        nameInput.dataset.bridgeDirtyBound = "1";
+        nameInput.addEventListener("input", () => { nameInput.dataset.dirty = "1"; });
+        nameInput.addEventListener("focus", () => { nameInput.dataset.editing = "1"; });
+        nameInput.addEventListener("blur", () => { nameInput.dataset.editing = "0"; });
+      }
+      if(saldoInput && !saldoInput.dataset.bridgeDirtyBound){
+        saldoInput.dataset.bridgeDirtyBound = "1";
+        saldoInput.addEventListener("input", () => { saldoInput.dataset.dirty = "1"; });
+        saldoInput.addEventListener("focus", () => { saldoInput.dataset.editing = "1"; });
+        saldoInput.addEventListener("blur", () => { saldoInput.dataset.editing = "0"; });
+      }
+
+      if(nameInput){
+        const editing = nameInput.dataset.editing === "1";
+        const dirty = nameInput.dataset.dirty === "1";
+        if(!editing && !dirty){
+          nameInput.value = bridgeUser.name || "";
+        }
+      }
+      if(saldoInput){
+        const editing = saldoInput.dataset.editing === "1";
+        const dirty = saldoInput.dataset.dirty === "1";
+        if(!editing && !dirty){
+          saldoInput.value = String(Math.trunc(bridgeUser.saldo || 0));
+        }
+      }
+      if(phoneInput){
+        const editing = phoneInput.dataset.editing === "1";
+        const dirty = phoneInput.dataset.dirty === "1";
+        if(!editing && !dirty){
+          phoneInput.value = bridgeUser.phone || "";
+        }
+      }
       if(total) total.textContent = String(bridgeUser.yapeos || 0);
       if(metaLabel) metaLabel.textContent = bridgeUser.phone ? formatPhone(bridgeUser.phone) : "Número de celular";
       const avatar = pdoc.getElementById("datosAvatar");
@@ -18679,6 +18879,16 @@ function setupProfileFrame(homeDoc){
         try {
           const user = await saveUserProfile({ name, saldo, phone, yapeos: bridgeUser?.yapeos || 0 });
           bridgeUser = user;
+          const phoneInput = pdoc.getElementById("bridgePhoneInput");
+          if(phoneInput){
+            phoneInput.value = user.phone || "";
+            phoneInput.dataset.dirty = "0";
+            phoneInput.dataset.editing = "0";
+          }
+          const nameInputEl = pdoc.getElementById("nameInput");
+          const saldoInputEl = pdoc.getElementById("saldoInput");
+          if(nameInputEl){ nameInputEl.dataset.dirty = "0"; nameInputEl.dataset.editing = "0"; }
+          if(saldoInputEl){ saldoInputEl.dataset.dirty = "0"; saldoInputEl.dataset.editing = "0"; saldoInputEl.value = String(Math.trunc(user.saldo || 0)); }
           syncHomeFrame(homeDoc);
           const metaLabel = pdoc.querySelector("#datosView .welcomeMeta");
           if(metaLabel) metaLabel.textContent = user.phone ? formatPhone(user.phone) : "Número de celular";
@@ -18781,9 +18991,49 @@ async function handleTransfer(homeWin, homeDoc){
   const receiverRef = doc(db, USERS_COLLECTION, receiverPhone);
   const transferRef = doc(collection(db, TRANSFERS_COLLECTION));
 
-  const result = await runTransaction(db, async (tx) => {
-    const senderSnap = await tx.get(senderRef);
-    const receiverSnap = await tx.get(receiverRef);
+  const buildPayload = (receiverName, kind = "out") => ({
+    nombre: receiverName,
+    phone: receiverPhone,
+    monto: amountText,
+    msg,
+    code3,
+    op8,
+    dateObj: now,
+    destino: "Yape",
+    kind
+  });
+
+  const runOfflineFallback = () => {
+    const updatedSender = applyLocalSenderTransfer(sender, amount, session);
+    const receiverName = manualRecipientName || "Sin nombre";
+    queueOfflineTransfer({
+      fromPhone: updatedSender.phone,
+      toPhone: receiverPhone,
+      fromName: updatedSender.name,
+      toName: receiverName,
+      monto: amount,
+      destino: "Yape",
+      op8,
+      code3,
+      msg,
+      createdAt: now.getTime(),
+      type: "transfer",
+      toRegistered: false,
+      offlineOnly: true
+    });
+    syncHomeFrame(homeDoc);
+    return { ...buildPayload(receiverName), offlineOnly: true };
+  };
+
+  if(typeof navigator !== "undefined" && navigator.onLine === false){
+    return runOfflineFallback();
+  }
+
+  try {
+    const [senderSnap, receiverSnap] = await Promise.all([
+      getDoc(senderRef),
+      getDoc(receiverRef)
+    ]);
 
     if(!senderSnap.exists()) throw new Error("Tu usuario no existe en la colección users.");
 
@@ -18797,7 +19047,7 @@ async function handleTransfer(homeWin, homeDoc){
     const newSenderYapeos = Number(senderData.yapeos || 0) + 1;
     const receiverName = receiverData?.name || manualRecipientName || "Sin nombre";
 
-    tx.set(senderRef, {
+    await setDoc(senderRef, {
       phone: senderData.phone,
       name: senderData.name,
       saldo: newSenderSaldo,
@@ -18808,7 +19058,7 @@ async function handleTransfer(homeWin, homeDoc){
 
     if(receiverExists && receiverData){
       const newReceiverSaldo = Number((receiverData.saldo + amount).toFixed(2));
-      tx.set(receiverRef, {
+      await setDoc(receiverRef, {
         phone: receiverData.phone,
         name: receiverData.name,
         saldo: newReceiverSaldo,
@@ -18817,7 +19067,7 @@ async function handleTransfer(homeWin, homeDoc){
       }, { merge: true });
     }
 
-    tx.set(transferRef, {
+    await setDoc(transferRef, {
       fromPhone: senderData.phone,
       toPhone: receiverPhone,
       fromName: senderData.name,
@@ -18832,28 +19082,23 @@ async function handleTransfer(homeWin, homeDoc){
       toRegistered: !!receiverExists
     });
 
-    return {
+    const result = {
       sender: { ...senderData, saldo: newSenderSaldo, yapeos: newSenderYapeos },
       receiver: receiverExists && receiverData ? { ...receiverData, saldo: Number((receiverData.saldo + amount).toFixed(2)) } : null,
-      payload: {
-        nombre: receiverName,
-        phone: receiverPhone,
-        monto: amountText,
-        msg,
-        code3,
-        op8,
-        dateObj: now,
-        destino: "Yape",
-        kind: "out"
-      }
+      payload: buildPayload(receiverName)
     };
-  });
 
-  bridgeUser = result.sender;
-  persistLegacyUser(bridgeUser);
-  syncHomeFrame(homeDoc);
-  try { window.dispatchEvent(new CustomEvent("bridgeNotificationsUpdated", { detail: result.payload })); } catch (e) {}
-  return result.payload;
+    bridgeUser = result.sender;
+    persistLegacyUser(bridgeUser);
+    syncHomeFrame(homeDoc);
+    try { window.dispatchEvent(new CustomEvent("bridgeNotificationsUpdated", { detail: result.payload })); } catch (e) {}
+    return result.payload;
+  } catch (err) {
+    if(isProbablyOfflineError(err)){
+      return runOfflineFallback();
+    }
+    throw err;
+  }
 }
 
 function bindTransferBridge(homeWin, homeDoc){
@@ -18895,7 +19140,7 @@ function bindTransferBridge(homeWin, homeDoc){
       }, 1200);
     } catch (err) {
       if(modal) modal.style.display = "none";
-      const msgText = err && err.message ? err.message : "No se pudo completar el yapeo.";
+      const msgText = isProbablyOfflineError(err) ? "Sin internet. Se guardó como yapeo local." : (err && err.message ? err.message : "No se pudo completar el yapeo.");
       if(typeof homeWin.showToast === "function") homeWin.showToast(msgText);
       else alert(msgText);
     }
@@ -19023,6 +19268,21 @@ window.addEventListener("message", async (event) => {
     setTimeout(() => { patchHomeFrame(); }, 350);
   }
 });
+window.addEventListener("bridgeUserDocUpdated", async (event) => {
+  const detail = event && event.detail ? event.detail : {};
+  const phone = clean9(detail.phone || (bridgeUser && bridgeUser.phone) || localStorage.getItem(USER_PHONE_KEY) || "");
+  if(!phone) return;
+  bridgeUser = {
+    id: phone,
+    phone,
+    name: String(detail.name || (bridgeUser && bridgeUser.name) || "Sin nombre").trim() || "Sin nombre",
+    saldo: safeMoney(detail.saldo || 0),
+    yapeos: Number(detail.yapeos || 0) || 0,
+    loginUid: String(detail.loginUid || (bridgeUser && bridgeUser.loginUid) || "").trim()
+  };
+  persistLegacyUser(bridgeUser);
+  await patchHomeFrame();
+});
 
 const boot = async () => {
   try { await findCurrentUser(); } catch (e) { console.warn(e); }
@@ -19037,7 +19297,7 @@ setInterval(() => { patchHomeFrame(); }, 3000);
 
 <script type="module" id="bridge-realtime-notify">
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, query, where, onSnapshot, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 (function(){
   if(window.__bridgeRealtimeInstalled) return;
@@ -19063,6 +19323,7 @@ import { getFirestore, collection, query, where, onSnapshot } from "https://www.
 
   let currentPhone = '';
   let unsubscribe = null;
+  let unsubscribeUser = null;
   let seeded = false;
   let audioEl = null;
   let audioUnlocked = false;
@@ -19359,11 +19620,47 @@ import { getFirestore, collection, query, where, onSnapshot } from "https://www.
       createdAtMs: created.getTime()
     };
   }
+  function syncRealtimeUserDoc(phone, data){
+    try {
+      const cleanPhone = clean9(phone || data.phone || '');
+      if(!cleanPhone) return;
+      const payload = {
+        phone: cleanPhone,
+        name: String(data.name || localStorage.getItem('yapeton_nombre') || 'Sin nombre').trim() || 'Sin nombre',
+        saldo: safeMoney(data.saldo || 0),
+        yapeos: Number(data.yapeos || 0) || 0,
+        loginUid: String(data.loginUid || '').trim()
+      };
+      try { localStorage.setItem('yapeton_user_phone', payload.phone); } catch (e) {}
+      try { localStorage.setItem(LS_PHONE, payload.phone); } catch (e) {}
+      try { localStorage.setItem('yapeton_nombre', payload.name); } catch (e) {}
+      try { localStorage.setItem('yapeton_saldo', String(payload.saldo)); } catch (e) {}
+      try { localStorage.setItem('yapeton_yapeos', String(payload.yapeos)); } catch (e) {}
+      try { window.dispatchEvent(new CustomEvent('bridgeUserDocUpdated', { detail: payload })); } catch (e) {}
+      try {
+        const fw = document.getElementById('homeFrame')?.contentWindow;
+        if(fw && typeof fw.refreshHomeFromStorage === 'function') fw.refreshHomeFromStorage();
+      } catch (e) {}
+    } catch (e) {}
+  }
+  function subscribeUserDoc(phone){
+    if(unsubscribeUser){ try { unsubscribeUser(); } catch (e) {} unsubscribeUser = null; }
+    const cleanPhone = clean9(phone);
+    if(!cleanPhone) return;
+    unsubscribeUser = onSnapshot(doc(db, 'users', cleanPhone), (userSnap) => {
+      if(!userSnap || !userSnap.exists()) return;
+      syncRealtimeUserDoc(cleanPhone, userSnap.data() || {});
+    }, (err) => {
+      console.warn('Realtime user watch failed', err);
+    });
+  }
   function subscribe(phone){
     if(unsubscribe){ try { unsubscribe(); } catch (e) {} unsubscribe = null; }
+    if(unsubscribeUser){ try { unsubscribeUser(); } catch (e) {} unsubscribeUser = null; }
     seeded = false;
     currentPhone = clean9(phone);
     if(!currentPhone) return;
+    subscribeUserDoc(currentPhone);
     try { localStorage.setItem(LS_PHONE, currentPhone); } catch (e) {}
     const q = query(collection(db, 'transfers'), where('toPhone', '==', currentPhone));
     unsubscribe = onSnapshot(q, (snap) => {
@@ -19430,6 +19727,14 @@ import { getFirestore, collection, query, where, onSnapshot } from "https://www.
   window.addEventListener('storage', (e) => {
     if(e && e.key === 'yapeton_user_phone') setTimeout(boot, 120);
     if(e && e.key === 'yapeton_home_notif') dispatchUpdate();
+  });
+  window.addEventListener('bridgeUserPhoneChanged', (event) => {
+    const detail = event && event.detail ? event.detail : {};
+    const next = clean9(detail.newPhone || '');
+    if(!next) return;
+    try { localStorage.setItem('yapeton_user_phone', next); } catch (e) {}
+    try { localStorage.setItem(LS_PHONE, next); } catch (e) {}
+    setTimeout(() => { subscribe(next); dispatchUpdate(); }, 60);
   });
   document.addEventListener('visibilitychange', () => {
     if(document.visibilityState === 'visible'){ dispatchUpdate(); }
