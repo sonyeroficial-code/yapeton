@@ -19744,6 +19744,237 @@ import { getFirestore, collection, query, where, onSnapshot, doc } from "https:/
 })();
 </script>
 
+
+<script>
+window.YAPETON_VAPID_KEY = "BPCvBt0YfzBm0fF_LUbXH6DaCxydHk_FUKGFjac2VndseKfqY_lpEPGj_o8EXINMIxb6lp1yAbKt9AeVkFCQnd8";
+</script>
+
+<script type="module" id="fcm-web-push-bridge">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, setDoc, arrayUnion, arrayRemove, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getMessaging, getToken, isSupported, deleteToken, onMessage } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
+
+(() => {
+  if (window.__yapetonPushBridgeInstalled) return;
+  window.__yapetonPushBridgeInstalled = true;
+
+  const PUSH_CONFIG = {
+    apiKey: "AIzaSyC89Qpf_Ie85lVkm5V5wi_xBC5fajPngj8",
+    authDomain: "yapeton.firebaseapp.com",
+    projectId: "yapeton",
+    storageBucket: "yapeton.firebasestorage.app",
+    messagingSenderId: "550981729513",
+    appId: "1:550981729513:web:1048656e03ec1a54410478",
+    measurementId: "G-CXZSJB540K"
+  };
+
+  const VAPID_KEY = "BPCvBt0YfzBm0fF_LUbXH6DaCxydHk_FUKGFjac2VndseKfqY_lpEPGj_o8EXINMIxb6lp1yAbKt9AeVkFCQnd8";
+  const TOKEN_KEY = 'yapeton_fcm_token';
+  const TOKEN_PHONE_KEY = 'yapeton_fcm_token_phone';
+  const PUSH_READY_KEY = 'yapeton_push_ready';
+  const USERS_COLLECTION = 'users';
+
+  const app = getApps().find(a => a.name === 'yapeton-push') || initializeApp(PUSH_CONFIG, 'yapeton-push');
+  const db = getFirestore(app);
+
+  let messaging = null;
+  let lastForegroundId = '';
+  let syncTimer = null;
+
+  function clean9(value){
+    return String(value || '').replace(/\D/g, '').slice(0, 9);
+  }
+
+  function notifEnabled(){
+    try {
+      const v = localStorage.getItem('yapeton_home_notif');
+      return v == null ? true : v === '1';
+    } catch (e) { return true; }
+  }
+
+  function showToastSafe(msg){
+    try {
+      if(typeof window.showToast === 'function') return window.showToast(msg);
+    } catch (e) {}
+    try { console.log('[push]', msg); } catch (e) {}
+  }
+
+  async function getPhone(){
+    try {
+      if(typeof window.__bridgeGetCurrentUser === 'function'){
+        const user = await window.__bridgeGetCurrentUser();
+        const p = clean9(user && user.phone);
+        if(p) return p;
+      }
+    } catch (e) {}
+    try {
+      return clean9(localStorage.getItem('yapeton_user_phone') || localStorage.getItem('yapeton_rt_phone') || '');
+    } catch (e) {
+      return '';
+    }
+  }
+
+  async function getSWRegistration(){
+    if(!('serviceWorker' in navigator)) return null;
+    try {
+      return (await navigator.serviceWorker.getRegistration('./')) || (await navigator.serviceWorker.register('./service-worker.js', { scope: './' }));
+    } catch (e) {
+      try { return await navigator.serviceWorker.getRegistration(); } catch (_) { return null; }
+    }
+  }
+
+  async function ensureMessaging(){
+    if(messaging) return messaging;
+    try {
+      const supported = await isSupported();
+      if(!supported) return null;
+      messaging = getMessaging(app);
+      try {
+        onMessage(messaging, async (payload) => {
+          try {
+            const data = payload && payload.data ? payload.data : {};
+            const body = (payload && payload.notification && payload.notification.body) || data.body || data.text || '';
+            const title = (payload && payload.notification && payload.notification.title) || data.title || 'Confirmación de Pago';
+            const uniq = String(data.transferId || body || title || '').trim();
+            if(uniq && uniq === lastForegroundId) return;
+            lastForegroundId = uniq;
+            try { window.dispatchEvent(new CustomEvent('bridgeNotificationsUpdated')); } catch (e) {}
+            if(document.visibilityState === 'visible'){
+              try {
+                if(typeof window.showToast === 'function' && body) window.showToast(body);
+              } catch (e) {}
+            }
+          } catch (e) {}
+        });
+      } catch (e) {}
+      return messaging;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async function removeTokenFromPhone(phone, token){
+    const p = clean9(phone);
+    if(!p || !token) return;
+    try {
+      await setDoc(doc(db, USERS_COLLECTION, p), {
+        pushTokens: arrayRemove(token),
+        pushUpdatedAt: serverTimestamp(),
+        pushEnabled: false
+      }, { merge: true });
+    } catch (e) {}
+  }
+
+  async function saveTokenOnPhone(phone, token){
+    const p = clean9(phone);
+    if(!p || !token) return;
+    await setDoc(doc(db, USERS_COLLECTION, p), {
+      phone: p,
+      pushTokens: arrayUnion(token),
+      pushEnabled: true,
+      pushUpdatedAt: serverTimestamp(),
+      webPushReady: true
+    }, { merge: true });
+  }
+
+  async function disablePush(){
+    try {
+      const prevToken = localStorage.getItem(TOKEN_KEY) || '';
+      const prevPhone = clean9(localStorage.getItem(TOKEN_PHONE_KEY) || '');
+      if(prevToken && prevPhone) await removeTokenFromPhone(prevPhone, prevToken);
+      const msg = await ensureMessaging();
+      if(msg && prevToken){
+        try { await deleteToken(msg); } catch (e) {}
+      }
+    } catch (e) {}
+    try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
+    try { localStorage.removeItem(TOKEN_PHONE_KEY); } catch (e) {}
+    try { localStorage.removeItem(PUSH_READY_KEY); } catch (e) {}
+  }
+
+  async function syncPush(forceAsk = false){
+    if(!notifEnabled()){
+      await disablePush();
+      return false;
+    }
+    const phone = await getPhone();
+    if(!phone) return false;
+
+    const msg = await ensureMessaging();
+    if(!msg) return false;
+    if(!('Notification' in window)) return false;
+
+    if(Notification.permission !== 'granted'){
+      if(!forceAsk && Notification.permission === 'default') return false;
+      try {
+        const res = await Notification.requestPermission();
+        if(res !== 'granted') return false;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    const reg = await getSWRegistration();
+    if(!reg) return false;
+
+    let token = '';
+    try {
+      token = await getToken(msg, { vapidKey: VAPID_KEY, serviceWorkerRegistration: reg });
+    } catch (e) {
+      console.warn('No se pudo obtener el token FCM', e);
+      return false;
+    }
+    if(!token) return false;
+
+    const prevToken = String(localStorage.getItem(TOKEN_KEY) || '');
+    const prevPhone = clean9(localStorage.getItem(TOKEN_PHONE_KEY) || '');
+
+    if(prevToken && (prevToken !== token || (prevPhone && prevPhone !== phone))){
+      await removeTokenFromPhone(prevPhone, prevToken);
+    }
+
+    await saveTokenOnPhone(phone, token);
+
+    try { localStorage.setItem(TOKEN_KEY, token); } catch (e) {}
+    try { localStorage.setItem(TOKEN_PHONE_KEY, phone); } catch (e) {}
+    try { localStorage.setItem(PUSH_READY_KEY, '1'); } catch (e) {}
+    return true;
+  }
+
+  function queueSync(forceAsk = false){
+    clearTimeout(syncTimer);
+    syncTimer = setTimeout(() => { syncPush(forceAsk); }, forceAsk ? 30 : 250);
+  }
+
+  ['click','touchstart','pointerdown'].forEach((evt) => {
+    document.addEventListener(evt, () => {
+      if(notifEnabled()) queueSync(true);
+    }, { passive: true });
+  });
+
+  window.addEventListener('message', (event) => {
+    const data = event && event.data ? event.data : {};
+    if(data.type === 'homeNotifToggle'){
+      if(data.enabled) queueSync(true);
+      else disablePush();
+    }
+    if(data.type === 'LOGIN_OK' || data.type === 'profileUpdated') queueSync(false);
+  });
+
+  window.addEventListener('storage', (e) => {
+    if(!e) return;
+    if(e.key === 'yapeton_user_phone' || e.key === 'yapeton_rt_phone' || e.key === 'yapeton_home_notif') queueSync(false);
+  });
+
+  window.addEventListener('bridgeUserPhoneChanged', () => queueSync(false));
+  window.addEventListener('load', () => queueSync(false));
+  setTimeout(() => queueSync(false), 1800);
+  setInterval(() => queueSync(false), 45000);
+
+  window.__yapetonSyncPush = syncPush;
+})();
+</script>
+
 </body>
 </html>
 

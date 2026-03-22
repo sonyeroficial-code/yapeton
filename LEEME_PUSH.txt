@@ -1,0 +1,7 @@
+Ya va la VAPID key pegada.
+
+Para que lleguen afuera de la app:
+1) súbelo por HTTPS
+2) en iPhone agrégalo a pantalla de inicio
+3) activa Avisos en tiempo real
+4) falta el envío del push desde backend/Cloud Function cuando se crea el yapeo.

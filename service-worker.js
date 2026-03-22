@@ -1,9 +1,77 @@
+/* Firebase Cloud Messaging background support */
+importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js');
+
+const FCM_BG_CONFIG = {
+  apiKey: 'AIzaSyC89Qpf_Ie85lVkm5V5wi_xBC5fajPngj8',
+  authDomain: 'yapeton.firebaseapp.com',
+  projectId: 'yapeton',
+  storageBucket: 'yapeton.firebasestorage.app',
+  messagingSenderId: '550981729513',
+  appId: '1:550981729513:web:1048656e03ec1a54410478',
+  measurementId: 'G-CXZSJB540K'
+};
+
+try {
+  if (!firebase.apps.length) firebase.initializeApp(FCM_BG_CONFIG);
+} catch (e) {}
+
+let __bgMessaging = null;
+try { __bgMessaging = firebase.messaging(); } catch (e) { __bgMessaging = null; }
+
+function normalizePushPayload(payload) {
+  const root = payload || {};
+  const data = root.data || {};
+  const note = root.notification || {};
+  const title = note.title || data.title || 'Confirmación de Pago';
+  const body = note.body || data.body || data.text || 'Recibiste un nuevo yapeo';
+  const icon = note.icon || data.icon || './icon-192.png';
+  const badge = note.badge || data.badge || icon;
+  const url = data.url || self.location.origin + '/';
+  const tag = data.tag || ('yape-push-' + (data.transferId || Date.now()));
+  return { title, body, icon, badge, url, tag, data };
+}
+
+if (__bgMessaging && __bgMessaging.onBackgroundMessage) {
+  __bgMessaging.onBackgroundMessage((payload) => {
+    const msg = normalizePushPayload(payload);
+    self.registration.showNotification(msg.title, {
+      body: msg.body,
+      icon: msg.icon,
+      badge: msg.badge,
+      tag: msg.tag,
+      renotify: true,
+      data: { url: msg.url, raw: msg.data },
+      vibrate: [180, 80, 180]
+    });
+  });
+}
+
+self.addEventListener('push', (event) => {
+  if (!event || !event.data) return;
+  event.waitUntil((async () => {
+    let raw = {};
+    try { raw = event.data.json(); } catch (e) {
+      try { raw = { notification: { body: event.data.text() } }; } catch (_) { raw = {}; }
+    }
+    const msg = normalizePushPayload(raw);
+    await self.registration.showNotification(msg.title, {
+      body: msg.body,
+      icon: msg.icon,
+      badge: msg.badge,
+      tag: msg.tag,
+      renotify: true,
+      data: { url: msg.url, raw: msg.data },
+      vibrate: [180, 80, 180]
+    });
+  })());
+});
+
 /* Yape PWA Service Worker - safe startup + offline support */
-const CACHE_VERSION = 'fix-startup-v2';
+const CACHE_VERSION = 'push-ready-v1';
 const PRECACHE_NAME = `yape-precache-${CACHE_VERSION}`;
 const RUNTIME_NAME  = `yape-runtime-${CACHE_VERSION}`;
 
-// Keep the app shell extremely small so install never blocks startup.
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -25,9 +93,7 @@ self.addEventListener('install', (event) => {
           if (res && (res.ok || res.type === 'opaque')) {
             await cache.put(url, res.clone());
           }
-        } catch (_) {
-          // Never fail install because an asset is missing or offline.
-        }
+        } catch (_) {}
       })
     );
   })());
@@ -67,7 +133,6 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  // Never let startup HTML block. Prefer network quickly, fallback to cache.
   if (request.mode === 'navigate' || (request.headers.get('accept') || '').includes('text/html')) {
     event.respondWith((async () => {
       try {
@@ -81,7 +146,6 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // For static assets use cache first, then network, but never throw.
   event.respondWith((async () => {
     const cached = await fromCache(request);
     if (cached) return cached;
