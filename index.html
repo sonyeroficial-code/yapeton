@@ -4038,7 +4038,7 @@ html body #qrScanView .qrScan-bottom{
             &lt;/div&gt;
 
             &lt;div class=&quot;mName&quot; id=&quot;mNameBox&quot; contenteditable=&quot;true&quot; data-placeholder=&quot;Sin nombre&quot;
-                 style=&quot;margin-top:12px;text-align:center;font-size:22px;font-weight:500 !important;color:var(--mPurple);outline:none;cursor:text;display:block;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased;font-synthesis:none;&quot;&gt;
+                 style=&quot;margin-top:12px;text-align:center;font-size:22px;font-weight:500 !important;color:var(--mPurple);outline:none;cursor:text;display:block;font-family:-apple-system,BlinkMacSystemFont,&quot;Helvetica Neue&quot;,Arial,sans-serif;font-synthesis:none;-webkit-font-smoothing:antialiased;&quot;&gt;
               Sin nombre
             &lt;/div&gt;
 
@@ -4051,7 +4051,7 @@ html body #qrScanView .qrScan-bottom{
 
             &lt;div class=&quot;mAmount&quot; style=&quot;margin-top:40px;text-align:center;&quot;&gt;
               &lt;input id=&quot;mAmountInput&quot; type=&quot;text&quot; value=&quot;0&quot; inputmode=&quot;decimal&quot;
-                     style=&quot;width:100%;border:none;outline:none;background:transparent;text-align:center;font-size:82px;font-weight:400 !important;color:var(--mPurple);caret-color:var(--mPurple);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased;font-synthesis:none;&quot; /&gt;
+                     style=&quot;width:100%;border:none;outline:none;background:transparent;text-align:center;font-size:82px;font-weight:300 !important;color:var(--mPurple);caret-color:var(--mPurple);font-family:-apple-system,BlinkMacSystemFont,&quot;Helvetica Neue&quot;,Arial,sans-serif;letter-spacing:-0.04em;font-synthesis:none;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision;-webkit-text-stroke:0 transparent;&quot; /&gt;
             &lt;/div&gt;
 
             &lt;div class=&quot;montoLimitWrap&quot;&gt;&lt;div class=&quot;mPill limitPill&quot; id=&quot;mLimitPill&quot;
@@ -4102,6 +4102,7 @@ html body #qrScanView .qrScan-bottom{
             #mMsgInput:focus{ border-bottom:2px solid var(--mGreen) !important; }
             #mPhoneInput:focus{ border-bottom:1px solid var(--mGreen) !important; }
             #mNameBox:focus{ caret-color:var(--mPurple); }
+            #mAmountInput{ font-weight:300 !important; font-family:-apple-system,BlinkMacSystemFont,&quot;Helvetica Neue&quot;,Arial,sans-serif !important; letter-spacing:-0.04em !important; font-synthesis:none !important; -webkit-font-smoothing:antialiased !important; text-rendering:geometricPrecision !important; -webkit-text-stroke:0 transparent !important; }
             #mNameBox[contenteditable=&quot;true&quot;]:empty:before{
               content: attr(data-placeholder);
               color: #b7b7b7;
