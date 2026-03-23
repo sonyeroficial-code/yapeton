@@ -4038,7 +4038,7 @@ html body #qrScanView .qrScan-bottom{
             &lt;/div&gt;
 
             &lt;div class=&quot;mName&quot; id=&quot;mNameBox&quot; contenteditable=&quot;true&quot; data-placeholder=&quot;Sin nombre&quot;
-                 style=&quot;margin-top:12px;text-align:center;font-size:22px;font-weight:600 !important;color:var(--mPurple);outline:none;cursor:text;display:block;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;&quot;&gt;
+                 style=&quot;margin-top:12px;text-align:center;font-size:22px;font-weight:500 !important;color:var(--mPurple);outline:none;cursor:text;display:block;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased;font-synthesis:none;&quot;&gt;
               Sin nombre
             &lt;/div&gt;
 
@@ -4051,7 +4051,7 @@ html body #qrScanView .qrScan-bottom{
 
             &lt;div class=&quot;mAmount&quot; style=&quot;margin-top:40px;text-align:center;&quot;&gt;
               &lt;input id=&quot;mAmountInput&quot; type=&quot;text&quot; value=&quot;0&quot; inputmode=&quot;decimal&quot;
-                     style=&quot;width:100%;border:none;outline:none;background:transparent;text-align:center;font-size:82px;font-weight:400 !important;color:var(--mPurple);caret-color:var(--mPurple);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;&quot; /&gt;
+                     style=&quot;width:100%;border:none;outline:none;background:transparent;text-align:center;font-size:82px;font-weight:400 !important;color:var(--mPurple);caret-color:var(--mPurple);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased;font-synthesis:none;&quot; /&gt;
             &lt;/div&gt;
 
             &lt;div class=&quot;montoLimitWrap&quot;&gt;&lt;div class=&quot;mPill limitPill&quot; id=&quot;mLimitPill&quot;
@@ -11965,6 +11965,53 @@ function maskPhoneVoucher(p){
   
     // ===== Movimientos (historial) =====
     const MOV_KEY = &quot;movimientos_v1&quot;;
+    const MOV_DELETED_KEY = &quot;movimientos_deleted_v1&quot;;
+
+    function __yLoadDeletedMovs(){
+      try{
+        const raw = localStorage.getItem(MOV_DELETED_KEY);
+        const arr = raw ? JSON.parse(raw) : [];
+        return Array.isArray(arr) ? arr.filter(Boolean) : [];
+      }catch(e){
+        return [];
+      }
+    }
+    function __ySaveDeletedMovs(arr){
+      try{
+        const out = Array.isArray(arr) ? Array.from(new Set(arr.filter(Boolean))).slice(0,300) : [];
+        localStorage.setItem(MOV_DELETED_KEY, JSON.stringify(out));
+      }catch(e){}
+    }
+    function __yMovId(m){
+      try{
+        if(!m || typeof m !== &quot;object&quot;) return &quot;&quot;;
+        const direct = String(m.transferId || m.id || m.uid || &quot;&quot;).trim();
+        if(direct) return direct;
+        const phone = String(m.phone || &quot;&quot;).replace(/\D+/g,&quot;&quot;);
+        const ts = Number(m.ts || 0) || 0;
+        const monto = Number(m.monto || 0) || 0;
+        const op8 = String(m.op8 || &quot;&quot;).trim();
+        const nombre = String(m.nombre || &quot;&quot;).trim();
+        const kind = String(m.kind || &quot;&quot;).trim();
+        const destino = String(m.destino || &quot;&quot;).trim();
+        return [phone,ts,monto,op8,nombre,kind,destino].join(&quot;|&quot;);
+      }catch(e){
+        return &quot;&quot;;
+      }
+    }
+    function __yIsDeletedMov(m){
+      const id = __yMovId(m);
+      if(!id) return false;
+      return __yLoadDeletedMovs().includes(id);
+    }
+    function __yMarkDeletedMov(m){
+      const id = __yMovId(m);
+      if(!id) return;
+      const arr = __yLoadDeletedMovs();
+      if(arr.includes(id)) return;
+      arr.unshift(id);
+      __ySaveDeletedMovs(arr);
+    }
 
     
     // ===== Toast global (HOME) =====
@@ -11994,7 +12041,8 @@ function maskPhoneVoucher(p){
       try{
         const raw = localStorage.getItem(MOV_KEY);
         const arr = raw ? JSON.parse(raw) : [];
-        return Array.isArray(arr) ? arr : [];
+        const list = Array.isArray(arr) ? arr : [];
+        return list.filter((m)=&gt; !__yIsDeletedMov(m));
       }catch(e){
         return [];
       }
@@ -12058,9 +12106,10 @@ function maskPhoneVoucher(p){
 
           if(__deleteMode){
             const arr = __yLoadMovs();
+            const removed = arr[i];
+            if(removed) __yMarkDeletedMov(removed);
             arr.splice(i, 1);
             __ySaveMovs(arr);
-            
             renderMovs();
             return;
           }
@@ -12135,8 +12184,9 @@ function maskPhoneVoucher(p){
       const arr = __yLoadMovs();
       const num = Number(monto || 0);
       const ex = extra &amp;&amp; typeof extra === &quot;object&quot; ? extra : {};
-      arr.unshift({
+      const newItem = {
         nombre: String(nombre || &quot;Sin nombre&quot;),
+        transferId: String(ex.transferId || &quot;&quot;),
         monto: (String(ex.kind||&quot;out&quot;)===&quot;in&quot; ? Math.abs(num) : -Math.abs(num)),
         kind: String(ex.kind || &quot;out&quot;),
         ts: Number(ex.ts || Date.now()),
@@ -12148,7 +12198,9 @@ function maskPhoneVoucher(p){
         promoAlt: String(ex.promoAlt || &quot;&quot;),
         msg: String(ex.msg || &quot;&quot;),
         tipo: String(ex.tipo || &quot;&quot;)
-      });
+      };
+      if(__yIsDeletedMov(newItem)) return;
+      arr.unshift(newItem);
       if(arr.length &gt; 30) arr.length = 30;
       __ySaveMovs(arr);
       renderMovs();
@@ -19496,17 +19548,39 @@ import { getFirestore, collection, query, where, onSnapshot, doc } from "https:/
     return false;
   }
   function loadMovs(){
-    try { return JSON.parse(localStorage.getItem('movimientos_v1') || '[]') || []; } catch (e) { return []; }
+    try {
+      const arr = JSON.parse(localStorage.getItem('movimientos_v1') || '[]') || [];
+      const deleted = (function(){ try { return JSON.parse(localStorage.getItem('movimientos_deleted_v1') || '[]') || []; } catch(e){ return []; } })();
+      const deletedSet = new Set(Array.isArray(deleted) ? deleted : []);
+      return (Array.isArray(arr) ? arr : []).filter((m) => {
+        try {
+          const id = String((m && (m.transferId || m.id || '')) || '').trim() || [String(m && m.phone || '').replace(/\D+/g,''), Number(m && m.ts || 0) || 0, Number(m && m.monto || 0) || 0, String(m && m.op8 || ''), String(m && m.nombre || ''), String(m && m.kind || ''), String(m && m.destino || '')].join('|');
+          return !deletedSet.has(id);
+        } catch(e){ return true; }
+      });
+    } catch (e) { return []; }
   }
   function saveMovs(arr){
     try { localStorage.setItem('movimientos_v1', JSON.stringify((arr || []).slice(0, 30))); } catch (e) {}
   }
+  function movIdForSync(m){
+    try {
+      return String((m && (m.transferId || m.id || '')) || '').trim() || [String(m && m.phone || '').replace(/\D+/g,''), Number(m && m.ts || 0) || 0, Number(m && m.monto || 0) || 0, String(m && m.op8 || ''), String(m && m.nombre || ''), String(m && m.kind || ''), String(m && m.destino || '')].join('|');
+    } catch (e) { return ''; }
+  }
+  function isDeletedMovId(id){
+    try {
+      const arr = JSON.parse(localStorage.getItem('movimientos_deleted_v1') || '[]') || [];
+      return Array.isArray(arr) && arr.includes(String(id || ''));
+    } catch (e) { return false; }
+  }
   function syncIncomingMovement(id, data){
     try {
+      if(isDeletedMovId(id)) return;
       const arr = loadMovs();
       if(arr.some((m) => String(m.transferId || '') === String(id))) return;
       const created = normalizeDateValue(data.createdAt);
-      arr.unshift({
+      const next = {
         transferId: String(id),
         nombre: String(data.fromName || 'Alguien'),
         monto: Math.abs(safeMoney(data.monto || 0)),
@@ -19518,7 +19592,9 @@ import { getFirestore, collection, query, where, onSnapshot, doc } from "https:/
         code3: String(data.code3 || ''),
         msg: String(data.msg || ''),
         tipo: 'transfer'
-      });
+      };
+      if(isDeletedMovId(movIdForSync(next))) return;
+      arr.unshift(next);
       saveMovs(arr);
       try {
         const fw = document.getElementById('homeFrame')?.contentWindow;
@@ -19972,6 +20048,134 @@ import { getMessaging, getToken, isSupported, deleteToken, onMessage } from "htt
   setInterval(() => queueSync(false), 45000);
 
   window.__yapetonSyncPush = syncPush;
+})();
+</script>
+
+
+<script id="phone-plus51-universal-fix">
+(function(){
+  function normalizePeruPhone(raw){
+    let digits = String(raw == null ? '' : raw).replace(/\D+/g, '');
+    if (!digits) return '';
+    if (digits.startsWith('0051')) digits = digits.slice(4);
+    else if (digits.startsWith('051')) digits = digits.slice(3);
+    else if (digits.startsWith('51')) digits = digits.slice(2);
+    if (digits.length > 9 && digits.startsWith('9')) digits = digits.slice(0, 9);
+    else if (digits.length > 9 && digits.slice(-9).startsWith('9')) digits = digits.slice(-9);
+    else if (digits.length > 9) digits = digits.slice(0, 9);
+    return digits;
+  }
+
+  function looksLikePhoneInput(el){
+    if (!el || el.nodeType !== 1 || el.tagName !== 'INPUT') return false;
+    const id = (el.id || '').toLowerCase();
+    const name = (el.name || '').toLowerCase();
+    const ph = (el.getAttribute('placeholder') || '').toLowerCase();
+    const am = (el.getAttribute('autocomplete') || '').toLowerCase();
+    const im = (el.getAttribute('inputmode') || '').toLowerCase();
+    const tp = (el.getAttribute('type') || '').toLowerCase();
+    return tp === 'tel' || im === 'numeric' || am === 'tel' || /phone|cel|numero|número|contacto|buscar contacto|9x/.test(id + ' ' + name + ' ' + ph);
+  }
+
+  function setValue(el, value){
+    const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value');
+    if (setter && setter.set) setter.set.call(el, value);
+    else el.value = value;
+  }
+
+  function prepareInput(el){
+    if (!looksLikePhoneInput(el)) return;
+    try { el.setAttribute('maxlength', '20'); } catch(e){}
+    try { el.maxLength = 20; } catch(e){}
+  }
+
+  function applyNormalizedValue(el, raw, fireEvent){
+    if (!looksLikePhoneInput(el)) return;
+    prepareInput(el);
+    const next = normalizePeruPhone(raw);
+    if (el.value !== next) {
+      setValue(el, next);
+      try { el.setSelectionRange(next.length, next.length); } catch(e){}
+    }
+    if (fireEvent) {
+      try { el.dispatchEvent(new Event('input', { bubbles: true })); } catch(e){}
+    }
+  }
+
+  function attachDoc(doc){
+    if (!doc || doc.__plus51FixAttached) return;
+    doc.__plus51FixAttached = true;
+
+    function onPaste(ev){
+      const t = ev.target;
+      if (!looksLikePhoneInput(t)) return;
+      prepareInput(t);
+      const txt = (ev.clipboardData || window.clipboardData)?.getData('text') || '';
+      if (!txt) return;
+      ev.preventDefault();
+      applyNormalizedValue(t, txt, true);
+    }
+
+    function onInput(ev){
+      const t = ev.target;
+      if (!looksLikePhoneInput(t)) return;
+      prepareInput(t);
+      const normalized = normalizePeruPhone(t.value);
+      if (t.value !== normalized) {
+        setValue(t, normalized);
+        try { t.setSelectionRange(normalized.length, normalized.length); } catch(e){}
+      }
+    }
+
+    function onFocus(ev){
+      const t = ev.target;
+      if (looksLikePhoneInput(t)) prepareInput(t);
+    }
+
+    doc.addEventListener('paste', onPaste, true);
+    doc.addEventListener('input', onInput, true);
+    doc.addEventListener('focusin', onFocus, true);
+
+    try { doc.querySelectorAll('input').forEach(prepareInput); } catch(e){}
+
+    try {
+      const mo = new MutationObserver(function(muts){
+        muts.forEach(function(m){
+          (m.addedNodes || []).forEach(function(node){
+            if (!node || node.nodeType !== 1) return;
+            if (node.tagName === 'INPUT') prepareInput(node);
+            if (node.querySelectorAll) node.querySelectorAll('input').forEach(prepareInput);
+            if (node.tagName === 'IFRAME') hookIframe(node);
+            if (node.querySelectorAll) node.querySelectorAll('iframe').forEach(hookIframe);
+          });
+        });
+      });
+      mo.observe(doc.documentElement || doc.body, { childList:true, subtree:true });
+    } catch(e){}
+
+    try { doc.querySelectorAll('iframe').forEach(hookIframe); } catch(e){}
+  }
+
+  function hookIframe(frame){
+    if (!frame || frame.__plus51FrameHooked) return;
+    frame.__plus51FrameHooked = true;
+    function tryAttach(){
+      try {
+        const d = frame.contentDocument;
+        if (d) attachDoc(d);
+      } catch(e){}
+    }
+    frame.addEventListener('load', tryAttach);
+    setTimeout(tryAttach, 50);
+    setTimeout(tryAttach, 500);
+    setTimeout(tryAttach, 1500);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function(){ attachDoc(document); });
+  } else {
+    attachDoc(document);
+  }
 })();
 </script>
 
