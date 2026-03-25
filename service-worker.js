@@ -1,165 +1,183 @@
-/* Firebase Cloud Messaging background support */
-importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js');
+const CACHE_VERSION = '2026-03-25-v1';
+const SHELL_CACHE = `yape-shell-${CACHE_VERSION}`;
+const STATIC_CACHE = `yape-static-${CACHE_VERSION}`;
+const DATA_CACHE = `yape-data-${CACHE_VERSION}`;
+const NAVIGATION_TIMEOUT_MS = 2600;
+const DATA_TIMEOUT_MS = 3000;
 
-const FCM_BG_CONFIG = {
-  apiKey: 'AIzaSyC89Qpf_Ie85lVkm5V5wi_xBC5fajPngj8',
-  authDomain: 'yapeton.firebaseapp.com',
-  projectId: 'yapeton',
-  storageBucket: 'yapeton.firebasestorage.app',
-  messagingSenderId: '550981729513',
-  appId: '1:550981729513:web:1048656e03ec1a54410478',
-  measurementId: 'G-CXZSJB540K'
-};
-
-try {
-  if (!firebase.apps.length) firebase.initializeApp(FCM_BG_CONFIG);
-} catch (e) {}
-
-let __bgMessaging = null;
-try { __bgMessaging = firebase.messaging(); } catch (e) { __bgMessaging = null; }
-
-function normalizePushPayload(payload) {
-  const root = payload || {};
-  const data = root.data || {};
-  const note = root.notification || {};
-  const title = note.title || data.title || 'Confirmación de Pago';
-  const body = note.body || data.body || data.text || 'Recibiste un nuevo yapeo';
-  const icon = note.icon || data.icon || './icon-192.png';
-  const badge = note.badge || data.badge || icon;
-  const url = data.url || self.location.origin + '/';
-  const tag = data.tag || ('yape-push-' + (data.transferId || Date.now()));
-  return { title, body, icon, badge, url, tag, data };
-}
-
-if (__bgMessaging && __bgMessaging.onBackgroundMessage) {
-  __bgMessaging.onBackgroundMessage((payload) => {
-    const msg = normalizePushPayload(payload);
-    self.registration.showNotification(msg.title, {
-      body: msg.body,
-      icon: msg.icon,
-      badge: msg.badge,
-      tag: msg.tag,
-      renotify: true,
-      data: { url: msg.url, raw: msg.data },
-      vibrate: [180, 80, 180]
-    });
-  });
-}
-
-self.addEventListener('push', (event) => {
-  if (!event || !event.data) return;
-  event.waitUntil((async () => {
-    let raw = {};
-    try { raw = event.data.json(); } catch (e) {
-      try { raw = { notification: { body: event.data.text() } }; } catch (_) { raw = {}; }
-    }
-    const msg = normalizePushPayload(raw);
-    await self.registration.showNotification(msg.title, {
-      body: msg.body,
-      icon: msg.icon,
-      badge: msg.badge,
-      tag: msg.tag,
-      renotify: true,
-      data: { url: msg.url, raw: msg.data },
-      vibrate: [180, 80, 180]
-    });
-  })());
-});
-
-/* Yape PWA Service Worker - safe startup + offline support */
-const CACHE_VERSION = 'push-ready-v1';
-const PRECACHE_NAME = `yape-precache-${CACHE_VERSION}`;
-const RUNTIME_NAME  = `yape-runtime-${CACHE_VERSION}`;
-
-const CORE_ASSETS = [
+const APP_SHELL = [
   './',
   './index.html',
+  './offline.html',
   './manifest.webmanifest',
+  './service-worker.js',
+  './app-runtime.js',
   './icon-192.png',
   './icon-512.png',
+  './apple-touch-icon.png',
   './bcp.png'
 ];
+
+const STATIC_HOSTS = new Set([
+  self.location.hostname,
+  'www.gstatic.com',
+  'cdnjs.cloudflare.com',
+  'fonts.gstatic.com',
+  'fonts.googleapis.com'
+]);
+
+function notifyClients(message, level = 'slow') {
+  self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
+    clients.forEach((client) => {
+      client.postMessage({ type: 'APP_NOTICE', message, level });
+    });
+  }).catch(() => {});
+}
+
+async function cachePut(cacheName, request, response) {
+  if (!response || !(response.ok || response.type === 'opaque')) return response;
+  const cache = await caches.open(cacheName);
+  await cache.put(request, response.clone());
+  return response;
+}
+
+async function fetchWithTimeout(request, timeoutMs) {
+  if (typeof AbortController === 'undefined') {
+    return fetch(request);
+  }
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(request, { signal: controller.signal });
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function isNavigation(request) {
+  return request.mode === 'navigate' || (request.headers.get('accept') || '').includes('text/html');
+}
+
+function isStaticAsset(request, url) {
+  if (request.destination && ['style', 'script', 'image', 'font', 'audio', 'manifest'].includes(request.destination)) {
+    return true;
+  }
+  if (!STATIC_HOSTS.has(url.hostname)) return false;
+  return /\.(?:css|js|mjs|png|jpg|jpeg|gif|svg|webp|ico|woff2?|ttf|mp3)$/i.test(url.pathname);
+}
+
+function isApiGet(request, url) {
+  if (request.method !== 'GET') return false;
+  if (url.origin === self.location.origin && url.pathname.startsWith('/api/')) return true;
+  return /firestore|googleapis/.test(url.hostname);
+}
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil((async () => {
-    const cache = await caches.open(PRECACHE_NAME);
-    await Promise.allSettled(
-      CORE_ASSETS.map(async (url) => {
-        try {
-          const req = new Request(url, { cache: 'reload' });
-          const res = await fetch(req);
-          if (res && (res.ok || res.type === 'opaque')) {
-            await cache.put(url, res.clone());
-          }
-        } catch (_) {}
-      })
-    );
+    const cache = await caches.open(SHELL_CACHE);
+    await Promise.allSettled(APP_SHELL.map(async (asset) => {
+      try {
+        const response = await fetch(new Request(asset, { cache: 'reload' }));
+        if (response && (response.ok || response.type === 'opaque')) {
+          await cache.put(asset, response.clone());
+        }
+      } catch (_) {}
+    }));
   })());
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
-    await Promise.all(
-      keys.map((key) => {
-        if (key !== PRECACHE_NAME && key !== RUNTIME_NAME) {
-          return caches.delete(key);
-        }
-      })
-    );
+    await Promise.all(keys.map((key) => {
+      if (![SHELL_CACHE, STATIC_CACHE, DATA_CACHE].includes(key)) {
+        return caches.delete(key);
+      }
+    }));
     await self.clients.claim();
   })());
 });
-
-async function fromCache(request) {
-  const cached = await caches.match(request, { ignoreSearch: request.mode === 'navigate' });
-  return cached || null;
-}
-
-async function putRuntime(request, response) {
-  try {
-    if (!response || !(response.ok || response.type === 'opaque')) return;
-    const cache = await caches.open(RUNTIME_NAME);
-    await cache.put(request, response.clone());
-  } catch (_) {}
-}
 
 self.addEventListener('fetch', (event) => {
   const request = event.request;
   if (request.method !== 'GET') return;
 
   const url = new URL(request.url);
-  if (url.origin !== self.location.origin) return;
 
-  if (request.mode === 'navigate' || (request.headers.get('accept') || '').includes('text/html')) {
+  if (isNavigation(request)) {
     event.respondWith((async () => {
       try {
-        const response = await fetch(request, { cache: 'no-store' });
-        putRuntime('./index.html', response.clone());
+        const response = await fetchWithTimeout(request, NAVIGATION_TIMEOUT_MS);
+        if (response && response.ok) {
+          await cachePut(SHELL_CACHE, './index.html', response.clone());
+          return response;
+        }
+      } catch (_) {
+        notifyClients('Conexión lenta, mostrando el shell guardado.', 'slow');
+      }
+      const cached = await caches.match(request, { ignoreSearch: true })
+        || await caches.match('./index.html', { ignoreSearch: true })
+        || await caches.match('./offline.html', { ignoreSearch: true });
+      if (cached) return cached;
+      return new Response('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Offline</title><body style="margin:0;display:grid;place-items:center;min-height:100vh;background:#742284;color:#fff;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif">Sin conexión</body>', { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+    })());
+    return;
+  }
+
+  if (isStaticAsset(request, url)) {
+    event.respondWith((async () => {
+      const cached = await caches.match(request, { ignoreSearch: false });
+      if (cached) {
+        event.waitUntil((async () => {
+          try {
+            const response = await fetch(request);
+            await cachePut(STATIC_CACHE, request, response.clone());
+          } catch (_) {}
+        })());
+        return cached;
+      }
+      try {
+        const response = await fetch(request);
+        await cachePut(STATIC_CACHE, request, response.clone());
         return response;
       } catch (_) {
-        return (await fromCache('./index.html')) || (await fromCache('./')) || new Response('<!doctype html><title>Offline</title><meta name="viewport" content="width=device-width,initial-scale=1"><body style="font-family:sans-serif;background:#742284;color:#fff;display:flex;min-height:100vh;align-items:center;justify-content:center">Sin conexión</body>', { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+        notifyClients('Sin conexión. Se usaron recursos estáticos guardados.', 'slow');
+        if (request.destination === 'image') {
+          const fallback = await caches.match('./icon-192.png');
+          if (fallback) return fallback;
+        }
+        return new Response('', { status: 204 });
       }
     })());
     return;
   }
 
+  if (isApiGet(request, url)) {
+    event.respondWith((async () => {
+      try {
+        const response = await fetchWithTimeout(request, DATA_TIMEOUT_MS);
+        await cachePut(DATA_CACHE, request, response.clone());
+        return response;
+      } catch (_) {
+        const cached = await caches.match(request, { ignoreSearch: false });
+        if (cached) {
+          notifyClients('Conexión lenta, mostrando datos guardados.', 'slow');
+          return cached;
+        }
+        throw _;
+      }
+    })().catch(() => new Response('', { status: 504, statusText: 'Gateway Timeout' })));
+    return;
+  }
+
   event.respondWith((async () => {
-    const cached = await fromCache(request);
-    if (cached) return cached;
     try {
       const response = await fetch(request);
-      putRuntime(request, response.clone());
       return response;
     } catch (_) {
-      const accept = request.headers.get('accept') || '';
-      if (accept.includes('image')) {
-        const body = Uint8Array.from([137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,0,0,0,1,0,0,0,1,8,6,0,0,0,31,21,196,137,0,0,0,12,73,68,65,84,8,29,99,0,1,0,0,5,0,1,13,10,42,78,0,0,0,0,73,69,78,68,174,66,96,130]);
-        return new Response(body, { headers: { 'Content-Type': 'image/png' } });
-      }
-      return new Response('', { status: 204 });
+      const cached = await caches.match(request, { ignoreSearch: false });
+      return cached || new Response('', { status: 204 });
     }
   })());
 });
@@ -177,7 +195,11 @@ self.addEventListener('notificationclick', (event) => {
     const allClients = await clients.matchAll({ type: 'window', includeUncontrolled: true });
     for (const client of allClients) {
       if ('focus' in client) {
-        try { await client.focus(); if ('navigate' in client) await client.navigate(target); return; } catch (_) {}
+        try {
+          await client.focus();
+          if ('navigate' in client) await client.navigate(target);
+          return;
+        } catch (_) {}
       }
     }
     if (clients.openWindow) return clients.openWindow(target);
