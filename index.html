@@ -10917,7 +10917,7 @@ function setUploadState(state){
           if(!finalName &amp;&amp; isAutoCompleteEnabled()){
             finalName = autoNameForNumber(only);
           }
-          setTimeout(()=&gt; goMonto((finalName || &quot;Sin nombre&quot;), value), 900);
+          setTimeout(()=&gt; goMonto((finalName || &quot;Sin nombre&quot;), value), 180);
         });
       } else {
         yContactsSection.style.display = &quot;block&quot;;
@@ -10929,8 +10929,8 @@ function setUploadState(state){
       el.addEventListener(&quot;click&quot;, ()=&gt;{
         const nm = el.getAttribute(&quot;data-name&quot;) || &quot;Sin nombre&quot;;
         const ph = el.getAttribute(&quot;data-phone&quot;) || &quot;999999000&quot;;
-        showYLoading(700);
-        setTimeout(()=&gt; goMonto(nm, ph), 700);
+        showYLoading(180);
+        setTimeout(()=&gt; goMonto(nm, ph), 180);
       });
     });
   
@@ -11881,7 +11881,7 @@ const isFromMov = payload &amp;&amp; payload.fromMov;
         const __kind = __isAuto ? &quot;in&quot; : &quot;out&quot;;
         window.__confettiAllowNext = true;
         goVoucher({ nombre, phone, monto, msg, code3, op8, dateObj: now, destino: (window.__currentDestino || &quot;Yape&quot;), kind: __kind });
-      }, 2000);
+      }, 250);
     });
   
 function maskPhoneVoucher(p){
@@ -19457,13 +19457,11 @@ function bindTransferBridge(homeWin, homeDoc){
 
     try {
       const voucherPayload = await handleTransfer(homeWin, homeDoc);
-      setTimeout(() => {
-        if(modal) modal.style.display = "none";
-        try { homeWin.__confettiAllowNext = true; } catch (e) {}
-        if(typeof homeWin.goVoucher === "function"){
-          homeWin.goVoucher(voucherPayload);
-        }
-      }, 1200);
+      if(modal) modal.style.display = "none";
+      try { homeWin.__confettiAllowNext = true; } catch (e) {}
+      if(typeof homeWin.goVoucher === "function"){
+        homeWin.goVoucher(voucherPayload);
+      }
     } catch (err) {
       if(modal) modal.style.display = "none";
       const msgText = isProbablyOfflineError(err) ? "Sin internet. Se guardó como yapeo local." : (err && err.message ? err.message : "No se pudo completar el yapeo.");
