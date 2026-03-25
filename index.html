@@ -1710,6 +1710,62 @@ html, body { height: 100%; }
       max-width: 56vw;
     }
 
+    .headerMain{
+      flex:1;
+      min-width:0;
+      display:flex;
+      align-items:center;
+    }
+
+    .headerSearch{
+      display:none;
+      width:100%;
+      min-width:0;
+    }
+
+    .headerSearch.show{
+      display:block;
+    }
+
+    .headerSearchBox{
+      width:100%;
+      height:42px;
+      border-radius:22px;
+      background: rgba(255,255,255,.18);
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:0 14px;
+      color:#f3e8ff;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+      overflow:hidden;
+    }
+
+    .headerSearchIcon{
+      width:17px;
+      height:17px;
+      flex:0 0 auto;
+      display:block;
+      opacity:.96;
+    }
+
+    .headerSearchText{
+      font-size:14px;
+      font-weight:400;
+      color:#f4e7ff;
+      overflow:hidden;
+      white-space:nowrap;
+      text-overflow:ellipsis;
+    }
+
+    .header.search-enabled .hello{
+      display:none;
+    }
+
+    .header.search-enabled .headerSearch{
+      display:block;
+    }
+
     .headerRight{
       margin-left:auto;
       display:flex;
@@ -3921,7 +3977,18 @@ html body #qrScanView .qrScan-bottom{
                 &lt;/svg&gt;
               &lt;/div&gt;
 
-              &lt;div class=&quot;hello&quot; id=&quot;helloText&quot;&gt;Hola, Sonyer&lt;/div&gt;
+              &lt;div class=&quot;headerMain&quot;&gt;
+                &lt;div class=&quot;hello&quot; id=&quot;helloText&quot;&gt;Hola, Sonyer&lt;/div&gt;
+                &lt;div class=&quot;headerSearch&quot; id=&quot;homeSearchWrap&quot; aria-hidden=&quot;true&quot;&gt;
+                  &lt;div class=&quot;headerSearchBox&quot;&gt;
+                    &lt;svg class=&quot;headerSearchIcon&quot; viewBox=&quot;0 0 24 24&quot; aria-hidden=&quot;true&quot;&gt;
+                      &lt;circle cx=&quot;10.5&quot; cy=&quot;10.5&quot; r=&quot;5.75&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2.1&quot;/&gt;
+                      &lt;path d=&quot;M15.1 15.1l4.1 4.1&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2.1&quot; stroke-linecap=&quot;round&quot;/&gt;
+                    &lt;/svg&gt;
+                    &lt;span class=&quot;headerSearchText&quot;&gt;Buscar en Yape&lt;/span&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
 
               &lt;div class=&quot;headerRight&quot;&gt;
                 
@@ -6736,6 +6803,23 @@ body{
             &lt;/div&gt;
           &lt;/div&gt;
 
+          &lt;div class=&quot;svcCard glass&quot;&gt;
+            &lt;div class=&quot;svcRow&quot;&gt;
+              &lt;div class=&quot;svcLeft&quot;&gt;
+                &lt;div class=&quot;svcIco purple&quot; aria-hidden=&quot;true&quot;&gt;🔎&lt;/div&gt;
+                &lt;div class=&quot;svcText&quot;&gt;
+                  &lt;div class=&quot;svcTitle&quot;&gt;Activar buscador de Yape&lt;/div&gt;
+                  &lt;div class=&quot;svcSub&quot;&gt;Muestra la barra de búsqueda en el Home.&lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+
+              &lt;div class=&quot;switch&quot; aria-label=&quot;Activar buscador de Yape&quot;&gt;
+                &lt;input id=&quot;searchToggle&quot; type=&quot;checkbox&quot; /&gt;
+                &lt;div class=&quot;switchTrack&quot;&gt;&lt;div class=&quot;switchThumb&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+
           &lt;!-- Autocompletado --&gt;
           &lt;div id=&quot;autoSvcCard&quot; class=&quot;svcCard glass autoSvc&quot;&gt;
             &lt;div class=&quot;svcRow&quot;&gt;
@@ -6844,7 +6928,8 @@ body{
         smsToken: &quot;yapeton_sms_token&quot;,
         mailOn: &quot;yapeton_mail_on&quot;,
         mail: &quot;yapeton_mail&quot;,
-        autoOn: &quot;yapeton_auto_on&quot;
+        autoOn: &quot;yapeton_auto_on&quot;,
+        searchOn: &quot;yapeton_search_on&quot;
       };
 
       const nameInput = document.getElementById(&quot;nameInput&quot;);
@@ -6861,6 +6946,7 @@ body{
       const autoToggle = document.getElementById(&quot;autoToggle&quot;);
       const autoSvcCard = document.getElementById(&quot;autoSvcCard&quot;);
       const autoNotice = document.getElementById(&quot;autoNotice&quot;);
+      const searchToggle = document.getElementById(&quot;searchToggle&quot;);
       const clearToggle = document.getElementById(&quot;clearToggle&quot;);
 
       function onlyDigits(value) {
@@ -6906,6 +6992,21 @@ body{
         }
       }
 
+      function applyHomeSearchUI(){
+        const header = document.querySelector(&quot;#homeView .header&quot;);
+        const hello = document.getElementById(&quot;helloText&quot;);
+        const searchWrap = document.getElementById(&quot;homeSearchWrap&quot;);
+        const enabled = !!(searchToggle ? searchToggle.checked : (localStorage.getItem(LS_KEYS.searchOn) || &quot;0&quot;) === &quot;1&quot;);
+
+        if(header) header.classList.toggle(&quot;search-enabled&quot;, enabled);
+        if(hello) hello.style.display = enabled ? &quot;none&quot; : &quot;&quot;;
+        if(searchWrap){
+          searchWrap.style.display = enabled ? &quot;block&quot; : &quot;none&quot;;
+          searchWrap.classList.toggle(&quot;show&quot;, enabled);
+          searchWrap.setAttribute(&quot;aria-hidden&quot;, enabled ? &quot;false&quot; : &quot;true&quot;);
+        }
+      }
+
       function load() {
         const savedName = localStorage.getItem(LS_KEYS.name) || &quot;&quot;;
         const savedSaldo = localStorage.getItem(LS_KEYS.saldo) || &quot;&quot;;
@@ -6920,9 +7021,11 @@ body{
         mailToggle.checked = (localStorage.getItem(LS_KEYS.mailOn) || &quot;0&quot;) === &quot;1&quot;;
         mailInput.value = localStorage.getItem(LS_KEYS.mail) || &quot;&quot;;
         autoToggle.checked = (localStorage.getItem(LS_KEYS.autoOn) || &quot;0&quot;) === &quot;1&quot;;
+        if(searchToggle) searchToggle.checked = (localStorage.getItem(LS_KEYS.searchOn) || &quot;0&quot;) === &quot;1&quot;;
 
         syncAvatar();
         applyAutoUI();
+        applyHomeSearchUI();
         applySaldoVisual();
         lastSaldoValue = parseInt(onlyDigits(saldoInput.value || &quot;&quot;), 10) || 0;
       }
@@ -6967,6 +7070,13 @@ body{
       });
       autoToggle.addEventListener(&quot;click&quot;, applyAutoUI);
 
+      if(searchToggle){
+        searchToggle.addEventListener(&quot;change&quot;, () =&gt; {
+          localStorage.setItem(LS_KEYS.searchOn, searchToggle.checked ? &quot;1&quot; : &quot;0&quot;);
+          applyHomeSearchUI();
+        });
+      }
+
       async function applyHomeNotifToggle(showSavedToast) {
         const enabled = !!homeToggle.checked;
         localStorage.setItem(LS_KEYS.home, enabled ? &quot;1&quot; : &quot;0&quot;);
@@ -6994,6 +7104,8 @@ body{
         localStorage.setItem(LS_KEYS.mailOn, mailToggle.checked ? &quot;1&quot; : &quot;0&quot;);
         localStorage.setItem(LS_KEYS.mail, (mailInput.value || &quot;&quot;).trim());
         localStorage.setItem(LS_KEYS.autoOn, autoToggle.checked ? &quot;1&quot; : &quot;0&quot;);
+        localStorage.setItem(LS_KEYS.searchOn, searchToggle &amp;&amp; searchToggle.checked ? &quot;1&quot; : &quot;0&quot;);
+        applyHomeSearchUI();
 
         showToast(&quot;Guardado ✓&quot;);
         try{ parent.postMessage({ type:&quot;profileUpdated&quot; }, &quot;*&quot;); }catch(e){}
@@ -11874,10 +11986,21 @@ function maskPhoneVoucher(p){
           const nm = (localStorage.getItem(&quot;yapeton_nombre&quot;) || &quot;&quot;).trim();
           const sdRaw = localStorage.getItem(&quot;yapeton_saldo&quot;) || &quot;&quot;;
           const sd = saldoToNumberFromStorage(sdRaw);
+          const searchEnabled = (localStorage.getItem(&quot;yapeton_search_on&quot;) || &quot;0&quot;) === &quot;1&quot;;
+          const header = document.querySelector(&quot;#homeView .header&quot;);
+          const searchWrap = document.getElementById(&quot;homeSearchWrap&quot;);
+          const hello = document.getElementById(&quot;helloText&quot;);
 
-          if(nm){
-            const hello = document.getElementById(&quot;helloText&quot;);
-            if(hello) hello.textContent = &quot;Hola, &quot; + nm;
+          if(nm &amp;&amp; hello){
+            hello.textContent = &quot;Hola, &quot; + nm;
+          }
+
+          if(header) header.classList.toggle(&quot;search-enabled&quot;, searchEnabled);
+          if(hello) hello.style.display = searchEnabled ? &quot;none&quot; : &quot;&quot;;
+          if(searchWrap){
+            searchWrap.style.display = searchEnabled ? &quot;block&quot; : &quot;none&quot;;
+            searchWrap.classList.toggle(&quot;show&quot;, searchEnabled);
+            searchWrap.setAttribute(&quot;aria-hidden&quot;, searchEnabled ? &quot;false&quot; : &quot;true&quot;);
           }
 
           if(sdRaw !== &quot;&quot; &amp;&amp; !isNaN(sd)){
@@ -20327,6 +20450,271 @@ import { getMessaging, getToken, isSupported, deleteToken, onMessage } from "htt
   } else {
     attachDoc(document);
   }
+})();
+</script>
+
+
+<style id="perfil-help-and-icons-v3">
+/* Perfil estilo más cercano a Yape real */
+.y-profile-page,
+.y-profile-page *{
+  box-sizing:border-box !important;
+}
+
+.y-profile-page{
+  text-align:left !important;
+}
+
+.y-profile-page .top-bar{
+  display:flex !important;
+  justify-content:space-between !important;
+  align-items:center !important;
+  gap:14px !important;
+  margin-bottom:26px !important;
+}
+
+.y-profile-page .top-left{
+  display:flex !important;
+  align-items:center !important;
+  min-width:34px !important;
+}
+
+.y-profile-page .top-right{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:8px !important;
+  margin-left:auto !important;
+  padding:10px 16px !important;
+  border-radius:18px !important;
+  background:#f4f0fa !important;
+}
+
+.y-profile-page .title{
+  font-size:31px !important;
+  line-height:1.06 !important;
+  font-weight:800 !important;
+  letter-spacing:-0.4px !important;
+  color:#26144d !important;
+  margin-bottom:6px !important;
+}
+
+.y-profile-page .subtitle{
+  font-size:17px !important;
+  font-weight:700 !important;
+  color:#26144d !important;
+  opacity:.96 !important;
+  margin-bottom:28px !important;
+}
+
+.y-profile-page .section-title{
+  font-size:18px !important;
+  font-weight:800 !important;
+  color:#26144d !important;
+  margin:30px 0 10px 0 !important;
+}
+
+.y-profile-page .menu-item{
+  display:flex !important;
+  justify-content:space-between !important;
+  align-items:center !important;
+  gap:12px !important;
+  width:100% !important;
+  padding:17px 0 !important;
+  border-bottom:1px solid #ece8f1 !important;
+}
+
+.y-profile-page .menu-item:last-child{
+  border-bottom:none !important;
+}
+
+.y-profile-page .left{
+  display:flex !important;
+  align-items:center !important;
+  gap:18px !important;
+  min-width:0 !important;
+  flex:1 1 auto !important;
+}
+
+.y-profile-page .menu-text,
+.y-profile-page .help-text{
+  color:#26144d !important;
+}
+
+.y-profile-page .menu-text{
+  font-size:18px !important;
+  font-weight:800 !important;
+  line-height:1.25 !important;
+}
+
+.y-profile-page .help-text{
+  font-size:18px !important;
+  font-weight:800 !important;
+  line-height:1 !important;
+}
+
+.y-profile-page .icon,
+.y-profile-page .back-icon,
+.y-profile-page .help-icon,
+.y-profile-page .material-symbols-outlined.y-icon-replaced{
+  width:24px !important;
+  height:24px !important;
+  min-width:24px !important;
+  min-height:24px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  font-size:0 !important;
+  line-height:0 !important;
+  overflow:visible !important;
+  vertical-align:middle !important;
+}
+
+.y-profile-page .icon,
+.y-profile-page .material-symbols-outlined.icon{
+  color:#b566d8 !important;
+}
+
+.y-profile-page .back-icon,
+.y-profile-page .material-symbols-outlined.back-icon,
+.y-profile-page .help-icon,
+.y-profile-page .material-symbols-outlined.help-icon{
+  color:#26144d !important;
+}
+
+.y-profile-page .y-inline-svg{
+  width:100% !important;
+  height:100% !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+
+.y-profile-page .y-inline-svg svg{
+  width:100% !important;
+  height:100% !important;
+  display:block !important;
+  overflow:visible !important;
+}
+
+.y-profile-page .activate-btn{
+  background:#efb400 !important;
+  color:#3d2d00 !important;
+  border:none !important;
+  border-radius:8px !important;
+  padding:7px 14px !important;
+  font-size:13px !important;
+  font-weight:800 !important;
+  line-height:1 !important;
+  box-shadow:none !important;
+}
+
+@media (max-width: 420px){
+  .y-profile-page .title{font-size:29px !important;}
+  .y-profile-page .menu-text,
+  .y-profile-page .help-text{font-size:17px !important;}
+}
+</style>
+<script id="perfil-help-and-icons-v3-js">
+(function(){
+  const ICONS = {
+    arrow_back: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.2 12h10.2" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M10.3 18 4.8 12l5.5-6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    support_agent: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 13.5V12a6.5 6.5 0 0 1 13 0v1.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="4.2" y="13" width="3.2" height="5.4" rx="1.4" fill="none" stroke="currentColor" stroke-width="2"/><rect x="16.6" y="13" width="3.2" height="5.4" rx="1.4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.2 18.8c.5.8 1.6 1.4 2.8 1.4h1.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="8" r="2" fill="none" stroke="currentColor" stroke-width="2"/></svg>',
+    badge: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="10" r="2.1" fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M8.1 16.2c1.2-2 6.6-2 7.8 0" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/></svg>',
+    qr_code_2: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="5" height="5" rx="1" fill="none" stroke="currentColor" stroke-width="2.1"/><rect x="15" y="4" width="5" height="5" rx="1" fill="none" stroke="currentColor" stroke-width="2.1"/><rect x="4" y="15" width="5" height="5" rx="1" fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15 15h2m3 0h0m-5 3h5m-2-3v5m-8-2h2" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/></svg>',
+    vpn_key: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8.2" cy="12" r="3.3" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M11.5 12H20m-3 0v2.6m-3-2.6v2.1" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    location_on: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.2s-5-4.6-5-9a5 5 0 1 1 10 0c0 4.4-5 9-5 9Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><circle cx="12" cy="11.2" r="1.8" fill="none" stroke="currentColor" stroke-width="2"/></svg>',
+    heart_broken: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19.8 5.4 13a4 4 0 0 1 5.8-5.5L12 8.4l.9-.9a4 4 0 0 1 5.7 5.6L12 19.8Z" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round"/><path d="m12.6 7.9-1.4 3 2 .7-1.9 3.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    fingerprint: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 10.5a3 3 0 1 1 6 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M7 11.2a5 5 0 0 1 10 0v1.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M6.2 14c0 3.1-.9 4.9-2.1 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M9.2 14.2c0 2.4-.5 4.4-1.5 5.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 13.8c0 3.6-.2 5.1-.7 6.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M14.8 14.2c.1 2.3.5 4.2 1.4 5.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M17.8 14c0 2.7.7 4.5 2 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+    public: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M4.8 9.5h14.4M4.8 14.5h14.4M12 4.2c2 2 3.2 4.8 3.2 7.8S14 17.8 12 19.8c-2-2-3.2-4.8-3.2-7.8S10 6.2 12 4.2Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    info: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M12 10v5" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/><circle cx="12" cy="7.2" r="1" fill="currentColor"/></svg>',
+    bar_chart: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19V11m7 8V5m7 14v-6" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/><path d="M4 19h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+    notifications: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.2 16.8V11a4.8 4.8 0 1 1 9.6 0v5.8l1.7 1.6H5.5l1.7-1.6Z" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round"/><path d="M10.3 19a1.9 1.9 0 0 0 3.4 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
+  };
+
+  function profileRoot(doc){
+    const nodes = [...doc.querySelectorAll('div,span,h1,h2,h3,p,strong,b')];
+    const title = nodes.find(n => (n.textContent || '').trim() === 'Mi Perfil');
+    if(!title) return null;
+    return title.closest('.screen, .app, div, section, main, article') || doc.body;
+  }
+
+  function replaceIcon(el){
+    if(!el || el.dataset.ySvgDone === '1') return;
+    const key = (el.textContent || '').trim();
+    if(!ICONS[key]) return;
+    const holder = el.querySelector('.y-inline-svg');
+    if(holder){
+      el.dataset.ySvgDone = '1';
+      el.classList.add('y-icon-replaced');
+      return;
+    }
+    el.innerHTML = '<span class="y-inline-svg">' + ICONS[key] + '</span>';
+    el.dataset.ySvgDone = '1';
+    el.classList.add('y-icon-replaced');
+    el.setAttribute('aria-label', key.replace(/_/g, ' '));
+  }
+
+  function improveProfile(doc){
+    const root = profileRoot(doc);
+    if(!root) return false;
+    root.classList.add('y-profile-page');
+
+    const textTargets = [
+      'Mis datos','Mi QR','Cambiar mi clave','Mis direcciones','Eliminar mi cuenta',
+      'Biometría digital','Compras por internet','Confirmación de yapeo alto',
+      'Limites Transaccionales','Notificaciones por yapeo'
+    ];
+
+    textTargets.forEach(label => {
+      const el = [...doc.querySelectorAll('div,span,p,h1,h2,h3,h4,button,strong,b')].find(x => (x.textContent || '').trim() === label);
+      if(!el) return;
+      const row = el.closest('.menu-item, button, a, li, div');
+      if(row) row.classList.add('profile-item');
+    });
+
+    const rootScope = root.querySelectorAll ? root.querySelectorAll('.material-symbols-outlined') : [];
+    rootScope.forEach(replaceIcon);
+
+    const help = [...doc.querySelectorAll('div,span,label,p,strong,b')].find(x => (x.textContent || '').trim() === 'Ayuda');
+    if(help){
+      const helpBox = help.closest('.top-right, div, header') || help.parentElement;
+      if(helpBox) helpBox.classList.add('y-help-pill');
+    }
+
+    return true;
+  }
+
+  let scheduled = false;
+  function run(){
+    scheduled = false;
+    try{ improveProfile(document); }catch(e){}
+    document.querySelectorAll('iframe').forEach(ifr => {
+      try{ if(ifr.contentDocument) improveProfile(ifr.contentDocument); }catch(e){}
+    });
+  }
+  function schedule(){
+    if(scheduled) return;
+    scheduled = true;
+    setTimeout(run, 40);
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', schedule, {once:true});
+  }else{
+    schedule();
+  }
+
+  [180, 600, 1300, 2500, 4500].forEach(ms => setTimeout(schedule, ms));
+  window.addEventListener('pageshow', schedule);
+  document.addEventListener('visibilitychange', schedule);
+  document.addEventListener('click', function(){ setTimeout(schedule, 60); }, true);
+
+  try{
+    const mo = new MutationObserver(schedule);
+    mo.observe(document.documentElement, {subtree:true, childList:true, attributes:true});
+    setTimeout(function(){ try{ mo.disconnect(); }catch(e){} }, 12000);
+  }catch(e){}
 })();
 </script>
 
