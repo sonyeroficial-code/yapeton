@@ -6404,6 +6404,272 @@ body{
 &lt;style&gt;
 &lt;/style&gt;
 
+&lt;style&gt;
+/* ===== AJUSTE FINAL REFINADO: MÁS ELEGANTE Y OSCURO ===== */
+
+/* Pantalla DATOS */
+#datosView{
+  --fg:#ffffff !important;
+  --muted:#d8d0ea !important;
+  --muted2:rgba(216,208,234,0.76) !important;
+  --stroke:rgba(255,255,255,0.06) !important;
+  --stroke2:rgba(255,255,255,0.09) !important;
+}
+
+#datosView .nebula{
+  background:
+    radial-gradient(90% 68% at 50% 7%, rgba(152,72,255,0.18) 0%, rgba(152,72,255,0) 42%),
+    radial-gradient(70% 54% at 14% 20%, rgba(102,50,206,0.15) 0%, rgba(102,50,206,0) 48%),
+    radial-gradient(74% 60% at 88% 58%, rgba(0,145,170,0.11) 0%, rgba(0,145,170,0) 42%),
+    linear-gradient(180deg, #3c0f5f 0%, #120028 34%, #050012 100%) !important;
+}
+
+#datosView .nebula::after{
+  opacity:0.18 !important;
+}
+
+#datosView #backFromDatos{
+  background: rgba(255,255,255,0.02) !important;
+  border-color: rgba(255,255,255,0.05) !important;
+  box-shadow:none !important;
+}
+
+#datosView .avatarCircle{
+  width:84px !important;
+  height:84px !important;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,255,255,0.24), rgba(255,255,255,0) 52%),
+    linear-gradient(135deg, #b15cff 0%, #8745f5 100%) !important;
+  box-shadow: 0 0 24px rgba(168,85,247,0.26) !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+  font-size: 26px !important;
+}
+
+#datosView .welcomeSmall,
+#datosView .welcomeMeta,
+#datosView .sectionTitle,
+#datosView .fieldLabel,
+#datosView .svcSub,
+#datosView .sumLabel{
+  color: rgba(226,220,240,0.78) !important;
+}
+
+#datosView .welcomeName{
+  color:#ffffff !important;
+  font-size:34px !important;
+  font-weight:800 !important;
+}
+
+#datosView .summary .sumCard{
+  border: 1px solid rgba(255,255,255,0.05) !important;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.28) !important;
+}
+
+#datosView .summary .sumCard:nth-child(1){
+  background: linear-gradient(180deg, rgba(52,15,103,0.96), rgba(36,8,76,0.98)) !important;
+}
+
+#datosView .summary .sumCard:nth-child(2){
+  background: linear-gradient(180deg, rgba(0,69,94,0.94), rgba(0,44,69,0.98)) !important;
+}
+
+#datosView .summary .sumCard:nth-child(1) .sumIcon,
+#datosView .summary .sumCard:nth-child(2) .sumIcon{
+  background: rgba(255,255,255,0.08) !important;
+  border:1px solid rgba(255,255,255,0.10) !important;
+  box-shadow:none !important;
+}
+
+#datosView .summary .sumCard:nth-child(1) .sumIcon{ color:#f8d26a !important; }
+#datosView .summary .sumCard:nth-child(2) .sumIcon{ color:#ffd54f !important; }
+
+#datosView .sumValueInput,
+#datosView .sumValue{
+  color:#ffffff !important;
+  font-size:33px !important;
+  font-weight:800 !important;
+}
+
+#datosView .sumCard.balance-active{
+  border: 1px solid rgba(255,102,113,0.55) !important;
+  box-shadow: 0 0 0 1px rgba(255,102,113,0.12), 0 10px 26px rgba(0,0,0,0.26) !important;
+}
+
+#datosView .sumCard.balance-active .sumValueInput{
+  color:#ff6671 !important;
+  text-shadow:none !important;
+}
+
+#datosView .sumCard.balance-active .sumIcon{
+  border-color: rgba(255,120,130,0.42) !important;
+  box-shadow:none !important;
+}
+
+#datosView .services .svcCard{
+  border:1px solid rgba(255,255,255,0.05) !important;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.26) !important;
+}
+
+#datosView .services .svcCard:nth-of-type(1){
+  background: linear-gradient(135deg, rgba(123,44,191,0.94), rgba(96,28,156,0.98)) !important;
+}
+#datosView .services .svcCard:nth-of-type(2){
+  background: linear-gradient(135deg, rgba(0,54,92,0.96), rgba(0,74,122,0.98)) !important;
+}
+#datosView .services .svcCard:nth-of-type(3){
+  background: linear-gradient(135deg, rgba(0,74,95,0.96), rgba(0,98,118,0.98)) !important;
+}
+#datosView .services .svcCard:nth-of-type(4){
+  background: linear-gradient(135deg, rgba(0,88,93,0.96), rgba(0,112,106,0.98)) !important;
+}
+#datosView .services .svcCard:nth-of-type(5){
+  background: linear-gradient(135deg, rgba(50,64,116,0.96), rgba(74,88,150,0.98)) !important;
+}
+#datosView .services .svcCard:nth-of-type(6){
+  background: linear-gradient(135deg, rgba(112,44,164,0.95), rgba(154,66,201,0.98)) !important;
+}
+
+#datosView .services .svcTitle,
+#datosView .privateTitle,
+#datosView .credHeadTitle,
+#datosView .credValue{
+  color:#ffffff !important;
+}
+
+#datosView .svcFields{
+  border-top-color: rgba(255,255,255,0.09) !important;
+}
+
+#datosView .fieldInput{
+  background: rgba(5,8,20,0.22) !important;
+  border-color: rgba(255,255,255,0.10) !important;
+  color:#ffffff !important;
+}
+
+#datosView .fieldInput::placeholder{
+  color: rgba(255,255,255,0.38) !important;
+}
+
+#datosView .switchTrack{
+  background: rgba(255,255,255,0.22) !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08) !important;
+}
+
+#datosView .switch input:checked + .switchTrack{
+  background: linear-gradient(135deg, #b04cf2, #8c34db) !important;
+  box-shadow:none !important;
+}
+
+#datosView .autoNotice{
+  background: rgba(255,214,102,0.08) !important;
+  border-color: rgba(255,219,128,0.18) !important;
+}
+
+#datosView .autoNoticeTitle{
+  color:#ffd56b !important;
+}
+
+#datosView #saveBtn{
+  background: linear-gradient(90deg, #a13de0 0%, #bf59f5 100%) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 10px 24px rgba(95,28,156,0.28) !important;
+  font-size:17px !important;
+  font-weight:800 !important;
+}
+
+/* Pantalla OPCIONES */
+#opcionesScreen{
+  background: linear-gradient(180deg, #54107f 0%, #17002d 48%, #060010 100%) !important;
+}
+
+#opcionesScreen::before{
+  opacity:0.42 !important;
+}
+
+#opcionesScreen .opciones-wrapper{
+  background:
+    radial-gradient(circle at 50% 8%, rgba(176,88,255,0.18), rgba(176,88,255,0) 32%),
+    linear-gradient(180deg, #54107f 0%, #17002d 52%, #060010 100%) !important;
+}
+
+#opcionesScreen .opciones-update{
+  background: rgba(255,255,255,0.08) !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+  color:#ffffff !important;
+  box-shadow:none !important;
+}
+
+#opcionesScreen .opciones-hero-title,
+#opcionesScreen .option-text,
+#opcionesScreen .option-chevron,
+#opcionesScreen .back-opciones{
+  color:#ffffff !important;
+}
+
+#opcionesScreen .opciones-hero-desc,
+#opcionesScreen .section-label,
+#opcionesScreen .owner-tag{
+  color: rgba(226,220,240,0.78) !important;
+}
+
+#opcionesScreen .sheet.opciones-card{
+  background: rgba(31,8,58,0.84) !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  box-shadow: 0 14px 32px rgba(0,0,0,0.24) !important;
+}
+
+#opcionesScreen .sheet.opciones-card::before{
+  content:"" !important;
+  display:block !important;
+  width: 110px !important;
+  height: 6px !important;
+  margin: 6px auto 18px !important;
+  border-radius: 999px !important;
+  background: rgba(255,255,255,0.18) !important;
+}
+
+#opcionesScreen .option-list{
+  background: transparent !important;
+}
+
+#opcionesScreen .option-btn,
+#opcionesScreen .soporte-btn{
+  background: rgba(255,255,255,0.03) !important;
+  border: 1px solid rgba(255,255,255,0.04) !important;
+  box-shadow:none !important;
+}
+
+#opcionesScreen .option-btn + .option-btn,
+#opcionesScreen .option-btn + .soporte-btn,
+#opcionesScreen .soporte-btn + .soporte-btn{
+  border-top-color: rgba(255,255,255,0.06) !important;
+}
+
+#opcionesScreen .option-icon{
+  border:none !important;
+  box-shadow:none !important;
+}
+
+#opcionesScreen .principal-list .option-btn:nth-child(1) .option-icon{ background: linear-gradient(135deg, #9f54ff, #b86bff) !important; }
+#opcionesScreen .principal-list .option-btn:nth-child(2) .option-icon{ background: linear-gradient(135deg, #37b8ff, #3478ff) !important; }
+#opcionesScreen .principal-list .option-btn:nth-child(3) .option-icon{ background: linear-gradient(135deg, #2acb83, #21a96b) !important; }
+#opcionesScreen .principal-list .option-btn:nth-child(4) .option-icon{ background: linear-gradient(135deg, #f5a623, #e97814) !important; }
+#opcionesScreen .principal-list .option-btn:nth-child(5) .option-icon{ background: linear-gradient(135deg, #f487b8, #ef6f92) !important; }
+#opcionesScreen .principal-list .option-btn:nth-child(6) .option-icon{ background: linear-gradient(135deg, #b269ff, #8c47ef) !important; }
+#opcionesScreen .principal-list .option-btn:nth-child(7) .option-icon{ background: linear-gradient(135deg, #5d95ff, #4478f5) !important; }
+
+#opcionesScreen .new-badge{
+  background: linear-gradient(135deg, #c55bff, #9d47ff) !important;
+  border:none !important;
+  color:#ffffff !important;
+  box-shadow:none !important;
+}
+
+#opcionesScreen .owner-tag span{
+  color:#dcb8ff !important;
+}
+&lt;/style&gt;
+
 &lt;/head&gt;
 
 &lt;body&gt;
@@ -6907,6 +7173,206 @@ body{
             &lt;/div&gt;
           &lt;/div&gt;
         &lt;/section&gt;
+
+        &lt;div class=&quot;sectionTitle privateTitle&quot;&gt;DATOS PRIVADOS&lt;/div&gt;
+
+        &lt;section class=&quot;privateSection&quot; aria-label=&quot;Datos privados&quot;&gt;
+          &lt;div class=&quot;credHeadCard glass&quot; id=&quot;credAccordionBtn&quot; role=&quot;button&quot; tabindex=&quot;0&quot; aria-expanded=&quot;false&quot; aria-controls=&quot;credAccordionBody&quot;&gt;
+            &lt;div class=&quot;credHeadLeft&quot;&gt;
+              &lt;div class=&quot;credLockBox&quot; aria-hidden=&quot;true&quot;&gt;
+                &lt;span class=&quot;material-symbols-outlined credLockIcon&quot;&gt;lock&lt;/span&gt;
+              &lt;/div&gt;
+              &lt;div class=&quot;credHeadText&quot;&gt;
+                &lt;div class=&quot;credHeadTitle&quot;&gt;Mis credenciales&lt;/div&gt;
+                &lt;div class=&quot;credHeadSub&quot;&gt;Ver usuario, contraseña y seller ID&lt;/div&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;credChevron&quot; id=&quot;credChevron&quot; aria-hidden=&quot;true&quot;&gt;▼&lt;/div&gt;
+          &lt;/div&gt;
+
+          &lt;div class=&quot;credPanel glass&quot; id=&quot;credAccordionBody&quot; style=&quot;display:none;&quot;&gt;
+            &lt;div class=&quot;credRow&quot;&gt;
+              &lt;div class=&quot;credInfo&quot;&gt;
+                &lt;div class=&quot;credLabel&quot;&gt;Usuario&lt;/div&gt;
+                &lt;div class=&quot;credValue&quot; id=&quot;credUsername&quot;&gt;—&lt;/div&gt;
+              &lt;/div&gt;
+              &lt;button class=&quot;credBtn&quot; type=&quot;button&quot; data-copy-target=&quot;credUsername&quot;&gt;Copiar&lt;/button&gt;
+            &lt;/div&gt;
+
+            &lt;div class=&quot;credRow&quot;&gt;
+              &lt;div class=&quot;credInfo&quot;&gt;
+                &lt;div class=&quot;credLabel&quot;&gt;Contraseña&lt;/div&gt;
+                &lt;div class=&quot;credValue&quot; id=&quot;credPassword&quot; data-real=&quot;&quot;&gt;••••••••&lt;/div&gt;
+              &lt;/div&gt;
+              &lt;div class=&quot;credActions&quot;&gt;
+                &lt;button class=&quot;credBtn&quot; type=&quot;button&quot; id=&quot;credTogglePassword&quot;&gt;Ver&lt;/button&gt;
+                &lt;button class=&quot;credBtn&quot; type=&quot;button&quot; data-copy-target=&quot;credPassword&quot;&gt;Copiar&lt;/button&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+
+            &lt;div class=&quot;credRow&quot;&gt;
+              &lt;div class=&quot;credInfo&quot;&gt;
+                &lt;div class=&quot;credLabel&quot;&gt;Seller ID&lt;/div&gt;
+                &lt;div class=&quot;credValue&quot; id=&quot;credSellerId&quot;&gt;—&lt;/div&gt;
+              &lt;/div&gt;
+              &lt;button class=&quot;credBtn&quot; type=&quot;button&quot; data-copy-target=&quot;credSellerId&quot;&gt;Copiar&lt;/button&gt;
+            &lt;/div&gt;
+
+            &lt;div class=&quot;credMetaDate&quot; id=&quot;credCreatedAtMeta&quot;&gt;Creado: —&lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/section&gt;
+
+        &lt;style&gt;
+          .privateTitle{
+            margin-top: 8px;
+            margin-bottom: 8px;
+            letter-spacing: .28em;
+          }
+          .privateSection{
+            display:flex;
+            flex-direction:column;
+            gap:10px;
+            padding-bottom:6px;
+          }
+          .credHeadCard,
+          .credPanel{
+            border-radius:24px;
+            overflow:hidden;
+          }
+          .credHeadCard{
+            padding:14px 16px;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:12px;
+            cursor:pointer;
+          }
+          .credHeadLeft{
+            display:flex;
+            align-items:center;
+            gap:14px;
+            min-width:0;
+            flex:1;
+          }
+          .credLockBox{
+            width:44px;
+            height:44px;
+            border-radius:14px;
+            flex:0 0 44px;
+            display:grid;
+            place-items:center;
+            background:linear-gradient(180deg, rgba(233,236,242,.98), rgba(201,206,216,.98));
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.68), 0 4px 14px rgba(0,0,0,.08);
+          }
+          .credLockIcon{
+            font-size:24px;
+            line-height:1;
+            color:#ffffff;
+            text-shadow:0 1px 0 rgba(0,0,0,.12);
+          }
+          .credHeadTitle{
+            color:#ffffff;
+            font-size:17px;
+            line-height:1.05;
+            font-weight:700;
+            margin-bottom:3px;
+          }
+          .credHeadSub{
+            color:rgba(255,255,255,.74);
+            font-size:12.5px;
+            line-height:1.2;
+            font-weight:500;
+            max-width:210px;
+          }
+          .credChevron{
+            color:#d7d4df;
+            font-size:16px;
+            line-height:1;
+            flex:0 0 auto;
+            transition: transform .18s ease;
+          }
+          .credHeadCard.open .credChevron{
+            transform:rotate(180deg);
+          }
+          .credPanel{
+            padding:12px;
+            display:flex;
+            flex-direction:column;
+            gap:8px;
+            margin-top:-2px;
+          }
+          .credRow{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:10px;
+            background:rgba(255,255,255,.04);
+            border:1px solid rgba(255,255,255,.05);
+            border-radius:16px;
+            padding:11px 12px;
+          }
+          .credInfo{
+            min-width:0;
+            flex:1;
+          }
+          .credLabel{
+            color:rgba(255,255,255,.58);
+            font-size:12px;
+            line-height:1.05;
+            font-weight:600;
+            margin-bottom:7px;
+          }
+          .credValue{
+            color:#ffffff;
+            font-size:15px;
+            line-height:1.1;
+            font-weight:700;
+            word-break:break-word;
+          }
+          .credActions{
+            display:flex;
+            align-items:center;
+            gap:8px;
+            flex:0 0 auto;
+          }
+          .credBtn{
+            appearance:none;
+            border:none;
+            outline:none;
+            background:transparent;
+            min-width:74px;
+            height:38px;
+            padding:0 14px;
+            border-radius:999px;
+            color:#d67cff;
+            border:1.5px solid rgba(214,124,255,.55);
+            font-size:13px;
+            font-weight:700;
+            line-height:1;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,.02);
+          }
+          .credBtn:active{
+            transform:scale(.98);
+            opacity:.92;
+          }
+          .credMetaDate{
+            padding:2px 4px 0;
+            color:rgba(255,255,255,.60);
+            font-size:11.5px;
+            line-height:1.25;
+            font-weight:600;
+          }
+          @media (max-width:390px){
+            .credHeadCard{ padding:13px 14px; }
+            .credHeadLeft{ gap:12px; }
+            .credHeadTitle{ font-size:16px; }
+            .credHeadSub{ font-size:12px; max-width:190px; }
+            .credRow{ padding:10px 11px; gap:8px; }
+            .credValue{ font-size:14px; }
+            .credBtn{ min-width:68px; height:36px; padding:0 12px; font-size:12.5px; }
+          }
+        &lt;/style&gt;
+
       &lt;/main&gt;
 
       &lt;footer class=&quot;sticky&quot; aria-label=&quot;Acción&quot;&gt;
@@ -7138,6 +7604,181 @@ body{
       }
     });
   &lt;/script&gt;
+
+  &lt;script type=&quot;module&quot;&gt;
+    import { initializeApp, getApps, getApp } from &quot;https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js&quot;;
+    import { getFirestore, doc, getDoc } from &quot;https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js&quot;;
+
+    const firebaseConfig = {
+      apiKey: &quot;AIzaSyCfjKjr5rqM8qzpUpgqKfWMx3QsiPMHUeY&quot;,
+      authDomain: &quot;login-48d79.firebaseapp.com&quot;,
+      projectId: &quot;login-48d79&quot;,
+      storageBucket: &quot;login-48d79.firebasestorage.app&quot;,
+      messagingSenderId: &quot;1081911677152&quot;,
+      appId: &quot;1:1081911677152:web:dfe5416b6fe656f8994085&quot;,
+      measurementId: &quot;G-KG2RDVTX9E&quot;
+    };
+
+    const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const SESSION_KEY = &quot;yapeton_session&quot;;
+    const CREDENTIALS_ACCORDION_KEY = &quot;yape_credentials_accordion_open&quot;;
+
+    const accordionBtn = document.getElementById(&quot;credAccordionBtn&quot;);
+    const accordionBody = document.getElementById(&quot;credAccordionBody&quot;);
+    const passwordEl = document.getElementById(&quot;credPassword&quot;);
+    const togglePasswordBtn = document.getElementById(&quot;credTogglePassword&quot;);
+    const usernameEl = document.getElementById(&quot;credUsername&quot;);
+    const sellerIdEl = document.getElementById(&quot;credSellerId&quot;);
+    const createdAtMetaEl = document.getElementById(&quot;credCreatedAtMeta&quot;);
+
+    let passwordVisible = false;
+
+    function getSession(){
+      try {
+        const raw = localStorage.getItem(SESSION_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function formatDate(value){
+      if(!value) return &quot;No disponible&quot;;
+      let date = null;
+      if (typeof value?.toDate === &quot;function&quot;) date = value.toDate();
+      else if (value?.seconds) date = new Date(value.seconds * 1000);
+      else if (typeof value === &quot;number&quot;) date = new Date(value);
+      else if (typeof value === &quot;string&quot;) date = new Date(value);
+      else if (value instanceof Date) date = value;
+      if(!(date instanceof Date) || Number.isNaN(date.getTime())) return &quot;No disponible&quot;;
+      return date.toLocaleString(&quot;es-PE&quot;, {
+        day: &quot;2-digit&quot;,
+        month: &quot;short&quot;,
+        year: &quot;numeric&quot;,
+        hour: &quot;2-digit&quot;,
+        minute: &quot;2-digit&quot;
+      });
+    }
+
+    function maskPassword(value){
+      const txt = String(value || &quot;&quot;);
+      if(!txt) return &quot;••••••••&quot;;
+      return &quot;•&quot;.repeat(Math.max(txt.length, 8));
+    }
+
+    function renderPassword(){
+      const real = passwordEl?.dataset?.real || &quot;&quot;;
+      if(!passwordEl) return;
+      passwordEl.textContent = passwordVisible ? (real || &quot;Sin contraseña&quot;) : maskPassword(real);
+      if(togglePasswordBtn) togglePasswordBtn.textContent = passwordVisible ? &quot;Ocultar&quot; : &quot;Ver&quot;;
+    }
+
+    function showCopyToast(){
+      try {
+        const toast = document.getElementById(&quot;toast&quot;);
+        if(!toast) return;
+        toast.textContent = &quot;Copiado ✓&quot;;
+        toast.classList.add(&quot;show&quot;);
+        clearTimeout(window.__credToastTimer);
+        window.__credToastTimer = setTimeout(() =&gt; toast.classList.remove(&quot;show&quot;), 1200);
+      } catch(e){}
+    }
+
+    function copyText(value){
+      if(!value) return;
+      navigator.clipboard.writeText(value).then(showCopyToast).catch(() =&gt; {});
+    }
+
+    function getCopyValue(id){
+      if(id === &quot;credPassword&quot;) return passwordEl?.dataset?.real || &quot;&quot;;
+      return (document.getElementById(id)?.textContent || &quot;&quot;).trim();
+    }
+
+    function setAccordionState(isOpen){
+      if(!accordionBtn || !accordionBody) return;
+      accordionBody.style.display = isOpen ? &quot;block&quot; : &quot;none&quot;;
+      accordionBtn.classList.toggle(&quot;open&quot;, !!isOpen);
+      accordionBtn.setAttribute(&quot;aria-expanded&quot;, isOpen ? &quot;true&quot; : &quot;false&quot;);
+      try {
+        localStorage.setItem(CREDENTIALS_ACCORDION_KEY, isOpen ? &quot;1&quot; : &quot;0&quot;);
+      } catch(e) {}
+    }
+
+    function restoreAccordionState(){
+      let saved = null;
+      try {
+        saved = localStorage.getItem(CREDENTIALS_ACCORDION_KEY);
+      } catch(e) {}
+      if(saved === &quot;1&quot;) return setAccordionState(true);
+      if(saved === &quot;0&quot;) return setAccordionState(false);
+      return setAccordionState(false);
+    }
+
+    function toggleAccordion(){
+      const isOpen = accordionBody.style.display === &quot;block&quot;;
+      setAccordionState(!isOpen);
+    }
+
+    accordionBtn?.addEventListener(&quot;click&quot;, toggleAccordion);
+    accordionBtn?.addEventListener(&quot;keydown&quot;, (ev) =&gt; {
+      if(ev.key === &quot;Enter&quot; || ev.key === &quot; "){
+        ev.preventDefault();
+        toggleAccordion();
+      }
+    });
+
+    togglePasswordBtn?.addEventListener(&quot;click&quot;, () =&gt; {
+      passwordVisible = !passwordVisible;
+      renderPassword();
+    });
+
+    document.querySelectorAll(&quot;[data-copy-target]&quot;).forEach((btn) =&gt; {
+      btn.addEventListener(&quot;click&quot;, () =&gt; copyText(getCopyValue(btn.getAttribute(&quot;data-copy-target&quot;))));
+    });
+
+    async function loadCredentials(){
+      const session = getSession();
+      if(!session?.uid) {
+        usernameEl.textContent = &quot;Sin sesión&quot;;
+        sellerIdEl.textContent = &quot;—&quot;;
+        createdAtMetaEl.textContent = &quot;Creado: —&quot;;
+        renderPassword();
+        return;
+      }
+
+      try {
+        const snap = await getDoc(doc(db, &quot;users&quot;, session.uid));
+        if(!snap.exists()){
+          usernameEl.textContent = session.username || &quot;Sin usuario&quot;;
+          sellerIdEl.textContent = session.sellerId || &quot;Sin seller ID&quot;;
+          createdAtMetaEl.textContent = &quot;Creado: No disponible&quot;;
+          renderPassword();
+          return;
+        }
+
+        const data = snap.data() || {};
+        usernameEl.textContent = data.username || session.username || &quot;Sin usuario&quot;;
+        sellerIdEl.textContent = data.sellerId || session.sellerId || &quot;Sin seller ID&quot;;
+        createdAtMetaEl.textContent = &quot;Creado: &quot; + formatDate(data.createdAt);
+        if(passwordEl){
+          passwordEl.dataset.real = data.password || &quot;&quot;;
+        }
+        renderPassword();
+      } catch (err) {
+        console.error(err);
+        usernameEl.textContent = session.username || &quot;Sin usuario&quot;;
+        sellerIdEl.textContent = session.sellerId || &quot;Sin seller ID&quot;;
+        createdAtMetaEl.textContent = &quot;Creado: No disponible&quot;;
+        renderPassword();
+      }
+    }
+
+    restoreAccordionState();
+    renderPassword();
+    loadCredentials();
+  &lt;/script&gt;
+
 &lt;/div&gt;
 
 
