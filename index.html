@@ -13422,36 +13422,44 @@ if (&quot;serviceWorker&quot; in navigator) {
     // cerrar scanner y abrir monto con datos
     hideScan();
 
-    const regs = getRegistros();
-    const found = regs.find(x =&gt; norm(x.qr) === norm(qrValue));
-
-    if(found){
-      const numero = ensure9Digits(found.numero);
-      let nombre = (found.nombre || &quot;&quot;).trim();
-      if(!nombre){
-        try{
-          if(typeof isAutoCompleteEnabled === &quot;function&quot; &amp;&amp; isAutoCompleteEnabled() &amp;&amp; typeof autoNameForNumber === &quot;function&quot;){
-            nombre = autoNameForNumber(numero) || &quot;Miembro&quot;;
-          }
-        }catch(e){}
+    return (async function(){
+      try{
+        if(typeof window.__procesarQRDetectado === &quot;function&quot;){
+          const handled = await window.__procesarQRDetectado(qrValue);
+          if(handled) return;
+        }
+      }catch(e){
+        console.error(&quot;❌ Error resolviendo QR escaneado:&quot;, e);
       }
-      nombre = nombre || &quot;Miembro&quot;;
-      // manda a pantalla de &quot;Yapear a&quot; (montoView) con datos
+
+      const regs = getRegistros();
+      const found = regs.find(x =&gt; norm(x.qr) === norm(qrValue));
+
+      if(found){
+        const numero = ensure9Digits(found.numero);
+        let nombre = (found.nombre || &quot;&quot;).trim();
+        if(!nombre){
+          try{
+            if(typeof isAutoCompleteEnabled === &quot;function&quot; &amp;&amp; isAutoCompleteEnabled() &amp;&amp; typeof autoNameForNumber === &quot;function&quot;){
+              nombre = autoNameForNumber(numero) || &quot;Miembro&quot;;
+            }
+          }catch(e){}
+        }
+        nombre = nombre || &quot;Miembro&quot;;
+        if(typeof goMonto === &quot;function&quot;){
+          goMonto(nombre, numero);
+        }
+        return;
+      }
+
+      const tmp = randomMiembro();
+      window.__scanPendingQR = qrValue;
+      window.__scanPendingSave = true;
+
       if(typeof goMonto === &quot;function&quot;){
-        goMonto(nombre, numero);
+        goMonto(tmp.nombre, tmp.numero);
       }
-      return;
-    }
-
-    // si no existe, mandar con nombre automático solo cuando Autocompletado está activo.
-    // si está apagado, conserva la lógica original con &quot;Miembro&quot;.
-    const tmp = randomMiembro();
-    window.__scanPendingQR = qrValue;
-    window.__scanPendingSave = true;
-
-    if(typeof goMonto === &quot;function&quot;){
-      goMonto(tmp.nombre, tmp.numero);
-    }
+    })();
   }
 
   // permitir editar nombre (solo cuando viene de scan sin registrar)
@@ -13948,17 +13956,56 @@ function setUploadState(state){
   }
 
   // Conectar al escaneo: deja registro disponible para que la pantalla de monto use el nombre personalizado
-  window.__procesarQRDetectado = function(qrTexto){
+  window.__procesarQRDetectado = async function(qrTexto){
     const qn = normQR(qrTexto);
     const arr = getArr();
-    const found = arr.find(x =&gt; normQR(x &amp;&amp; x.qr) === qn) || null;
+    let found = arr.find(x =&gt; normQR(x &amp;&amp; x.qr) === qn) || null;
+
+    try{
+      if((!found || !only9(found.numero)) &amp;&amp; window.fsGetQr){
+        const remote = await window.fsGetQr(qrTexto);
+        if(remote){
+          found = {
+            ...(found || {}),
+            qr: qn,
+            nombre: String((remote.name || remote.nombre || (found &amp;&amp; found.nombre) || &quot;&quot;)).trim(),
+            numero: only9(remote.phone || remote.numero || (found &amp;&amp; found.numero) || &quot;&quot;),
+            destino: String(remote.destino || (found &amp;&amp; found.destino) || &quot;Yape&quot;)
+          };
+
+          const idx = arr.findIndex(x =&gt; normQR(x &amp;&amp; x.qr) === qn);
+          if(idx &gt;= 0) arr[idx] = { ...(arr[idx] || {}), ...found, updatedAt: Date.now() };
+          else arr.push({ ...found, updatedAt: Date.now() });
+          setArr(arr);
+          try{ if(window.__updateRegistrosTotal) window.__updateRegistrosTotal(); }catch(e){}
+          try{ renderList(); }catch(e){}
+        }
+      }
+    }catch(err){
+      console.error(&quot;❌ Error consultando QR en Firestore:&quot;, err);
+    }
+
     window.__lastQRRegistro = found;
+
+    const numero = only9(found &amp;&amp; (found.numero || found.phone) || &quot;&quot;);
+    const nombre = String((found &amp;&amp; (found.nombre || found.name)) || &quot;&quot;).trim();
+
+    if(numero &amp;&amp; typeof goMonto === &quot;function&quot;){
+      goMonto(nombre || &quot;Miembro&quot;, numero);
+      return true;
+    }
 
     const inputNumero = document.getElementById(&quot;ySearchInput&quot;);
     if(inputNumero){
-      inputNumero.value = found &amp;&amp; found.numero ? String(found.numero) : &quot;&quot;;
+      inputNumero.value = numero ? String(numero) : &quot;&quot;;
       try{ inputNumero.dispatchEvent(new Event(&quot;input&quot;)); }catch(e){}
     }
+
+    if(!numero &amp;&amp; typeof window.showYapear === &quot;function&quot;){
+      window.showYapear();
+    }
+
+    return !!numero;
   };
 
   // primer render
