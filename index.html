@@ -8362,8 +8362,8 @@ const firebaseConfig = {
   projectId: &quot;yapeton&quot;,
   storageBucket: &quot;yapeton.firebasestorage.app&quot;,
   messagingSenderId: &quot;550981729513&quot;,
-  appId: &quot;1:550981729513:web:1048656e03ec1a54410478&quot;,
-  measurementId: &quot;G-CXZSJB540K&quot;
+  appId: &quot;1:550981729513:web:b7b72dbcd5cad004410478&quot;,
+  measurementId: &quot;G-DS790H07HM&quot;
 };
 
 const app = initializeApp(firebaseConfig);
@@ -9611,8 +9611,8 @@ const firebaseConfig = {
   projectId: &quot;yapeton&quot;,
   storageBucket: &quot;yapeton.firebasestorage.app&quot;,
   messagingSenderId: &quot;550981729513&quot;,
-  appId: &quot;1:550981729513:web:1048656e03ec1a54410478&quot;,
-  measurementId: &quot;G-CXZSJB540K&quot;
+  appId: &quot;1:550981729513:web:b7b72dbcd5cad004410478&quot;,
+  measurementId: &quot;G-DS790H07HM&quot;
 };
 
 const app = initializeApp(firebaseConfig);
@@ -12450,8 +12450,8 @@ const firebaseConfig = {
   projectId: &quot;yapeton&quot;,
   storageBucket: &quot;yapeton.firebasestorage.app&quot;,
   messagingSenderId: &quot;550981729513&quot;,
-  appId: &quot;1:550981729513:web:1048656e03ec1a54410478&quot;,
-  measurementId: &quot;G-CXZSJB540K&quot;
+  appId: &quot;1:550981729513:web:b7b72dbcd5cad004410478&quot;,
+  measurementId: &quot;G-DS790H07HM&quot;
 };
 
 const app = initializeApp(firebaseConfig);
@@ -18798,8 +18798,8 @@ const DATA_CONFIG = {
   projectId: "yapeton",
   storageBucket: "yapeton.firebasestorage.app",
   messagingSenderId: "550981729513",
-  appId: "1:550981729513:web:1048656e03ec1a54410478",
-  measurementId: "G-CXZSJB540K"
+  appId: "1:550981729513:web:b7b72dbcd5cad004410478",
+  measurementId: "G-DS790H07HM"
 };
 
 const SESSION_KEY = "yapeton_session";
@@ -19633,8 +19633,8 @@ import { getFirestore, collection, query, where, onSnapshot, doc } from "https:/
     projectId: "yapeton",
     storageBucket: "yapeton.firebasestorage.app",
     messagingSenderId: "550981729513",
-    appId: "1:550981729513:web:1048656e03ec1a54410478",
-    measurementId: "G-CXZSJB540K"
+    appId: "1:550981729513:web:b7b72dbcd5cad004410478",
+    measurementId: "G-DS790H07HM"
   };
 
   const app = getApps().find(a => a.name === 'bridge-realtime-notify') || initializeApp(DATA_CONFIG, 'bridge-realtime-notify');
@@ -20112,8 +20112,8 @@ import { getMessaging, getToken, isSupported, deleteToken, onMessage } from "htt
     projectId: "yapeton",
     storageBucket: "yapeton.firebasestorage.app",
     messagingSenderId: "550981729513",
-    appId: "1:550981729513:web:1048656e03ec1a54410478",
-    measurementId: "G-CXZSJB540K"
+    appId: "1:550981729513:web:b7b72dbcd5cad004410478",
+    measurementId: "G-DS790H07HM"
   };
 
   const VAPID_KEY = "BPCvBt0YfzBm0fF_LUbXH6DaCxydHk_FUKGFjac2VndseKfqY_lpEPGj_o8EXINMIxb6lp1yAbKt9AeVkFCQnd8";
@@ -20714,6 +20714,424 @@ import { getMessaging, getToken, isSupported, deleteToken, onMessage } from "htt
     setTimeout(function(){ try{ mo.disconnect(); }catch(e){} }, 12000);
   }catch(e){}
 })();
+</script>
+
+
+<script type="module" id="qr-firestore-save-fix">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const QR_FIX_CONFIG = {
+  apiKey: "AIzaSyC89Qpf_Ie85lVkm5V5wi_xBC5fajPngj8",
+  authDomain: "yapeton.firebaseapp.com",
+  projectId: "yapeton",
+  storageBucket: "yapeton.firebasestorage.app",
+  messagingSenderId: "550981729513",
+  appId: "1:550981729513:web:b7b72dbcd5cad004410478",
+  measurementId: "G-DS790H07HM"
+};
+
+const qrFixApp = getApps().find(a => a.name === "qr-firestore-save-fix") || initializeApp(QR_FIX_CONFIG, "qr-firestore-save-fix");
+const qrFixDb = getFirestore(qrFixApp);
+
+function clean9(value){
+  return String(value || "").replace(/\D/g, "").slice(0, 9);
+}
+
+function normQR(value){
+  return String(value || "").trim();
+}
+
+function getCandidateDocuments(){
+  const docs = [document];
+  document.querySelectorAll('iframe').forEach((frame) => {
+    try{
+      if(frame.contentDocument && !docs.includes(frame.contentDocument)) docs.push(frame.contentDocument);
+    }catch(e){}
+  });
+  return docs;
+}
+
+function getQrFormFromDoc(docRef){
+  if(!docRef) return null;
+  const nombreEl = docRef.getElementById("qrReg_nombre");
+  const qrEl = docRef.getElementById("qrReg_qr");
+  const numeroEl = docRef.getElementById("qrReg_numero");
+  const destinoEl = docRef.getElementById("qrReg_destino");
+  const guardarBtn = docRef.getElementById("qrReg_btnGuardar");
+  if(!guardarBtn && !qrEl) return null;
+  return { docRef, nombreEl, qrEl, numeroEl, destinoEl, guardarBtn };
+}
+
+function getAllQrForms(){
+  return getCandidateDocuments().map(getQrFormFromDoc).filter(Boolean);
+}
+
+async function upsertQrToFirestore(qrText, data = {}){
+  const q = normQR(qrText);
+  if(!q) return false;
+
+  try{
+    const ref = doc(qrFixDb, "qrs", q);
+    const snap = await getDoc(ref);
+
+    const payload = {
+      qr: q,
+      name: String(data.name || "").trim(),
+      phone: clean9(data.phone || ""),
+      destino: String(data.destino || "Yape").trim() || "Yape"
+    };
+
+    if(!snap.exists() || !(snap.data() && snap.data().createdAt)){
+      payload.createdAt = serverTimestamp();
+    }
+
+    await setDoc(ref, payload, { merge: true });
+    console.log("✅ QR guardado en Firestore:", q);
+    return true;
+  }catch(err){
+    console.error("❌ Error guardando QR en Firestore:", err);
+    return false;
+  }
+}
+
+function showMessage(docRef, message){
+  try{
+    const win = docRef && docRef.defaultView;
+    if(win && typeof win.showMsg === 'function') return win.showMsg(message);
+    if(win && typeof win.showToast === 'function') return win.showToast(message, 'info');
+  }catch(e){}
+  try{ alert(message); }catch(e){}
+}
+
+async function backupSaveFromForm(form){
+  if(!form || !form.qrEl) return false;
+  const qrVal = normQR(form.qrEl.value);
+  if(!qrVal){
+    showMessage(form.docRef, "Primero sube una imagen con QR");
+    return false;
+  }
+
+  const ok = await upsertQrToFirestore(qrVal, {
+    name: form.nombreEl ? form.nombreEl.value : "",
+    phone: form.numeroEl ? form.numeroEl.value : "",
+    destino: form.destinoEl ? form.destinoEl.value : "Yape"
+  });
+
+  if(ok){
+    try{
+      const win = form.docRef && form.docRef.defaultView;
+      if(win){
+        win.fsUpsertQr = upsertQrToFirestore;
+      }
+    }catch(e){}
+    console.log("✅ Backup Guardar QR ejecutado");
+  }
+
+  return ok;
+}
+
+window.fsUpsertQr = upsertQrToFirestore;
+window.__qrFixSave = async function(){
+  let any = false;
+  let success = false;
+  for(const form of getAllQrForms()){
+    any = true;
+    const ok = await backupSaveFromForm(form);
+    success = success || ok;
+  }
+  return any && success;
+};
+
+function installIntoDocument(docRef){
+  const form = getQrFormFromDoc(docRef);
+  if(!form || !form.guardarBtn) return false;
+  const btn = form.guardarBtn;
+  if(btn.dataset.qrFixInstalled === '1'){
+    try{
+      if(docRef.defaultView) docRef.defaultView.fsUpsertQr = upsertQrToFirestore;
+    }catch(e){}
+    return true;
+  }
+
+  btn.dataset.qrFixInstalled = '1';
+  try{
+    if(docRef.defaultView) docRef.defaultView.fsUpsertQr = upsertQrToFirestore;
+  }catch(e){}
+
+  btn.addEventListener('click', function(){
+    if(btn.dataset.qrFixBusy === '1') return;
+    btn.dataset.qrFixBusy = '1';
+    Promise.resolve(backupSaveFromForm(form)).finally(() => {
+      setTimeout(() => {
+        btn.dataset.qrFixBusy = '0';
+      }, 500);
+    });
+  }, true);
+
+  console.log('✅ Listener backup de Guardar QR instalado');
+  return true;
+}
+
+function installAll(){
+  let installed = false;
+  for(const docRef of getCandidateDocuments()){
+    installed = installIntoDocument(docRef) || installed;
+  }
+  return installed;
+}
+
+installAll();
+setTimeout(installAll, 500);
+setTimeout(installAll, 1200);
+setTimeout(installAll, 2500);
+document.addEventListener('DOMContentLoaded', installAll);
+window.addEventListener('load', installAll);
+
+try{
+  const mo = new MutationObserver(() => installAll());
+  mo.observe(document.documentElement, { subtree: true, childList: true });
+  setTimeout(() => { try{ mo.disconnect(); }catch(e){} }, 20000);
+}catch(e){}
+</script>
+
+
+<script type="module" id="qr-firestore-save-fix-v3">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const QR_V3_CONFIG = {
+  apiKey: "AIzaSyC89Qpf_Ie85lVkm5V5wi_xBC5fajPngj8",
+  authDomain: "yapeton.firebaseapp.com",
+  projectId: "yapeton",
+  storageBucket: "yapeton.firebasestorage.app",
+  messagingSenderId: "550981729513",
+  appId: "1:550981729513:web:b7b72dbcd5cad004410478",
+  measurementId: "G-DS790H07HM"
+};
+
+const qrV3App = getApps().find(a => a.name === 'qr-firestore-save-fix-v3') || initializeApp(QR_V3_CONFIG, 'qr-firestore-save-fix-v3');
+const qrV3Db = getFirestore(qrV3App);
+
+function only9(v){ return String(v || '').replace(/\D/g, '').slice(0, 9); }
+function normQR(v){ return String(v || '').trim(); }
+
+function collectDocs(rootDoc = document){
+  const docs = [];
+  const seen = new Set();
+  function visit(docRef){
+    if(!docRef || seen.has(docRef)) return;
+    seen.add(docRef);
+    docs.push(docRef);
+    try{
+      docRef.querySelectorAll('iframe').forEach((frame) => {
+        try{
+          if(frame.contentDocument) visit(frame.contentDocument);
+        }catch(e){}
+      });
+    }catch(e){}
+  }
+  visit(rootDoc);
+  return docs;
+}
+
+function getForm(docRef){
+  if(!docRef) return null;
+  const nombreEl = docRef.getElementById('qrReg_nombre');
+  const qrEl = docRef.getElementById('qrReg_qr');
+  const numeroEl = docRef.getElementById('qrReg_numero');
+  const destinoEl = docRef.getElementById('qrReg_destino');
+  const guardarBtn = docRef.getElementById('qrReg_btnGuardar');
+  const msgEl = docRef.getElementById('qrReg_msg');
+  if(!guardarBtn || !qrEl) return null;
+  return { docRef, nombreEl, qrEl, numeroEl, destinoEl, guardarBtn, msgEl };
+}
+
+function ensureBanner(docRef){
+  let el = docRef.getElementById('qrFirebaseBannerV3');
+  if(el) return el;
+  el = docRef.createElement('div');
+  el.id = 'qrFirebaseBannerV3';
+  el.setAttribute('aria-live', 'polite');
+  el.style.cssText = [
+    'position:fixed',
+    'left:16px',
+    'right:16px',
+    'bottom:18px',
+    'z-index:999999',
+    'padding:14px 16px',
+    'border-radius:16px',
+    'font:600 14px/1.35 system-ui,-apple-system,Segoe UI,Roboto,sans-serif',
+    'box-shadow:0 12px 30px rgba(0,0,0,.22)',
+    'display:none',
+    'text-align:center',
+    'backdrop-filter:blur(8px)',
+    '-webkit-backdrop-filter:blur(8px)'
+  ].join(';');
+  (docRef.body || docRef.documentElement).appendChild(el);
+  return el;
+}
+
+function showStatus(docRef, message, kind = 'success'){
+  try{
+    const msgEl = docRef.getElementById('qrReg_msg');
+    if(msgEl){
+      msgEl.textContent = message;
+      msgEl.style.background = kind === 'success' ? 'rgba(29,166,90,.14)' : 'rgba(220,38,38,.14)';
+      msgEl.style.color = kind === 'success' ? '#15803d' : '#b91c1c';
+      msgEl.style.border = kind === 'success' ? '1px solid rgba(21,128,61,.18)' : '1px solid rgba(185,28,28,.18)';
+      msgEl.classList.add('show');
+      clearTimeout(msgEl.__hideTimer);
+      msgEl.__hideTimer = setTimeout(() => msgEl.classList.remove('show'), 2300);
+    }
+  }catch(e){}
+
+  try{
+    const banner = ensureBanner(docRef);
+    banner.textContent = message;
+    banner.style.display = 'block';
+    banner.style.background = kind === 'success' ? 'rgba(20,120,70,.96)' : 'rgba(127,29,29,.96)';
+    banner.style.color = '#fff';
+    clearTimeout(banner.__hideTimer);
+    banner.__hideTimer = setTimeout(() => { banner.style.display = 'none'; }, 2400);
+  }catch(e){}
+}
+
+async function saveQrToFirestore(qrText, data = {}){
+  const qr = normQR(qrText);
+  if(!qr) throw new Error('QR vacío');
+
+  const ref = doc(qrV3Db, 'qrs', qr);
+  const snap = await getDoc(ref);
+  const payload = {
+    qr,
+    name: String(data.name || '').trim(),
+    phone: only9(data.phone || ''),
+    destino: String(data.destino || 'Yape').trim() || 'Yape',
+    updatedAt: serverTimestamp(),
+    savedFrom: 'web_qr_fix_v3'
+  };
+  if(!snap.exists() || !(snap.data() && snap.data().createdAt)){
+    payload.createdAt = serverTimestamp();
+  }
+  await setDoc(ref, payload, { merge: true });
+  return true;
+}
+
+async function handleSave(form, btn){
+  const nombre = String(form.nombreEl && form.nombreEl.value || '').trim();
+  const qr = normQR(form.qrEl && form.qrEl.value || '');
+  const phone = only9(form.numeroEl && form.numeroEl.value || '');
+  const destino = String(form.destinoEl && form.destinoEl.value || 'Yape').trim() || 'Yape';
+
+  if(!nombre){
+    showStatus(form.docRef, 'Falta el nombre del titular', 'error');
+    return false;
+  }
+  if(!qr){
+    showStatus(form.docRef, 'Primero sube una imagen y lee el QR', 'error');
+    return false;
+  }
+
+  const oldText = btn ? btn.textContent : '';
+  if(btn){
+    btn.disabled = true;
+    btn.style.opacity = '0.88';
+    btn.textContent = 'Guardando...';
+  }
+
+  try{
+    await saveQrToFirestore(qr, { name: nombre, phone, destino });
+    showStatus(form.docRef, 'Guardado en Firebase ✓', 'success');
+    try{
+      if(form.docRef.defaultView){
+        form.docRef.defaultView.fsUpsertQr = saveQrToFirestore;
+      }
+    }catch(e){}
+    if(form.nombreEl) form.nombreEl.value = '';
+    if(form.qrEl) form.qrEl.value = '';
+    if(form.numeroEl) form.numeroEl.value = '';
+    if(form.destinoEl) form.destinoEl.value = 'Yape';
+    return true;
+  }catch(err){
+    console.error('❌ Error guardando QR en Firebase:', err);
+    showStatus(form.docRef, 'No se pudo guardar en Firebase', 'error');
+    return false;
+  }finally{
+    if(btn){
+      btn.disabled = false;
+      btn.style.opacity = '';
+      btn.textContent = oldText || 'Guardar QR';
+    }
+  }
+}
+
+function replaceSaveButton(form){
+  const btn = form && form.guardarBtn;
+  if(!btn) return false;
+  if(btn.dataset.firebaseV3Bound === '1') return true;
+
+  const clone = btn.cloneNode(true);
+  clone.dataset.firebaseV3Bound = '1';
+  clone.disabled = false;
+  clone.removeAttribute('onclick');
+  btn.replaceWith(clone);
+  form.guardarBtn = clone;
+
+  clone.addEventListener('click', function(ev){
+    ev.preventDefault();
+    ev.stopPropagation();
+    ev.stopImmediatePropagation();
+    handleSave(form, clone);
+  }, true);
+
+  return true;
+}
+
+function install(){
+  let found = false;
+  collectDocs(document).forEach((docRef) => {
+    const form = getForm(docRef);
+    if(!form) return;
+    found = true;
+    replaceSaveButton(form);
+    try{
+      if(docRef.defaultView){
+        docRef.defaultView.fsUpsertQr = saveQrToFirestore;
+        docRef.defaultView.showFirebaseSavedMessage = function(msg, kind){
+          showStatus(docRef, msg || 'Guardado en Firebase ✓', kind || 'success');
+        };
+      }
+    }catch(e){}
+  });
+  return found;
+}
+
+window.fsUpsertQr = saveQrToFirestore;
+window.__saveQrFirebaseV3 = async function(){
+  let ok = false;
+  collectDocs(document).forEach(() => {});
+  for(const docRef of collectDocs(document)){
+    const form = getForm(docRef);
+    if(!form) continue;
+    const res = await handleSave(form, form.guardarBtn);
+    ok = ok || res;
+  }
+  return ok;
+};
+
+install();
+setTimeout(install, 300);
+setTimeout(install, 900);
+setTimeout(install, 1800);
+setTimeout(install, 3200);
+window.addEventListener('load', install);
+document.addEventListener('DOMContentLoaded', install);
+try{
+  const mo = new MutationObserver(() => install());
+  mo.observe(document.documentElement, { subtree:true, childList:true });
+  setTimeout(() => { try{ mo.disconnect(); }catch(e){} }, 30000);
+}catch(e){}
 </script>
 
 </body>
