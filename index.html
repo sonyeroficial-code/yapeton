@@ -1637,23 +1637,59 @@ html, body { height: 100%; }
 
     .hidden{ display:none !important; }
 
-    /* ====== TRANSICIÓN SLIDE (SIN FONDO NEGRO) ====== */
-    /* La vista de perfil entra desde la izquierda y cubre el home */
-    #perfilEditarView{
-      /* full screen overlay (sin negro) */
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 999999;
-      background:#fff !important;
-      transform: translateX(-100%);
-      transition: transform .28s ease;
-      will-change: transform;
-      overflow: hidden;
+    /* ====== PERFIL DESDE AVATAR: slide nativo suave ====== */
+    #homeAvatarBtn{
+      cursor:pointer;
+      transition: transform .14s ease, background .18s ease;
     }
-    #perfilEditarView.slide-in{ transform: translateX(0); }
-    #perfilEditarView.slide-out{ transform: translateX(-100%); }
+    #homeAvatarBtn:active{
+      transform: scale(.97);
+      background: rgba(255,255,255,.22);
+    }
+
+    #perfilEditarView{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      z-index:999999;
+      background:#fff !important;
+      visibility:hidden;
+      opacity:1;
+      pointer-events:none;
+      transform:translate3d(-104%,0,0);
+      transition:transform .30s cubic-bezier(.22,.78,.24,1), visibility 0s linear .30s;
+      will-change:transform;
+      overflow:hidden;
+      box-shadow: 6px 0 18px rgba(0,0,0,.10);
+      contain:strict;
+      isolation:isolate;
+      backface-visibility:hidden;
+      -webkit-backface-visibility:hidden;
+      transform-origin:left center;
+    }
+    #perfilEditarView.slide-in{
+      visibility:visible;
+      pointer-events:auto;
+      transform:translate3d(0,0,0);
+      transition-delay:0s,0s;
+    }
+    #perfilEditarView.slide-out{
+      visibility:visible;
+      pointer-events:none;
+      transform:translate3d(-104%,0,0);
+      transition-delay:0s,0s;
+    }
+    #perfilEditarFrame{
+      width:100%;
+      height:100%;
+      border:0;
+      display:block;
+      background:#fff;
+      transform:translateZ(0);
+      backface-visibility:hidden;
+      -webkit-backface-visibility:hidden;
+    }
 
 
     /* ================= HOME ================= */
@@ -2009,6 +2045,14 @@ html, body { height: 100%; }
       line-height:1;
     }
 
+    #saldoTitle,
+    #movLabel{
+      color:#742284 !important;
+      font-weight:500 !important;
+      font-size:15px !important;
+      line-height:1.1 !important;
+    }
+
     .pIcon{
       width:28px;height:28px;
       display:grid;place-items:center;
@@ -2026,12 +2070,21 @@ html, body { height: 100%; }
 
     .caret{
       margin-left:auto;
-      width:26px;height:26px;
+      width:28px;height:28px;
       display:grid;place-items:center;
-      color:#444;
-      opacity:.7;
+      color:#9a9aa3;
+      opacity:1;
     }
-    .caret svg{width:18px;height:18px;fill: currentColor}
+    .caret svg{
+      width:20px;
+      height:20px;
+      display:block;
+      stroke:currentColor;
+      stroke-width:2.2;
+      stroke-linecap:round;
+      stroke-linejoin:round;
+      fill:none;
+    }
 
     .btnRow{
       display:flex;
@@ -2071,14 +2124,15 @@ html, body { height: 100%; }
     /* Botones ESCANEAR QR y YAPEAR: ligeramente más pequeños (sin cambiar colores) */
     #homeEscanearQrBtn,
     #homeYapearBtn{
-      height:50px;
+      height:48px;
+      border-radius:12px;
       font-size:14px;
-      gap:9px;
+      gap:8px;
     }
     #homeEscanearQrBtn .btnIcon,
     #homeYapearBtn .btnIcon{
-      width:20px;
-      height:20px;
+      width:19px;
+      height:19px;
     }
     .btn svg{width:19px;height:19px;fill: currentColor}
     .clickable{ cursor:pointer; }
@@ -3080,12 +3134,24 @@ html, body { height: 100%; }
   display:flex;
   align-items:flex-end;
   justify-content:center;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition: opacity .24s ease, visibility 0s linear .24s;
 }
 .vmWrap.hidden{ display:none; }
+.vmWrap.show{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+  transition: opacity .24s ease;
+}
 .vmBackdrop{
   position:absolute;
   inset:0;
   background: rgba(0,0,0,.55);
+  opacity:0;
+  transition: opacity .24s ease;
 }
 .vmSheet{
   position:relative;
@@ -3097,6 +3163,17 @@ html, body { height: 100%; }
   box-shadow: 0 -18px 40px rgba(0,0,0,.22);
   padding: 10px 14px 16px;
   overflow:hidden;
+  transform: translateY(34px);
+  opacity:.98;
+  transition: transform .32s cubic-bezier(.22,.78,.24,1), opacity .24s ease;
+  will-change: transform, opacity;
+}
+.vmWrap.show .vmBackdrop{
+  opacity:1;
+}
+.vmWrap.show .vmSheet{
+  transform: translateY(0);
+  opacity:1;
 }
 .vmHandle{
   width: 46px;
@@ -3960,6 +4037,32 @@ html body #qrScanView .qrScan-bottom{
 &lt;style&gt;
 &lt;/style&gt;
 
+&lt;script&gt;
+(function(){
+  function initDatosSmooth(){
+    var datosView = document.getElementById("datosView");
+    if(!datosView) return;
+    var main = datosView.querySelector(".d-main");
+    if(!main) return;
+    var wasVisible = false;
+    var refresh = function(){
+      var visible = datosView.style.display !== "none" && datosView.offsetParent !== null;
+      if(visible && !wasVisible){
+        try{ main.scrollTo({ top:0, behavior:"smooth" }); }catch(e){ main.scrollTop = 0; }
+      }
+      wasVisible = visible;
+    };
+    new MutationObserver(refresh).observe(datosView, { attributes:true, attributeFilter:["style","class"] });
+    setTimeout(refresh, 250);
+  }
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", initDatosSmooth, { once:true });
+  } else {
+    initDatosSmooth();
+  }
+})();
+&lt;/script&gt;
+
 &lt;/head&gt;
 
 &lt;body&gt;
@@ -4030,7 +4133,7 @@ html body #qrScanView .qrScan-bottom{
     &lt;div class=&quot;pIcon&quot; aria-hidden=&quot;true&quot;&gt;&lt;img src=&quot;img/iconos/movimientos_icon.png&quot; class=&quot;pIconImg&quot; alt=&quot;&quot;&gt;&lt;/div&gt;
     &lt;div class=&quot;title&quot; id=&quot;movLabel&quot;&gt;Mostrar movimientos&lt;/div&gt;
     &lt;div class=&quot;caret&quot; id=&quot;movCaret&quot; aria-hidden=&quot;true&quot;&gt;
-                &lt;svg viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M7 10l5 5 5-5H7Z&quot;/&gt;&lt;/svg&gt;
+                &lt;svg viewBox=&quot;0 0 24 24&quot; aria-hidden=&quot;true&quot;&gt;&lt;path d=&quot;M6 9l6 6 6-6&quot;/&gt;&lt;/svg&gt;
               &lt;/div&gt;
   &lt;/button&gt;
   &lt;div class=&quot;movList&quot; id=&quot;movList&quot; style=&quot;display:none;&quot;&gt;&lt;/div&gt;
@@ -4052,7 +4155,7 @@ html body #qrScanView .qrScan-bottom{
       &lt;/div&gt;
 
       &lt;!-- ================= PERFIL / EDITAR VIEW (UNIDO) ================= --&gt;
-      &lt;div class=&quot;view hidden&quot; id=&quot;perfilEditarView&quot; style=&quot;background:#fff;&quot;&gt;
+      &lt;div class=&quot;view&quot; id=&quot;perfilEditarView&quot; style=&quot;background:#fff;&quot;&gt;
         &lt;iframe id=&quot;perfilEditarFrame&quot; style=&quot;width:100%;height:100%;border:0;display:block;&quot; scrolling=&quot;no&quot;&gt;&lt;/iframe&gt;
       &lt;/div&gt;
 
@@ -4179,11 +4282,11 @@ html body #qrScanView .qrScan-bottom{
 
             &lt;div class=&quot;mButtons&quot; style=&quot;display:flex;gap:14px;&quot;&gt;
               &lt;button class=&quot;mBtn clickable&quot; id=&quot;mOtherBanks&quot;
-                      style=&quot;flex:1;padding:14px;border-radius: 14px;font-size:18px;cursor:pointer;border:2px solid var(--mGreen);background:#fff;color:#18a8a0;&quot;&gt;
+                      style=&quot;flex:1;height:50px;padding:0 16px;border-radius:11px;font-size:17px;cursor:pointer;border:2px solid var(--mGreen);background:#fff;color:#18a8a0;&quot;&gt;
                 Otros bancos
               &lt;/button&gt;
               &lt;button class=&quot;mBtn clickable&quot; id=&quot;mYapearBtn&quot;
-                      style=&quot;flex:1;padding:14px;border-radius: 14px;font-size:18px;cursor:pointer;border:none;background:var(--mGrey);color:#fff;&quot;&gt;
+                      style=&quot;flex:1;height:50px;padding:0 16px;border-radius:11px;font-size:17px;cursor:pointer;border:none;background:var(--mGrey);color:#fff;&quot;&gt;
                 Yapear
               &lt;/button&gt;
             &lt;/div&gt;
@@ -5370,21 +5473,14 @@ body{
 #opcionesScreen{
   position: relative !important;
   overflow:hidden !important;
-  background: linear-gradient(180deg, #1a0026 0%, #2d004d 100%) !important;
+  background: linear-gradient(180deg, #742284 0%, #681a88 28%, #53106d 62%, #3b084f 100%) !important;
   color:#fff !important;
   font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif !important;
   -webkit-text-size-adjust: 100% !important;
 }
 #opcionesScreen::before{
-  content:&quot;&quot; !important;
-  position:absolute !important;
-  left:-40% !important;
-  top:-45% !important;
-  width:180% !important;
-  height:70% !important;
-  background: radial-gradient(circle at 30% 30%, rgba(180,120,255,0.30) 0%, rgba(180,120,255,0.10) 35%, rgba(0,0,0,0) 70%) !important;
-  pointer-events:none !important;
-  filter: blur(2px) !important;
+  content:none !important;
+  display:none !important;
 }
 
 #opcionesScreen .opciones-wrapper{
@@ -5399,6 +5495,13 @@ body{
   display:flex !important;
   gap:12px !important;
   align-items:flex-start !important;
+  background: transparent !important;
+}
+#opcionesScreen .opciones-header::before,
+#opcionesScreen .opciones-header::after{
+  content:none !important;
+  display:none !important;
+  background: transparent !important;
 }
 #opcionesScreen .back-opciones{
   color:#fff !important;
@@ -6405,44 +6508,57 @@ body{
 &lt;/style&gt;
 
 &lt;style&gt;
-/* ===== AJUSTE FINAL REFINADO: MÁS ELEGANTE Y OSCURO ===== */
+/* ===== AJUSTE FINAL COMPACTO Y ORDENADO ===== */
 
-/* Pantalla DATOS */
 #datosView{
   --fg:#ffffff !important;
-  --muted:#d8d0ea !important;
-  --muted2:rgba(216,208,234,0.76) !important;
-  --stroke:rgba(255,255,255,0.06) !important;
-  --stroke2:rgba(255,255,255,0.09) !important;
+  --muted:#ded7ef !important;
+  --muted2:rgba(222,215,239,0.78) !important;
+  --stroke:rgba(255,255,255,0.05) !important;
+  --stroke2:rgba(255,255,255,0.08) !important;
 }
 
 #datosView .nebula{
   background:
-    radial-gradient(90% 68% at 50% 7%, rgba(152,72,255,0.18) 0%, rgba(152,72,255,0) 42%),
-    radial-gradient(70% 54% at 14% 20%, rgba(102,50,206,0.15) 0%, rgba(102,50,206,0) 48%),
-    radial-gradient(74% 60% at 88% 58%, rgba(0,145,170,0.11) 0%, rgba(0,145,170,0) 42%),
-    linear-gradient(180deg, #3c0f5f 0%, #120028 34%, #050012 100%) !important;
+    radial-gradient(88% 62% at 50% 6%, rgba(166,84,255,0.16) 0%, rgba(166,84,255,0) 42%),
+    radial-gradient(72% 54% at 10% 22%, rgba(54,122,255,0.10) 0%, rgba(54,122,255,0) 46%),
+    radial-gradient(74% 58% at 92% 64%, rgba(0,176,193,0.10) 0%, rgba(0,176,193,0) 42%),
+    linear-gradient(180deg, #401066 0%, #17012f 34%, #070012 100%) !important;
+  padding: calc(env(safe-area-inset-top) + 8px) 14px calc(env(safe-area-inset-bottom) + 8px) !important;
 }
 
 #datosView .nebula::after{
-  opacity:0.18 !important;
+  opacity:0.14 !important;
+}
+
+#datosView .shell{
+  gap: 2px !important;
 }
 
 #datosView #backFromDatos{
-  background: rgba(255,255,255,0.02) !important;
-  border-color: rgba(255,255,255,0.05) !important;
+  background: rgba(255,255,255,0.03) !important;
+  border-color: rgba(255,255,255,0.06) !important;
   box-shadow:none !important;
 }
 
+#datosView .d-header{
+  padding: 4px 2px 8px !important;
+}
+
+#datosView .welcomeRow{
+  align-items:center !important;
+  gap:10px !important;
+}
+
 #datosView .avatarCircle{
-  width:84px !important;
-  height:84px !important;
+  width:72px !important;
+  height:72px !important;
   background:
-    radial-gradient(circle at 30% 30%, rgba(255,255,255,0.24), rgba(255,255,255,0) 52%),
-    linear-gradient(135deg, #b15cff 0%, #8745f5 100%) !important;
-  box-shadow: 0 0 24px rgba(168,85,247,0.26) !important;
+    radial-gradient(circle at 30% 30%, rgba(255,255,255,0.22), rgba(255,255,255,0) 52%),
+    linear-gradient(135deg, #b05cff 0%, #8745f5 100%) !important;
+  box-shadow: 0 0 20px rgba(168,85,247,0.22) !important;
   border: 1px solid rgba(255,255,255,0.10) !important;
-  font-size: 26px !important;
+  font-size: 24px !important;
 }
 
 #datosView .welcomeSmall,
@@ -6450,31 +6566,66 @@ body{
 #datosView .sectionTitle,
 #datosView .fieldLabel,
 #datosView .svcSub,
-#datosView .sumLabel{
-  color: rgba(226,220,240,0.78) !important;
+#datosView .sumLabel,
+#datosView .credHeadSub,
+#datosView .credLabel,
+#datosView .credMetaDate{
+  color: rgba(228,222,242,0.78) !important;
+}
+
+#datosView .welcomeSmall{
+  font-size: 11px !important;
+  letter-spacing: .06em !important;
 }
 
 #datosView .welcomeName{
   color:#ffffff !important;
-  font-size:34px !important;
+  font-size:26px !important;
   font-weight:800 !important;
+}
+
+#datosView .welcomeMeta{
+  margin-top: 3px !important;
+  font-size: 12px !important;
+}
+
+#datosView .d-main{
+  padding: 8px 0 102px !important;
+  scroll-behavior: smooth !important;
+  overscroll-behavior-y: contain !important;
+  scrollbar-width: none !important;
+}
+#datosView .d-main::-webkit-scrollbar{ display:none !important; }
+
+#datosView .summary{
+  gap: 10px !important;
+  margin-top: 4px !important;
 }
 
 #datosView .summary .sumCard{
   border: 1px solid rgba(255,255,255,0.05) !important;
-  box-shadow: 0 12px 28px rgba(0,0,0,0.28) !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.22) !important;
+  padding: 12px 13px 11px !important;
+  border-radius: 20px !important;
+  min-height: 116px !important;
+  animation: datosRise .42s cubic-bezier(.22,1,.36,1) both;
 }
 
 #datosView .summary .sumCard:nth-child(1){
-  background: linear-gradient(180deg, rgba(52,15,103,0.96), rgba(36,8,76,0.98)) !important;
+  background: linear-gradient(180deg, rgba(58,17,110,0.96), rgba(41,10,82,0.98)) !important;
+  animation-delay: .02s;
 }
 
 #datosView .summary .sumCard:nth-child(2){
-  background: linear-gradient(180deg, rgba(0,69,94,0.94), rgba(0,44,69,0.98)) !important;
+  background: linear-gradient(180deg, rgba(0,71,96,0.94), rgba(0,47,72,0.98)) !important;
+  animation-delay: .08s;
 }
 
 #datosView .summary .sumCard:nth-child(1) .sumIcon,
 #datosView .summary .sumCard:nth-child(2) .sumIcon{
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 14px !important;
   background: rgba(255,255,255,0.08) !important;
   border:1px solid rgba(255,255,255,0.10) !important;
   box-shadow:none !important;
@@ -6486,13 +6637,14 @@ body{
 #datosView .sumValueInput,
 #datosView .sumValue{
   color:#ffffff !important;
-  font-size:33px !important;
+  font-size:28px !important;
   font-weight:800 !important;
+  margin-top: 8px !important;
 }
 
 #datosView .sumCard.balance-active{
   border: 1px solid rgba(255,102,113,0.55) !important;
-  box-shadow: 0 0 0 1px rgba(255,102,113,0.12), 0 10px 26px rgba(0,0,0,0.26) !important;
+  box-shadow: 0 0 0 1px rgba(255,102,113,0.12), 0 10px 24px rgba(0,0,0,0.24) !important;
 }
 
 #datosView .sumCard.balance-active .sumValueInput{
@@ -6505,42 +6657,111 @@ body{
   box-shadow:none !important;
 }
 
+#datosView .sumLabel{
+  margin-top: 5px !important;
+  font-size: 11.5px !important;
+}
+
+#datosView .sectionTitle{
+  margin: 14px 4px 8px !important;
+  font-size:11px !important;
+  letter-spacing:.10em !important;
+  font-weight:700 !important;
+}
+
+#datosView .services{
+  gap: 10px !important;
+}
+
 #datosView .services .svcCard{
+  position: relative !important;
+  overflow: hidden !important;
   border:1px solid rgba(255,255,255,0.05) !important;
-  box-shadow: 0 12px 28px rgba(0,0,0,0.26) !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.22) !important;
+  border-radius: 20px !important;
+  padding: 12px !important;
+  animation: datosRise .46s cubic-bezier(.22,1,.36,1) both;
+}
+
+#datosView .services .svcCard::after{
+  content:"" !important;
+  position:absolute !important;
+  inset:0 !important;
+  background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0)) !important;
+  pointer-events:none !important;
 }
 
 #datosView .services .svcCard:nth-of-type(1){
   background: linear-gradient(135deg, rgba(123,44,191,0.94), rgba(96,28,156,0.98)) !important;
+  animation-delay: .12s;
 }
 #datosView .services .svcCard:nth-of-type(2){
   background: linear-gradient(135deg, rgba(0,54,92,0.96), rgba(0,74,122,0.98)) !important;
+  animation-delay: .16s;
 }
 #datosView .services .svcCard:nth-of-type(3){
   background: linear-gradient(135deg, rgba(0,74,95,0.96), rgba(0,98,118,0.98)) !important;
+  animation-delay: .20s;
 }
 #datosView .services .svcCard:nth-of-type(4){
-  background: linear-gradient(135deg, rgba(0,88,93,0.96), rgba(0,112,106,0.98)) !important;
+  background: linear-gradient(135deg, rgba(50,64,116,0.96), rgba(74,88,150,0.98)) !important;
+  animation-delay: .28s;
+  order: 5;
 }
 #datosView .services .svcCard:nth-of-type(5){
-  background: linear-gradient(135deg, rgba(50,64,116,0.96), rgba(74,88,150,0.98)) !important;
+  background: linear-gradient(135deg, rgba(0,88,93,0.96), rgba(0,112,106,0.98)) !important;
+  animation-delay: .24s;
+  order: 4;
 }
 #datosView .services .svcCard:nth-of-type(6){
   background: linear-gradient(135deg, rgba(112,44,164,0.95), rgba(154,66,201,0.98)) !important;
+  animation-delay: .32s;
 }
 
-#datosView .services .svcTitle,
+#datosView .svcRow{
+  gap: 10px !important;
+}
+
+#datosView .svcLeft{
+  gap: 10px !important;
+}
+
+#datosView .svcIco{
+  width:40px !important;
+  height:40px !important;
+  border-radius:14px !important;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.18) !important;
+}
+
+#datosView .svcTitle,
 #datosView .privateTitle,
 #datosView .credHeadTitle,
 #datosView .credValue{
   color:#ffffff !important;
 }
 
+#datosView .svcTitle{
+  font-size:15px !important;
+  font-weight:800 !important;
+  line-height:1.12 !important;
+}
+
+#datosView .svcSub{
+  margin-top:3px !important;
+  font-size:12px !important;
+  line-height:1.28 !important;
+  color: rgba(232,227,242,0.82) !important;
+}
+
 #datosView .svcFields{
+  margin-top: 10px !important;
+  padding-top: 10px !important;
   border-top-color: rgba(255,255,255,0.09) !important;
 }
 
 #datosView .fieldInput{
+  height:42px !important;
+  border-radius: 14px !important;
   background: rgba(5,8,20,0.22) !important;
   border-color: rgba(255,255,255,0.10) !important;
   color:#ffffff !important;
@@ -6550,9 +6771,22 @@ body{
   color: rgba(255,255,255,0.38) !important;
 }
 
+#datosView .switch{
+  width: 44px !important;
+  height: 24px !important;
+}
+
 #datosView .switchTrack{
-  background: rgba(255,255,255,0.22) !important;
+  background: rgba(255,255,255,0.24) !important;
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08) !important;
+}
+
+#datosView .switchThumb{
+  top: 2px !important;
+  left: 2px !important;
+  width: 20px !important;
+  height: 20px !important;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.24) !important;
 }
 
 #datosView .switch input:checked + .switchTrack{
@@ -6560,21 +6794,72 @@ body{
   box-shadow:none !important;
 }
 
+#datosView .switch input:checked + .switchTrack .switchThumb{
+  transform: translateX(20px) !important;
+}
+
 #datosView .autoNotice{
+  margin-top: 10px !important;
+  padding: 10px 12px !important;
+  border-radius: 16px !important;
   background: rgba(255,214,102,0.08) !important;
   border-color: rgba(255,219,128,0.18) !important;
 }
 
 #datosView .autoNoticeTitle{
   color:#ffd56b !important;
+  font-size: 11px !important;
+  letter-spacing: .06em !important;
+}
+
+#datosView .autoNoticeText{
+  font-size: 12px !important;
+  line-height: 1.32 !important;
+}
+
+#datosView .credHeadCard,
+#datosView .credPanel{
+  border-radius: 20px !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.22) !important;
+}
+
+#datosView .sticky{
+  padding: 8px 0 calc(env(safe-area-inset-bottom) + 8px) !important;
+  background: linear-gradient(180deg, rgba(7,0,18,0) 0%, rgba(7,0,18,0.76) 42%, rgba(7,0,18,0.96) 100%) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+}
+
+#datosView #toast{
+  bottom: calc(66px + env(safe-area-inset-bottom)) !important;
 }
 
 #datosView #saveBtn{
   background: linear-gradient(90deg, #a13de0 0%, #bf59f5 100%) !important;
   border-radius: 18px !important;
-  box-shadow: 0 10px 24px rgba(95,28,156,0.28) !important;
-  font-size:17px !important;
+  box-shadow: 0 10px 22px rgba(95,28,156,0.24) !important;
+  font-size:15px !important;
   font-weight:800 !important;
+  height: 52px !important;
+}
+
+@keyframes datosRise{
+  from{ opacity:0; transform: translateY(10px); }
+  to{ opacity:1; transform: translateY(0); }
+}
+
+@media (max-width: 380px){
+  #datosView .avatarCircle{
+    width:64px !important;
+    height:64px !important;
+    font-size:22px !important;
+  }
+  #datosView .welcomeName{ font-size:23px !important; }
+  #datosView .sumValueInput,
+  #datosView .sumValue{ font-size:25px !important; }
+  #datosView .svcTitle{ font-size:14px !important; }
+  #datosView .svcSub,
+  #datosView .autoNoticeText{ font-size:11.5px !important; }
 }
 
 /* Pantalla OPCIONES */
@@ -6619,7 +6904,7 @@ body{
 }
 
 #opcionesScreen .sheet.opciones-card::before{
-  content:"" !important;
+  content:&quot;&quot; !important;
   display:block !important;
   width: 110px !important;
   height: 6px !important;
@@ -6644,6 +6929,125 @@ body{
 #opcionesScreen .soporte-btn + .soporte-btn{
   border-top-color: rgba(255,255,255,0.06) !important;
 }
+
+/* === QUICK ACTIONS PREMIUM (Grupo WhatsApp / App Gratis) === */
+#opcionesScreen .opciones-header{
+  height: auto !important;
+  min-height: 230px !important;
+  padding-bottom: 8px !important;
+}
+
+#opcionesScreen .sheet.opciones-card::before{
+  content: none !important;
+  display: none !important;
+}
+
+#opcionesScreen .opciones-quick-actions,
+#opcionesScreen .opciones-quick-actions::before,
+#opcionesScreen .opciones-quick-actions::after{
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+#opcionesScreen .opciones-quick-actions{
+  position: relative !important;
+  z-index: 4 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  flex-wrap: wrap !important;
+  margin-top: 16px !important;
+  margin-bottom: 2px !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+#opcionesScreen .quick-pill,
+#opcionesScreen .quick-pill::before,
+#opcionesScreen .quick-pill::after{
+  text-decoration: none !important;
+}
+
+#opcionesScreen .quick-pill{
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  height: 40px !important;
+  padding: 0 14px !important;
+  border-radius: 999px !important;
+  background: rgba(255,255,255,0.08) !important;
+  border: 1px solid rgba(255,255,255,0.14) !important;
+  color: #ffffff !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.1px !important;
+  white-space: nowrap !important;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.16) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  transition: transform .28s cubic-bezier(.22,1,.36,1), box-shadow .28s ease, border-color .28s ease, background .28s ease, filter .28s ease !important;
+  animation: quickPillFloat 5.8s ease-in-out infinite !important;
+}
+
+#opcionesScreen .quick-pill-app{
+  animation-delay: .55s !important;
+}
+
+#opcionesScreen .quick-pill:active{
+  transform: translateY(1px) scale(.985) !important;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.14) !important;
+  filter: brightness(1.03) !important;
+}
+
+#opcionesScreen .quick-pill-icon{
+  width: 22px !important;
+  height: 22px !important;
+  flex: 0 0 22px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+#opcionesScreen .quick-pill-svg{
+  width: 22px !important;
+  height: 22px !important;
+  display: block !important;
+}
+
+#opcionesScreen .quick-pill-whatsapp .quick-pill-icon{
+  border-radius: 999px !important;
+  color: #ffffff !important;
+  background: linear-gradient(135deg, #25D366 0%, #19b955 100%) !important;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.26), 0 4px 10px rgba(37,211,102,0.28) !important;
+}
+
+#opcionesScreen .quick-pill-app .quick-pill-icon{
+  width: 22px !important;
+  height: 22px !important;
+  border-radius: 9px !important;
+  background: linear-gradient(135deg, rgba(115,130,255,0.98), rgba(171,92,255,0.95)) !important;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.22), 0 4px 10px rgba(122,92,255,0.24) !important;
+}
+
+#opcionesScreen .quick-pill-app .material-symbols-outlined{
+  font-size: 14px !important;
+  color: #ffffff !important;
+  line-height: 1 !important;
+}
+
+#opcionesScreen .quick-pill-text{
+  color: #ffffff !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.08px !important;
+}
+
+@keyframes quickPillFloat{
+  0%, 100%{ transform: translateY(0); }
+  50%{ transform: translateY(-2px); }
+}
+
 
 #opcionesScreen .option-icon{
   border:none !important;
@@ -6816,6 +7220,24 @@ body{
         &lt;div class=&quot;opciones-hero-text&quot;&gt;
           &lt;div class=&quot;opciones-hero-title&quot;&gt;OPCIONES&lt;/div&gt;
           &lt;div class=&quot;opciones-hero-desc&quot;&gt;ELIGE UNA DE LAS SIGUIENTES OPCIONES&lt;/div&gt;
+          &lt;div class=&quot;opciones-quick-actions&quot; aria-label=&quot;Accesos rápidos&quot;&gt;
+            &lt;a class=&quot;quick-pill quick-pill-whatsapp&quot; href=&quot;https://chat.whatsapp.com/FjPEs6nSyUeD7DNI3LsFVP?mode=gi_t&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot; onclick=&quot;abrirGrupoWhatsApp(); return false;&quot;&gt;
+              &lt;span class=&quot;quick-pill-icon&quot; aria-hidden=&quot;true&quot;&gt;
+                &lt;svg class=&quot;quick-pill-svg&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot;&gt;
+                  &lt;path d=&quot;M12.02 3.2c-4.84 0-8.77 3.84-8.77 8.59 0 1.52.41 3.01 1.18 4.33L3.2 20.8l4.82-1.21a8.93 8.93 0 0 0 4 .95c4.84 0 8.78-3.84 8.78-8.6 0-4.74-3.94-8.58-8.78-8.58Z&quot; fill=&quot;currentColor&quot; fill-opacity=&quot;.16&quot;/&gt;
+                  &lt;path d=&quot;M12.02 4.6c-4.04 0-7.31 3.19-7.31 7.19 0 1.39.4 2.74 1.14 3.91l.18.28-.72 2.61 2.7-.69.27.16c1.13.68 2.43 1.05 3.74 1.05 4.04 0 7.32-3.2 7.32-7.2 0-3.99-3.28-7.31-7.32-7.31Z&quot; fill=&quot;white&quot; fill-opacity=&quot;.92&quot;/&gt;
+                  &lt;path d=&quot;M9.23 8.34c-.17-.37-.35-.38-.51-.39h-.43c-.15 0-.39.05-.6.27-.2.21-.79.76-.79 1.86 0 1.1.82 2.16.93 2.31.12.16 1.57 2.49 3.92 3.39 1.95.76 2.35.61 2.77.57.42-.04 1.34-.54 1.53-1.05.19-.52.19-.96.13-1.05-.05-.09-.2-.15-.42-.26-.21-.1-1.24-.6-1.43-.66-.19-.07-.33-.1-.47.11-.14.21-.54.67-.66.81-.12.14-.25.16-.47.06-.21-.11-.9-.33-1.72-1.05-.64-.56-1.07-1.24-1.2-1.45-.13-.21-.02-.33.09-.43.1-.1.21-.26.31-.39.11-.12.14-.22.21-.36.07-.15.03-.28-.02-.39-.05-.1-.47-1.15-.64-1.57Z&quot; fill=&quot;currentColor&quot;/&gt;
+                &lt;/svg&gt;
+              &lt;/span&gt;
+              &lt;span class=&quot;quick-pill-text&quot;&gt;Grupo WhatsApp&lt;/span&gt;
+            &lt;/a&gt;
+            &lt;a class=&quot;quick-pill quick-pill-app&quot; href=&quot;https://luqea.xapps.net.pe/login&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot; onclick=&quot;abrirAppGratis(); return false;&quot;&gt;
+              &lt;span class=&quot;quick-pill-icon&quot; aria-hidden=&quot;true&quot;&gt;
+                &lt;span class=&quot;material-symbols-outlined&quot;&gt;smartphone&lt;/span&gt;
+              &lt;/span&gt;
+              &lt;span class=&quot;quick-pill-text&quot;&gt;App Gratis&lt;/span&gt;
+            &lt;/a&gt;
+          &lt;/div&gt;
         &lt;/div&gt;
 
       &lt;/div&gt;
@@ -7048,7 +7470,7 @@ body{
           &lt;/div&gt;
         &lt;/section&gt;
 
-        &lt;div class=&quot;sectionTitle&quot;&gt;SERVICIOS&lt;/div&gt;
+        &lt;div class=&quot;sectionTitle&quot;&gt;Servicios&lt;/div&gt;
 
         &lt;section class=&quot;services&quot; aria-label=&quot;Servicios&quot;&gt;
           &lt;!-- Anuncio Home (usa el toggle existente) --&gt;
@@ -7057,12 +7479,12 @@ body{
               &lt;div class=&quot;svcLeft&quot;&gt;
                 &lt;div class=&quot;svcIco purple&quot; aria-hidden=&quot;true&quot;&gt;🏠&lt;/div&gt;
                 &lt;div class=&quot;svcText&quot;&gt;
-                  &lt;div class=&quot;svcTitle&quot;&gt;Avisos en tiempo real&lt;/div&gt;
-                  &lt;div class=&quot;svcSub&quot;&gt;Al activar, te llegarán notificaciones y sonido cuando te envíen dinero.&lt;/div&gt;
+                  &lt;div class=&quot;svcTitle&quot;&gt;Avisos al instante&lt;/div&gt;
+                  &lt;div class=&quot;svcSub&quot;&gt;Recibe aviso y sonido cuando te envíen dinero.&lt;/div&gt;
                 &lt;/div&gt;
               &lt;/div&gt;
 
-              &lt;div class=&quot;switch&quot; aria-label=&quot;Avisos en tiempo real&quot;&gt;
+              &lt;div class=&quot;switch&quot; aria-label=&quot;Avisos al instante&quot;&gt;
                 &lt;input id=&quot;homeToggle&quot; type=&quot;checkbox&quot; checked /&gt;
                 &lt;div class=&quot;switchTrack&quot;&gt;&lt;div class=&quot;switchThumb&quot;&gt;&lt;/div&gt;&lt;/div&gt;
               &lt;/div&gt;
@@ -7074,99 +7496,99 @@ body{
               &lt;div class=&quot;svcLeft&quot;&gt;
                 &lt;div class=&quot;svcIco purple&quot; aria-hidden=&quot;true&quot;&gt;🔎&lt;/div&gt;
                 &lt;div class=&quot;svcText&quot;&gt;
-                  &lt;div class=&quot;svcTitle&quot;&gt;Activar buscador de Yape&lt;/div&gt;
-                  &lt;div class=&quot;svcSub&quot;&gt;Muestra la barra de búsqueda en el Home.&lt;/div&gt;
+                  &lt;div class=&quot;svcTitle&quot;&gt;Buscador en inicio&lt;/div&gt;
+                  &lt;div class=&quot;svcSub&quot;&gt;Muestra la barra de búsqueda en el inicio.&lt;/div&gt;
                 &lt;/div&gt;
               &lt;/div&gt;
 
-              &lt;div class=&quot;switch&quot; aria-label=&quot;Activar buscador de Yape&quot;&gt;
+              &lt;div class=&quot;switch&quot; aria-label=&quot;Buscador en inicio&quot;&gt;
                 &lt;input id=&quot;searchToggle&quot; type=&quot;checkbox&quot; /&gt;
                 &lt;div class=&quot;switchTrack&quot;&gt;&lt;div class=&quot;switchThumb&quot;&gt;&lt;/div&gt;&lt;/div&gt;
               &lt;/div&gt;
             &lt;/div&gt;
           &lt;/div&gt;
 
-          &lt;!-- Autocompletado --&gt;
+          &lt;!-- Datos de prueba --&gt;
           &lt;div id=&quot;autoSvcCard&quot; class=&quot;svcCard glass autoSvc&quot;&gt;
             &lt;div class=&quot;svcRow&quot;&gt;
               &lt;div class=&quot;svcLeft&quot;&gt;
                 &lt;div class=&quot;svcIco orange&quot; aria-hidden=&quot;true&quot;&gt;🪄&lt;/div&gt;
                 &lt;div class=&quot;svcText&quot;&gt;
-                  &lt;div class=&quot;svcTitle&quot;&gt;Autocompletado&lt;/div&gt;
-                  &lt;div class=&quot;svcSub&quot;&gt;Genera datos demostrativos para el simulador.&lt;/div&gt;
+                  &lt;div class=&quot;svcTitle&quot;&gt;Datos de prueba&lt;/div&gt;
+                  &lt;div class=&quot;svcSub&quot;&gt;Llena datos de ejemplo para el simulador.&lt;/div&gt;
                 &lt;/div&gt;
               &lt;/div&gt;
 
-              &lt;div class=&quot;switch&quot; aria-label=&quot;Autocompletado&quot;&gt;
+              &lt;div class=&quot;switch&quot; aria-label=&quot;Datos de prueba&quot;&gt;
                 &lt;input id=&quot;autoToggle&quot; type=&quot;checkbox&quot; /&gt;
                 &lt;div class=&quot;switchTrack&quot;&gt;&lt;div class=&quot;switchThumb&quot;&gt;&lt;/div&gt;&lt;/div&gt;
               &lt;/div&gt;
             &lt;/div&gt;
 
             &lt;div class=&quot;autoNotice&quot; id=&quot;autoNotice&quot;&gt;
-              &lt;div class=&quot;autoNoticeTitle&quot;&gt;&lt;span aria-hidden=&quot;true&quot;&gt;⚠️&lt;/span&gt;AVISO IMPORTANTE&lt;/div&gt;
-              &lt;div class=&quot;autoNoticeText&quot;&gt;Esta función pertenece al simulador y solo genera datos demostrativos para pruebas visuales. No corresponde a un autocompletado real ni valida información de terceros.&lt;/div&gt;
+              &lt;div class=&quot;autoNoticeTitle&quot;&gt;&lt;span aria-hidden=&quot;true&quot;&gt;⚠️&lt;/span&gt;SOLO PARA PRUEBAS&lt;/div&gt;
+              &lt;div class=&quot;autoNoticeText&quot;&gt;Crea datos de ejemplo. No valida datos reales ni información de terceros.&lt;/div&gt;
             &lt;/div&gt;
           &lt;/div&gt;
 
-          &lt;!-- SMS Activos --&gt;
+          &lt;!-- SMS --&gt;
           &lt;div class=&quot;svcCard glass&quot;&gt;
             &lt;div class=&quot;svcRow&quot;&gt;
               &lt;div class=&quot;svcLeft&quot;&gt;
                 &lt;div class=&quot;svcIco blue&quot; aria-hidden=&quot;true&quot;&gt;💬&lt;/div&gt;
                 &lt;div class=&quot;svcText&quot;&gt;
-                  &lt;div class=&quot;svcTitle&quot;&gt;SMS Activos&lt;/div&gt;
-                  &lt;div class=&quot;svcSub&quot;&gt;Disponibles: 0&lt;/div&gt;
+                  &lt;div class=&quot;svcTitle&quot;&gt;SMS&lt;/div&gt;
+                  &lt;div class=&quot;svcSub&quot;&gt;Pruebas: 0&lt;/div&gt;
                 &lt;/div&gt;
               &lt;/div&gt;
 
-              &lt;div class=&quot;switch&quot; aria-label=&quot;SMS Activos&quot;&gt;
+              &lt;div class=&quot;switch&quot; aria-label=&quot;SMS&quot;&gt;
                 &lt;input id=&quot;smsToggle&quot; type=&quot;checkbox&quot; /&gt;
                 &lt;div class=&quot;switchTrack&quot;&gt;&lt;div class=&quot;switchThumb&quot;&gt;&lt;/div&gt;&lt;/div&gt;
               &lt;/div&gt;
             &lt;/div&gt;
 
             &lt;div class=&quot;svcFields&quot;&gt;
-              &lt;div class=&quot;fieldLabel&quot;&gt;Token SMS:&lt;/div&gt;
-              &lt;input id=&quot;smsTokenInput&quot; class=&quot;fieldInput&quot; type=&quot;text&quot; placeholder=&quot;Ingresa tu token&quot; autocomplete=&quot;off&quot; /&gt;
+              &lt;div class=&quot;fieldLabel&quot;&gt;Token&lt;/div&gt;
+              &lt;input id=&quot;smsTokenInput&quot; class=&quot;fieldInput&quot; type=&quot;text&quot; placeholder=&quot;Ingresa el token&quot; autocomplete=&quot;off&quot; /&gt;
             &lt;/div&gt;
           &lt;/div&gt;
 
-          &lt;!-- Constancias a Correo --&gt;
+          &lt;!-- Correo --&gt;
           &lt;div class=&quot;svcCard glass&quot;&gt;
             &lt;div class=&quot;svcRow&quot;&gt;
               &lt;div class=&quot;svcLeft&quot;&gt;
                 &lt;div class=&quot;svcIco green&quot; aria-hidden=&quot;true&quot;&gt;✉️&lt;/div&gt;
                 &lt;div class=&quot;svcText&quot;&gt;
-                  &lt;div class=&quot;svcTitle&quot;&gt;Constancias a Correo&lt;/div&gt;
-                  &lt;div class=&quot;svcSub&quot;&gt;Se desactiva tras cada yapeo&lt;/div&gt;
+                  &lt;div class=&quot;svcTitle&quot;&gt;Correo&lt;/div&gt;
+                  &lt;div class=&quot;svcSub&quot;&gt;Se apaga después de cada yapeo.&lt;/div&gt;
                 &lt;/div&gt;
               &lt;/div&gt;
 
-              &lt;div class=&quot;switch&quot; aria-label=&quot;Constancias a Correo&quot;&gt;
+              &lt;div class=&quot;switch&quot; aria-label=&quot;Correo&quot;&gt;
                 &lt;input id=&quot;mailToggle&quot; type=&quot;checkbox&quot; /&gt;
                 &lt;div class=&quot;switchTrack&quot;&gt;&lt;div class=&quot;switchThumb&quot;&gt;&lt;/div&gt;&lt;/div&gt;
               &lt;/div&gt;
             &lt;/div&gt;
 
             &lt;div class=&quot;svcFields&quot;&gt;
-              &lt;div class=&quot;fieldLabel&quot;&gt;Tu correo:&lt;/div&gt;
+              &lt;div class=&quot;fieldLabel&quot;&gt;Correo&lt;/div&gt;
               &lt;input id=&quot;mailInput&quot; class=&quot;fieldInput&quot; type=&quot;email&quot; placeholder=&quot;correo@ejemplo.com&quot; autocomplete=&quot;email&quot; /&gt;
             &lt;/div&gt;
           &lt;/div&gt;
 
-          &lt;!-- Borrar Historial --&gt;
+          &lt;!-- Limpiar historial --&gt;
           &lt;div class=&quot;svcCard glass&quot;&gt;
             &lt;div class=&quot;svcRow&quot;&gt;
               &lt;div class=&quot;svcLeft&quot;&gt;
                 &lt;div class=&quot;svcIco red&quot; aria-hidden=&quot;true&quot;&gt;🧾&lt;/div&gt;
                 &lt;div class=&quot;svcText&quot;&gt;
-                  &lt;div class=&quot;svcTitle&quot;&gt;Borrar Historial&lt;/div&gt;
-                  &lt;div class=&quot;svcSub&quot;&gt;Elimina todos tus yapeos guardados&lt;/div&gt;
+                  &lt;div class=&quot;svcTitle&quot;&gt;Limpiar historial&lt;/div&gt;
+                  &lt;div class=&quot;svcSub&quot;&gt;Borra los yapeos guardados.&lt;/div&gt;
                 &lt;/div&gt;
               &lt;/div&gt;
 
-              &lt;div class=&quot;switch&quot; aria-label=&quot;Borrar Historial&quot;&gt;
+              &lt;div class=&quot;switch&quot; aria-label=&quot;Limpiar historial&quot;&gt;
                 &lt;input id=&quot;clearToggle&quot; type=&quot;checkbox&quot; /&gt;
                 &lt;div class=&quot;switchTrack&quot;&gt;&lt;div class=&quot;switchThumb&quot;&gt;&lt;/div&gt;&lt;/div&gt;
               &lt;/div&gt;
@@ -7174,7 +7596,7 @@ body{
           &lt;/div&gt;
         &lt;/section&gt;
 
-        &lt;div class=&quot;sectionTitle privateTitle&quot;&gt;DATOS PRIVADOS&lt;/div&gt;
+        &lt;div class=&quot;sectionTitle privateTitle&quot;&gt;Privacidad&lt;/div&gt;
 
         &lt;section class=&quot;privateSection&quot; aria-label=&quot;Datos privados&quot;&gt;
           &lt;div class=&quot;credHeadCard glass&quot; id=&quot;credAccordionBtn&quot; role=&quot;button&quot; tabindex=&quot;0&quot; aria-expanded=&quot;false&quot; aria-controls=&quot;credAccordionBody&quot;&gt;
@@ -7378,7 +7800,7 @@ body{
       &lt;footer class=&quot;sticky&quot; aria-label=&quot;Acción&quot;&gt;
         &lt;div id=&quot;toast&quot; class=&quot;toast&quot; aria-live=&quot;polite&quot;&gt;Guardado ✓&lt;/div&gt;
         &lt;div class=&quot;stickyInner&quot;&gt;
-          &lt;button id=&quot;saveBtn&quot; type=&quot;button&quot;&gt;Registrar datos&lt;/button&gt;
+          &lt;button id=&quot;saveBtn&quot; type=&quot;button&quot;&gt;Guardar cambios&lt;/button&gt;
         &lt;/div&gt;
       &lt;/footer&gt;
     &lt;/div&gt;
@@ -7504,6 +7926,188 @@ body{
         toastTimer = setTimeout(() =&gt; toast.classList.remove(&quot;show&quot;), 1200);
       }
 
+      function getStoredHistoryCount(){
+        try{
+          const raw = localStorage.getItem(&quot;movimientos_v1&quot;) || (parent &amp;&amp; parent !== window ? parent.localStorage.getItem(&quot;movimientos_v1&quot;) : &quot;[]&quot;) || &quot;[]&quot;;
+          const arr = JSON.parse(raw);
+          return Array.isArray(arr) ? arr.length : 0;
+        }catch(e){
+          return 0;
+        }
+      }
+
+      function ensureClearHistoryDialogStyles(){
+        if(document.getElementById(&quot;clearHistoryDialogStyles&quot;)) return;
+        const style = document.createElement(&quot;style&quot;);
+        style.id = &quot;clearHistoryDialogStyles&quot;;
+        style.textContent = `
+          .clearHistoryDialog,.clearHistoryLoaderDialog{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(10,6,18,.52);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:clearHistoryFade .16s ease;}
+          .clearHistoryCard{width:min(292px,84vw);border-radius:24px;padding:18px 16px 15px;background:linear-gradient(180deg,rgba(37,18,56,.98),rgba(24,11,38,.98));box-shadow:0 18px 40px rgba(0,0,0,.30);border:1px solid rgba(191,123,255,.16);text-align:center;color:#f7f2ff;}
+          .clearHistoryBadge{width:54px;height:54px;margin:0 auto 11px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:24px;background:linear-gradient(135deg,#ff4f79,#9a37ff);box-shadow:0 10px 20px rgba(154,55,255,.22);}
+          .clearHistoryEyebrow{font-size:10.5px;font-weight:800;letter-spacing:.20em;color:#c88fff;margin-bottom:6px;text-transform:uppercase;}
+          .clearHistoryTitle{font-size:20px;line-height:1.08;font-weight:800;margin:0 0 8px;color:#ffffff;}
+          .clearHistoryText{font-size:13px;line-height:1.42;color:rgba(244,234,255,.78);margin:0 auto;max-width:236px;}
+          .clearHistoryActions{display:flex;gap:10px;margin-top:15px;}
+          .clearHistoryBtn{flex:1;border:none;border-radius:16px;height:44px;padding:0 12px;font-size:14px;font-weight:700;cursor:pointer;transition:transform .14s ease,opacity .14s ease,box-shadow .14s ease;}
+          .clearHistoryBtn:active{transform:scale(.985);}
+          .clearHistoryBtn.ghost{background:rgba(255,255,255,.05);color:#dfbeff;box-shadow:inset 0 0 0 1px rgba(223,190,255,.14);}
+          .clearHistoryBtn.danger{background:linear-gradient(135deg,#ff4f79,#8d35ff);color:#fff;box-shadow:0 10px 20px rgba(141,53,255,.24);}
+          .clearHistoryLoaderCard{width:min(238px,74vw);border-radius:22px;padding:18px 16px;background:linear-gradient(180deg,rgba(33,16,51,.98),rgba(20,10,31,.98));border:1px solid rgba(191,123,255,.12);box-shadow:0 18px 38px rgba(0,0,0,.28);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;}
+          .clearHistoryLoaderSpinner{width:34px;height:34px;border-radius:50%;border:3px solid rgba(255,255,255,.14);border-top-color:#bf7bff;border-right-color:#ff5b8a;animation:clearHistorySpin .85s linear infinite;}
+          .clearHistoryLoaderTitle{margin-top:12px;font-size:15px;font-weight:700;color:#faf4ff;}
+          .clearHistoryLoaderText{margin-top:4px;font-size:12px;line-height:1.35;color:rgba(244,234,255,.70);}
+          .homeNotifLoaderDialog,.homeNotifInfoDialog{position:fixed;inset:0;z-index:100001;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(10,6,18,.44);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);animation:clearHistoryFade .18s ease;}
+          .homeNotifLoaderCard{width:min(236px,74vw);border-radius:22px;padding:18px 16px;background:linear-gradient(180deg,rgba(36,18,58,.98),rgba(18,10,32,.98));border:1px solid rgba(117,207,255,.14);box-shadow:0 18px 38px rgba(0,0,0,.30);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;}
+          .homeNotifLoaderSpinner{width:34px;height:34px;border-radius:50%;border:3px solid rgba(255,255,255,.12);border-top-color:#7ae3ff;border-right-color:#b85cff;animation:clearHistorySpin .82s linear infinite;}
+          .homeNotifLoaderTitle{margin-top:12px;font-size:15px;font-weight:700;color:#fbf8ff;}
+          .homeNotifLoaderText{margin-top:4px;font-size:12px;line-height:1.35;color:rgba(244,234,255,.74);}
+          .homeNotifInfoCard{width:min(294px,84vw);border-radius:24px;padding:18px 16px 16px;background:linear-gradient(180deg,rgba(39,20,61,.98),rgba(21,10,36,.98));box-shadow:0 18px 42px rgba(0,0,0,.32);border:1px solid rgba(117,207,255,.14);text-align:center;color:#f7f2ff;}
+          .homeNotifInfoBadge{width:54px;height:54px;margin:0 auto 11px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:24px;background:linear-gradient(135deg,#25d7c9,#8b43ff);box-shadow:0 10px 22px rgba(56,182,255,.20);}
+          .homeNotifInfoEyebrow{font-size:10.5px;font-weight:800;letter-spacing:.20em;color:#87e6ff;margin-bottom:6px;text-transform:uppercase;}
+          .homeNotifInfoTitle{font-size:20px;line-height:1.08;font-weight:800;margin:0 0 8px;color:#ffffff;}
+          .homeNotifInfoText{font-size:13px;line-height:1.42;color:rgba(244,234,255,.80);margin:0 auto;max-width:236px;}
+          .homeNotifInfoActions{display:flex;justify-content:center;margin-top:15px;}
+          .homeNotifInfoBtn{min-width:138px;border:none;border-radius:16px;height:44px;padding:0 16px;font-size:14px;font-weight:700;cursor:pointer;color:#fff;background:linear-gradient(135deg,#25d7c9,#8b43ff);box-shadow:0 10px 20px rgba(56,182,255,.22);transition:transform .14s ease,opacity .14s ease,box-shadow .14s ease;}
+          .homeNotifInfoBtn:active{transform:scale(.985);}
+          @keyframes clearHistoryFade{from{opacity:0;}to{opacity:1;}}
+          @keyframes clearHistorySpin{to{transform:rotate(360deg);}}
+        `;
+        document.head.appendChild(style);
+      }
+
+      function showClearHistoryLoader(waitMs){
+        return new Promise((resolve) =&gt; {
+          ensureClearHistoryDialogStyles();
+          const overlay = document.createElement(&quot;div&quot;);
+          overlay.className = &quot;clearHistoryLoaderDialog&quot;;
+          overlay.innerHTML = `
+            &lt;div class=&quot;clearHistoryLoaderCard&quot; role=&quot;status&quot; aria-live=&quot;polite&quot;&gt;
+              &lt;div class=&quot;clearHistoryLoaderSpinner&quot; aria-hidden=&quot;true&quot;&gt;&lt;/div&gt;
+              &lt;div class=&quot;clearHistoryLoaderTitle&quot;&gt;Cargando&lt;/div&gt;
+              &lt;div class=&quot;clearHistoryLoaderText&quot;&gt;Preparando confirmación...&lt;/div&gt;
+            &lt;/div&gt;
+          `;
+          document.body.appendChild(overlay);
+          setTimeout(() =&gt; {
+            try{ overlay.remove(); }catch(e){}
+            resolve();
+          }, Math.max(320, waitMs || 620));
+        });
+      }
+
+      function showElegantClearHistoryModal(total){
+        return new Promise((resolve) =&gt; {
+          ensureClearHistoryDialogStyles();
+          const overlay = document.createElement(&quot;div&quot;);
+          overlay.className = &quot;clearHistoryDialog&quot;;
+          const label = total === 1 ? &quot;1 movimiento&quot; : `${total} movimientos`;
+          overlay.innerHTML = `
+            &lt;div class=&quot;clearHistoryCard&quot; role=&quot;dialog&quot; aria-modal=&quot;true&quot; aria-labelledby=&quot;clearHistoryDialogTitle&quot;&gt;
+              &lt;div class=&quot;clearHistoryBadge&quot; aria-hidden=&quot;true&quot;&gt;🗑️&lt;/div&gt;
+              &lt;div class=&quot;clearHistoryEyebrow&quot;&gt;Confirmación&lt;/div&gt;
+              &lt;div class=&quot;clearHistoryTitle&quot; id=&quot;clearHistoryDialogTitle&quot;&gt;¿Eliminar historial?&lt;/div&gt;
+              &lt;div class=&quot;clearHistoryText&quot;&gt;Se eliminarán ${label} guardados. Esta acción no se puede deshacer.&lt;/div&gt;
+              &lt;div class=&quot;clearHistoryActions&quot;&gt;
+                &lt;button type=&quot;button&quot; class=&quot;clearHistoryBtn ghost&quot; data-act=&quot;cancel&quot;&gt;Cancelar&lt;/button&gt;
+                &lt;button type=&quot;button&quot; class=&quot;clearHistoryBtn danger&quot; data-act=&quot;accept&quot;&gt;Eliminar&lt;/button&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          `;
+
+          function close(ok){
+            try{ overlay.remove(); }catch(e){}
+            resolve(!!ok);
+          }
+
+          overlay.addEventListener(&quot;click&quot;, (ev) =&gt; {
+            if(ev.target === overlay) close(false);
+          });
+          overlay.querySelector(&#x27;[data-act=&quot;cancel&quot;]&#x27;).addEventListener(&quot;click&quot;, () =&gt; close(false));
+          overlay.querySelector(&#x27;[data-act=&quot;accept&quot;]&#x27;).addEventListener(&quot;click&quot;, () =&gt; close(true));
+          document.body.appendChild(overlay);
+        });
+      }
+
+
+      function showHomeNotifLoader(enabled, waitMs){
+        return new Promise((resolve) =&gt; {
+          ensureClearHistoryDialogStyles();
+          const overlay = document.createElement(&quot;div&quot;);
+          overlay.className = &quot;homeNotifLoaderDialog&quot;;
+          overlay.innerHTML = `
+            &lt;div class=&quot;homeNotifLoaderCard&quot; role=&quot;status&quot; aria-live=&quot;polite&quot;&gt;
+              &lt;div class=&quot;homeNotifLoaderSpinner&quot; aria-hidden=&quot;true&quot;&gt;&lt;/div&gt;
+              &lt;div class=&quot;homeNotifLoaderTitle&quot;&gt;Cargando&lt;/div&gt;
+              &lt;div class=&quot;homeNotifLoaderText&quot;&gt;${enabled ? &quot;Activando avisos en tiempo real...&quot; : &quot;Actualizando configuración...&quot;}&lt;/div&gt;
+            &lt;/div&gt;
+          `;
+          document.body.appendChild(overlay);
+          setTimeout(() =&gt; {
+            try{ overlay.remove(); }catch(e){}
+            resolve();
+          }, Math.max(320, waitMs || (enabled ? 760 : 420)));
+        });
+      }
+
+      function showHomeNotifStatusModal(enabled){
+        return new Promise((resolve) =&gt; {
+          ensureClearHistoryDialogStyles();
+          const overlay = document.createElement(&quot;div&quot;);
+          overlay.className = &quot;homeNotifInfoDialog&quot;;
+          const title = enabled ? &quot;Avisos activados&quot; : &quot;Avisos desactivados&quot;;
+          const text = enabled
+            ? &quot;Ahora te llegarán notificaciones y sonido cuando te envíen dinero.&quot;
+            : &quot;Los avisos en tiempo real quedaron desactivados.&quot;;
+          overlay.innerHTML = `
+            &lt;div class=&quot;homeNotifInfoCard&quot; role=&quot;dialog&quot; aria-modal=&quot;true&quot; aria-labelledby=&quot;homeNotifInfoTitle&quot;&gt;
+              &lt;div class=&quot;homeNotifInfoBadge&quot; aria-hidden=&quot;true&quot;&gt;🔔&lt;/div&gt;
+              &lt;div class=&quot;homeNotifInfoEyebrow&quot;&gt;Configuración&lt;/div&gt;
+              &lt;div class=&quot;homeNotifInfoTitle&quot; id=&quot;homeNotifInfoTitle&quot;&gt;${title}&lt;/div&gt;
+              &lt;div class=&quot;homeNotifInfoText&quot;&gt;${text}&lt;/div&gt;
+              &lt;div class=&quot;homeNotifInfoActions&quot;&gt;
+                &lt;button type=&quot;button&quot; class=&quot;homeNotifInfoBtn&quot; data-act=&quot;ok&quot;&gt;Entendido&lt;/button&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          `;
+
+          function close(){
+            try{ overlay.remove(); }catch(e){}
+            resolve();
+          }
+
+          overlay.addEventListener(&quot;click&quot;, (ev) =&gt; {
+            if(ev.target === overlay) close();
+          });
+          overlay.querySelector(&#x27;[data-act=&quot;ok&quot;]&#x27;).addEventListener(&quot;click&quot;, close);
+          document.body.appendChild(overlay);
+
+          if(!enabled){
+            setTimeout(close, 980);
+          }
+        });
+      }
+
+      function clearAllStoredHistory(){
+        const keys = [&quot;movimientos_v1&quot;, &quot;movimientos_deleted_v1&quot;, &quot;movimientos&quot;, &quot;yapeos&quot;];
+        try{
+          keys.forEach((key) =&gt; localStorage.removeItem(key));
+        }catch(e){}
+
+        try{
+          if(parent &amp;&amp; parent !== window){
+            keys.forEach((key) =&gt; {
+              try{ parent.localStorage.removeItem(key); }catch(err){}
+            });
+            if(typeof parent.toggleDeleteMode === &quot;function&quot;) parent.toggleDeleteMode(false);
+            if(typeof parent.renderMovs === &quot;function&quot;) parent.renderMovs();
+            if(typeof parent.showToast === &quot;function&quot;) parent.showToast(&quot;Historial borrado&quot;);
+          }
+        }catch(e){}
+
+        showToast(&quot;Historial borrado ✓&quot;);
+        try{ parent.postMessage({ type:&quot;clearHistory&quot;, source:&quot;profile-clear-toggle&quot; }, &quot;*&quot;); }catch(e){}
+      }
+
       nameInput.addEventListener(&quot;input&quot;, syncAvatar);
 
       let lastSaldoValue = 0;
@@ -7519,16 +8123,50 @@ body{
         lastSaldoValue = currentSaldoValue;
       });
 
-      clearToggle.addEventListener(&quot;change&quot;, () =&gt; {
-        if (!clearToggle.checked) return;
-        try{
-          localStorage.removeItem(&quot;movimientos&quot;);
-          localStorage.removeItem(&quot;yapeos&quot;);
-        }catch(e){}
+      let clearHistoryFlowBusy = false;
+
+      async function startClearHistoryFlow(ev){
+        if(ev){
+          try{ ev.preventDefault(); }catch(e){}
+          try{ ev.stopPropagation(); }catch(e){}
+        }
+        if(clearHistoryFlowBusy) return;
+        clearHistoryFlowBusy = true;
         clearToggle.checked = false;
-        showToast(&quot;Historial borrado ✓&quot;);
-        try{ parent.postMessage({ type:&quot;clearHistory&quot; }, &quot;*&quot;); }catch(e){}
+
+        try{
+          const total = getStoredHistoryCount();
+          if(total &lt;= 0){
+            showToast(&quot;No hay movimientos para borrar&quot;);
+            try{ if(parent &amp;&amp; parent !== window &amp;&amp; typeof parent.showToast === &quot;function&quot;) parent.showToast(&quot;No hay movimientos para borrar&quot;); }catch(e){}
+            return;
+          }
+
+          await showClearHistoryLoader(620);
+          const approved = await showElegantClearHistoryModal(total);
+          if(!approved) return;
+          clearAllStoredHistory();
+        } finally {
+          clearToggle.checked = false;
+          clearHistoryFlowBusy = false;
+        }
+      }
+
+      clearToggle.addEventListener(&quot;click&quot;, startClearHistoryFlow);
+      clearToggle.addEventListener(&quot;keydown&quot;, (ev) =&gt; {
+        if(ev.key === &quot; &quot; || ev.key === &quot;Enter&quot;){
+          startClearHistoryFlow(ev);
+        }
       });
+      try{
+        const clearSwitchWrap = clearToggle.closest(&quot;.switch&quot;);
+        if(clearSwitchWrap){
+          clearSwitchWrap.addEventListener(&quot;click&quot;, (ev) =&gt; {
+            if(ev.target === clearToggle) return;
+            startClearHistoryFlow(ev);
+          });
+        }
+      }catch(e){}
 
       autoToggle.addEventListener(&quot;change&quot;, () =&gt; {
         localStorage.setItem(LS_KEYS.autoOn, autoToggle.checked ? &quot;1&quot; : &quot;0&quot;);
@@ -7543,7 +8181,7 @@ body{
         });
       }
 
-      async function applyHomeNotifToggle(showSavedToast) {
+      async function applyHomeNotifToggle(showSavedToast, silentVisual) {
         const enabled = !!homeToggle.checked;
         localStorage.setItem(LS_KEYS.home, enabled ? &quot;1&quot; : &quot;0&quot;);
         try {
@@ -7552,12 +8190,28 @@ body{
           }
         } catch (e) {}
         try { parent.postMessage({ type:&quot;homeNotifToggle&quot;, enabled }, &quot;*&quot;); } catch (e) {}
-        if (showSavedToast) return;
+        if (showSavedToast || silentVisual) return;
         showToast(enabled ? &quot;Avisos activados ✓&quot; : &quot;Avisos desactivados&quot;);
       }
 
+      let homeNotifFlowBusy = false;
+      async function startHomeNotifFlow(){
+        if(homeNotifFlowBusy) return;
+        homeNotifFlowBusy = true;
+        const enabled = !!homeToggle.checked;
+        try{
+          homeToggle.disabled = true;
+          await showHomeNotifLoader(enabled, enabled ? 760 : 420);
+          await applyHomeNotifToggle(false, true);
+          await showHomeNotifStatusModal(enabled);
+        } finally {
+          homeToggle.disabled = false;
+          homeNotifFlowBusy = false;
+        }
+      }
+
       homeToggle.addEventListener(&quot;change&quot;, () =&gt; {
-        applyHomeNotifToggle(false);
+        startHomeNotifFlow();
       });
 
       saveBtn.addEventListener(&quot;click&quot;, async () =&gt; {
@@ -7722,7 +8376,7 @@ body{
 
     accordionBtn?.addEventListener(&quot;click&quot;, toggleAccordion);
     accordionBtn?.addEventListener(&quot;keydown&quot;, (ev) =&gt; {
-      if(ev.key === &quot;Enter&quot; || ev.key === &quot; "){
+      if(ev.key === &quot;Enter&quot; || ev.key === &quot; &quot;){
         ev.preventDefault();
         toggleAccordion();
       }
@@ -8516,24 +9170,30 @@ body{
 
 
 &lt;style&gt;
-/* ====== SOLO UI: Guardar contacto (replica Yape original) ====== */
+/* ====== SOLO UI: Guardar contacto (tema moderno + flujo confirmación) ====== */
 :root{
-  --yape-purple-1:#4a0b83;
-  --yape-purple-2:#6b1fb0;
-  --yape-purple-3:#8a3ad0;
-  --yape-label:#6b1fb0;
-  --yape-bg:#f2f1f6;
-  --yape-input-bg:#f6f4f9;
-  --yape-stroke:#e6e0ee;
-  --yape-shadow: 0 18px 40px rgba(55, 0, 85, .18);
+  --yape-purple-1:#5b148a;
+  --yape-purple-2:#7b2cbf;
+  --yape-purple-3:#a04be1;
+  --yape-label:#6a4e85;
+  --yape-bg:#f4f1f8;
+  --yape-input-bg:#fbf9fe;
+  --yape-stroke:#e6ddf3;
+  --yape-shadow: 0 22px 48px rgba(69, 34, 110, .16);
+  --yape-card:#ffffff;
+  --yape-text:#27183a;
+  --yape-muted:#7f6e96;
+  --yape-accent:#7a2fd0;
+  --yape-accent-dark:#581c9a;
+  --yape-success:#1aa37a;
+  --yape-success-dark:#0f7d5d;
+  --yape-danger:#ff5a6e;
 }
 
-/* Fondo general */
 body{
-  background: var(--yape-bg) !important;
+  background: linear-gradient(180deg, #f7f4fb 0%, #efe9f7 100%) !important;
 }
 
-/* Contenedor */
 .app-shell.yape-save-shell{
   padding: 0 !important;
   min-height: 100dvh;
@@ -8543,29 +9203,30 @@ body{
 .screen.yape-save-screen{
   width: min(420px, 100%);
   margin: 0 auto;
-  padding: 0 0 26px;
+  padding: 0 0 28px;
 }
 
-/* Header morado curvo */
 .header.yape-save-header{
   margin:0 !important;
   padding: 0 !important;
-  height: 248px;
-  background: linear-gradient(180deg, var(--yape-purple-1) 0%, var(--yape-purple-2) 55%, var(--yape-purple-3) 100%);
+  height: 258px;
+  background:
+    radial-gradient(circle at top right, rgba(255,255,255,.24), rgba(255,255,255,0) 34%),
+    radial-gradient(circle at left center, rgba(255,255,255,.10), rgba(255,255,255,0) 30%),
+    linear-gradient(180deg, var(--yape-purple-1) 0%, var(--yape-purple-2) 56%, var(--yape-purple-3) 100%);
   border-bottom-left-radius: 46px;
   border-bottom-right-radius: 46px;
   position: relative;
   overflow:hidden;
 }
 
-/* brillo suave (profundidad) */
 .header.yape-save-header::after{
   content:&quot;&quot;;
   position:absolute;
-  inset:-40px -60px auto -60px;
-  height: 180px;
+  inset:-30px -50px auto -50px;
+  height: 170px;
   background: radial-gradient(closest-side, rgba(255,255,255,.18), rgba(255,255,255,0));
-  transform: translateY(30px);
+  transform: translateY(24px);
   pointer-events:none;
 }
 
@@ -8574,25 +9235,26 @@ body{
   z-index:1;
   display:flex;
   align-items:center;
-  gap: 14px;
-  padding: 58px 22px 72px;
+  gap: 16px;
+  padding: 62px 22px 76px;
 }
 
 .yape-save-avatar{
-  width: 56px;
-  height: 56px;
+  width: 60px;
+  height: 60px;
   border-radius: 999px;
-  background: rgba(255,255,255,.18);
+  background: rgba(255,255,255,.16);
   display:flex;
   align-items:center;
   justify-content:center;
-  box-shadow: 0 10px 22px rgba(0,0,0,.14);
+  box-shadow: 0 14px 30px rgba(29, 9, 47, .18);
+  backdrop-filter: blur(6px);
 }
 
 .title.yape-save-title{
   margin:0 !important;
-  font-size: 26px !important;
-  line-height: 1.15;
+  font-size: 27px !important;
+  line-height: 1.12;
   font-weight:500 !important;
   letter-spacing: -0.2px;
   color:#fff !important;
@@ -8600,27 +9262,25 @@ body{
 }
 
 .subtitle.yape-save-subtitle{
-  margin: 6px 0 0 !important;
+  margin: 7px 0 0 !important;
   font-size: 14px !important;
   font-weight: 600 !important;
-  color: rgba(255,255,255,.85) !important;
+  color: rgba(255,255,255,.86) !important;
   text-align:left !important;
 }
 
-/* Ocultar logo viejo si existiera */
 .logo-wrap{ display:none !important; }
 
-/* Card flotante */
 .yape-save-card{
-  background: #fff;
-  border-radius: 26px;
+  background: var(--yape-card);
+  border-radius: 30px;
   box-shadow: var(--yape-shadow);
-  margin: -74px 16px 0;
+  margin: -78px 16px 0;
   padding: 22px 18px 18px;
   position:relative;
+  border: 1px solid rgba(108, 72, 150, .08);
 }
 
-/* Form */
 .form.yape-save-form{
   padding: 0 !important;
 }
@@ -8635,24 +9295,32 @@ body{
   color: var(--yape-label) !important;
 }
 
-/* Inputs */
 .input.yape-save-input{
   width: 100%;
-  height: 52px;
-  border-radius: 14px !important;
+  height: 54px;
+  border-radius: 18px !important;
   background: var(--yape-input-bg) !important;
   border: 1px solid var(--yape-stroke) !important;
-  padding: 14px 14px !important;
+  padding: 14px 16px !important;
   font-size: 16px !important;
   outline: none !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.65);
+  color: var(--yape-text) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.92), 0 4px 12px rgba(95, 62, 135, .04);
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease, transform .2s ease;
 }
 
 .input.yape-save-input::placeholder{
-  color: rgba(70,70,88,.55) !important;
+  color: rgba(91,72,117,.42) !important;
 }
 
-/* Select (sin estilo del navegador) */
+.input.yape-save-input:focus,
+select.yape-save-select:focus{
+  background:#ffffff !important;
+  border-color: rgba(122, 47, 208, .34) !important;
+  box-shadow: 0 0 0 4px rgba(122, 47, 208, .12), 0 12px 24px rgba(96, 53, 149, .10), inset 0 1px 0 rgba(255,255,255,.96);
+  transform: translateY(-1px);
+}
+
 .select-wrap.yape-save-select-wrap{
   position:relative;
 }
@@ -8664,8 +9332,8 @@ body{
   top: 50%;
   width: 10px;
   height: 10px;
-  border-right: 2px solid rgba(60,40,90,.55);
-  border-bottom: 2px solid rgba(60,40,90,.55);
+  border-right: 2px solid rgba(95,76,122,.72);
+  border-bottom: 2px solid rgba(95,76,122,.72);
   transform: translateY(-60%) rotate(45deg);
   pointer-events:none;
 }
@@ -8678,26 +9346,217 @@ select.yape-save-select{
   background-image:none !important;
 }
 
-/* Botón */
 .bottom.yape-save-bottom{
-  padding: 6px 0 0 !important;
+  padding: 8px 0 0 !important;
 }
 
 .btn.yape-save-btn{
   width: 100% !important;
-  height: 54px;
+  height: 56px;
   border: 0 !important;
   border-radius: 999px !important;
-  background: linear-gradient(180deg, var(--yape-purple-2) 0%, var(--yape-purple-1) 100%) !important;
+  background: linear-gradient(180deg, var(--yape-accent) 0%, var(--yape-accent-dark) 100%) !important;
   color: #fff !important;
   font-weight:500 !important;
   font-size: 16px !important;
-  box-shadow: 0 14px 24px rgba(55, 0, 85, .22);
+  box-shadow: 0 16px 28px rgba(88, 28, 154, .28);
+  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease, opacity .18s ease;
 }
 
 .btn.yape-save-btn:active{
   transform: translateY(1px);
-  box-shadow: 0 10px 18px rgba(55, 0, 85, .18);
+  box-shadow: 0 12px 20px rgba(88, 28, 154, .22);
+}
+
+.btn.yape-save-btn:disabled{
+  opacity:.82;
+  cursor:not-allowed;
+}
+
+.yape-save-status{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  opacity:0;
+  pointer-events:none;
+  transition: opacity .22s ease, background .22s ease;
+}
+
+.yape-save-status.show{
+  opacity:1;
+  pointer-events:auto;
+}
+
+.yape-save-status.is-loading,
+.yape-save-status.is-confirm{
+  background: rgba(30, 16, 44, .34);
+  backdrop-filter: blur(8px);
+}
+
+.yape-save-status-card,
+.yape-save-confirm-card{
+  width:min(286px, calc(100% - 42px));
+  border-radius:24px;
+  box-shadow: 0 20px 42px rgba(32, 17, 49, .18);
+  background: linear-gradient(180deg, #ffffff 0%, #fbf8ff 100%);
+}
+
+.yape-save-status-card{
+  padding: 22px 20px 20px;
+  text-align:center;
+  color: var(--yape-text);
+}
+
+.yape-save-spinner{
+  width: 46px;
+  height: 46px;
+  margin: 0 auto 14px;
+  border-radius:50%;
+  border: 4px solid rgba(122, 47, 208, .14);
+  border-top-color: var(--yape-accent);
+  border-right-color: #9f59f5;
+  animation: yapeSaveSpin .9s linear infinite;
+}
+
+@keyframes yapeSaveSpin{
+  to{ transform: rotate(360deg); }
+}
+
+.yape-save-status-title{
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--yape-text);
+}
+
+.yape-save-status-text{
+  margin-top: 7px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--yape-muted);
+}
+
+.yape-save-confirm-card{
+  padding: 22px 20px 20px;
+  text-align:center;
+}
+
+.yape-save-confirm-shell{
+  width:100%;
+}
+
+.yape-save-confirm-badge{
+  width: 66px;
+  height: 66px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #1ebc8a 0%, var(--yape-success-dark) 100%);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow: 0 14px 26px rgba(18, 124, 94, .18);
+  transform: scale(.76);
+  opacity:0;
+}
+
+.yape-save-confirm-badge svg{
+  width: 30px;
+  height: 30px;
+}
+
+.yape-save-confirm-ring,
+.yape-save-confirm-check{
+  fill:none;
+  stroke:#ffffff;
+  stroke-width:2.4;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.yape-save-confirm-ring{
+  opacity:.18;
+}
+
+.yape-save-confirm-check{
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+}
+
+.yape-save-confirm-card.animate .yape-save-confirm-badge{
+  animation: yapeConfirmPop .34s cubic-bezier(.22,.9,.32,1.2) forwards;
+}
+
+.yape-save-confirm-card.animate .yape-save-confirm-ring{
+  animation: yapeConfirmRing .42s ease-out .08s forwards;
+}
+
+.yape-save-confirm-card.animate .yape-save-confirm-check{
+  animation: yapeConfirmDraw .34s ease-out .18s forwards;
+}
+
+@keyframes yapeConfirmPop{
+  0%{ transform: scale(.76); opacity:0; }
+  70%{ transform: scale(1.08); opacity:1; }
+  100%{ transform: scale(1); opacity:1; }
+}
+
+@keyframes yapeConfirmRing{
+  0%{ opacity:.08; transform: scale(.88); }
+  100%{ opacity:.2; transform: scale(1); }
+}
+
+@keyframes yapeConfirmDraw{
+  0%{ stroke-dashoffset: 24; }
+  100%{ stroke-dashoffset: 0; }
+}
+
+.yape-save-confirm-title{
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--yape-text);
+  line-height: 1.15;
+}
+
+.yape-save-confirm-detail{
+  margin-top: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #4f2d76;
+}
+
+.yape-save-confirm-meta{
+  margin-top: 8px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--yape-muted);
+}
+
+.yape-save-confirm-action{
+  margin-top: 18px;
+  width:100%;
+  max-width: 210px;
+  height:48px;
+  border:none;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--yape-accent) 0%, var(--yape-accent-dark) 100%);
+  color:#fff;
+  font-size:15px;
+  font-weight:700;
+  box-shadow: 0 12px 22px rgba(88, 28, 154, .22);
+}
+
+.yape-save-confirm-action:active{
+  transform: translateY(1px);
+}
+
+@media (max-width: 360px){
+  .title.yape-save-title{ font-size: 25px !important; }
+  .yape-save-status-card,
+  .yape-save-confirm-card{ width:min(272px, calc(100% - 34px)); }
+  .yape-save-confirm-title{ font-size: 18px; }
 }
 &lt;/style&gt;
 &lt;/head&gt;
@@ -8732,7 +9591,7 @@ select.yape-save-select{
               type=&quot;text&quot;
               inputmode=&quot;text&quot;
               autocomplete=&quot;name&quot;
-              placeholder=&quot;Ej: Sonyer &quot;
+              placeholder=&quot;Ej: Sonyer&quot;
             /&gt;
           &lt;/div&gt;
 
@@ -8776,6 +9635,29 @@ select.yape-save-select{
     &lt;div class=&quot;msg&quot; id=&quot;toastMsg&quot;&gt;&lt;/div&gt;
   &lt;/div&gt;
 
+  &lt;div id=&quot;saveStatus&quot; class=&quot;yape-save-status&quot; aria-hidden=&quot;true&quot;&gt;
+    &lt;div id=&quot;saveLoadingState&quot; class=&quot;yape-save-status-card&quot; hidden&gt;
+      &lt;div class=&quot;yape-save-spinner&quot; aria-hidden=&quot;true&quot;&gt;&lt;/div&gt;
+      &lt;div class=&quot;yape-save-status-title&quot;&gt;Guardando contacto&lt;/div&gt;
+      &lt;div id=&quot;saveLoadingText&quot; class=&quot;yape-save-status-text&quot;&gt;Estamos validando tus datos.&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div id=&quot;saveConfirmState&quot; class=&quot;yape-save-confirm-card&quot; hidden&gt;
+      &lt;div class=&quot;yape-save-confirm-shell&quot;&gt;
+        &lt;div id=&quot;saveConfirmBadge&quot; class=&quot;yape-save-confirm-badge&quot; aria-hidden=&quot;true&quot;&gt;
+          &lt;svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;&gt;
+            &lt;circle class=&quot;yape-save-confirm-ring&quot; cx=&quot;12&quot; cy=&quot;12&quot; r=&quot;9.2&quot;/&gt;
+            &lt;path id=&quot;saveConfirmCheckPath&quot; class=&quot;yape-save-confirm-check&quot; d=&quot;M7.2 12.6L10.5 15.8L16.9 9.2&quot;/&gt;
+          &lt;/svg&gt;
+        &lt;/div&gt;
+        &lt;div id=&quot;saveConfirmTitle&quot; class=&quot;yape-save-confirm-title&quot;&gt;Contacto guardado&lt;/div&gt;
+        &lt;div id=&quot;saveConfirmDetail&quot; class=&quot;yape-save-confirm-detail&quot;&gt;&lt;/div&gt;
+        &lt;div id=&quot;saveConfirmMeta&quot; class=&quot;yape-save-confirm-meta&quot;&gt;&lt;/div&gt;
+        &lt;button id=&quot;saveConfirmAction&quot; class=&quot;yape-save-confirm-action&quot; type=&quot;button&quot;&gt;Guardar otro&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
   &lt;script&gt;
     const STORAGE_KEY = &quot;contacts_v1&quot;;
 
@@ -8813,6 +9695,18 @@ select.yape-save-select{
     const phoneInput = document.getElementById(&quot;phoneInput&quot;);
     const destinoSelect = document.getElementById(&quot;destinoSelect&quot;);
     const saveBtn = document.getElementById(&quot;saveBtn&quot;);
+    const saveStatus = document.getElementById(&quot;saveStatus&quot;);
+    const saveLoadingState = document.getElementById(&quot;saveLoadingState&quot;);
+    const saveConfirmState = document.getElementById(&quot;saveConfirmState&quot;);
+    const saveLoadingText = document.getElementById(&quot;saveLoadingText&quot;);
+    const saveConfirmTitle = document.getElementById(&quot;saveConfirmTitle&quot;);
+    const saveConfirmDetail = document.getElementById(&quot;saveConfirmDetail&quot;);
+    const saveConfirmMeta = document.getElementById(&quot;saveConfirmMeta&quot;);
+    const saveConfirmAction = document.getElementById(&quot;saveConfirmAction&quot;);
+    const saveConfirmBadge = document.getElementById(&quot;saveConfirmBadge&quot;);
+    const saveConfirmCheckPath = document.getElementById(&quot;saveConfirmCheckPath&quot;);
+
+    let __afterSaveConfirm = null;
 
     function sanitizePhone(value) {
       const digitsOnly = String(value || &quot;&quot;).replace(/\D+/g, &quot;&quot;);
@@ -8892,14 +9786,20 @@ select.yape-save-select{
       const phone = sanitizePhone(phoneInput.value);
       const destino = destinoSelect.value;
 
+      if (!name &amp;&amp; !phone) {
+        showToast(&quot;Ingresa tus datos para guardar el contacto.&quot;, &quot;error&quot;);
+        nameInput.focus();
+        return null;
+      }
+
       if (!name) {
-        showToast(&quot;Ingresa un nombre.&quot;, &quot;error&quot;);
+        showToast(&quot;Ingresa el nombre del contacto.&quot;, &quot;error&quot;);
         nameInput.focus();
         return null;
       }
 
       if (phone.length !== 9) {
-        showToast(&quot;El número debe tener 9 dígitos.&quot;, &quot;error&quot;);
+        showToast(&quot;Ingresa un número de celular válido de 9 dígitos.&quot;, &quot;error&quot;);
         phoneInput.focus();
         return null;
       }
@@ -8907,59 +9807,159 @@ select.yape-save-select{
       return { name, phone, destino };
     }
 
-    saveBtn.addEventListener(&quot;click&quot;, async () =&gt; {
-      const data = validateForm();
-      if (!data) return;
+    function formatPhonePretty(value) {
+      const digits = sanitizePhone(value);
+      if (digits.length !== 9) return digits;
+      return digits.replace(/(\d{3})(\d{3})(\d{3})/, &quot;$1 $2 $3&quot;);
+    }
 
-      const contacts = loadContacts();
-      const nowISO = new Date().toISOString();
-
-      const idx = contacts.findIndex(c =&gt; String(c.phone) === String(data.phone));
-
-      if (idx &gt;= 0) {
-        contacts[idx] = {
-          ...contacts[idx],
-          name: data.name,
-          destino: data.destino,
-          createdAt: contacts[idx].createdAt || nowISO
-        };
-        saveContacts(contacts);
-        showToast(&quot;Contacto actualizado ✅&quot;, &quot;success&quot;);
-      } else {
-        contacts.push({
-          name: data.name,
-          phone: data.phone,
-          destino: data.destino,
-          createdAt: nowISO
-        });
-        saveContacts(contacts);
-        showToast(&quot;Contacto guardado ✅&quot;, &quot;success&quot;);
-      }
-
-      try{
-        if(window.fsUpsertContact){
-          const ok = await window.fsUpsertContact(data.phone, { name: data.name, destino: data.destino });
-          if(ok){
-            showToast(&quot;Guardado en Firestore ✅&quot;, &quot;success&quot;);
-          }else{
-            showToast(&quot;Error al guardar en Firestore&quot;, &quot;error&quot;);
-            try{ alert(&quot;Error al guardar en Firestore&quot;); }catch(e){}
-          }
-        }
-      }catch(err){
-        console.error(&quot;❌ Error guardando contacto en Firestore:&quot;, err);
-        showToast(&quot;Error al guardar en Firestore&quot;, &quot;error&quot;);
-        try{ alert(&quot;Error al guardar en Firestore&quot;); }catch(e){}
-      }
-
-      try{ parent.postMessage({ type:&quot;contactsUpdated&quot; }, &quot;*&quot;); }catch(e){}
-
+    function resetContactForm() {
       nameInput.value = &quot;&quot;;
       phoneInput.value = &quot;&quot;;
       destinoSelect.value = &quot;Yape&quot;;
       __nameEditedByUser = false;
       __destinoEditedByUser = false;
       nameInput.focus();
+    }
+
+    function setSaveButtonLoading(isLoading) {
+      saveBtn.disabled = isLoading;
+      saveBtn.textContent = isLoading ? &quot;Guardando...&quot; : &quot;Guardar contacto&quot;;
+    }
+
+    function waitMs(ms) {
+      return new Promise(resolve =&gt; setTimeout(resolve, ms));
+    }
+
+    function openSaveLoading(message) {
+      saveStatus.classList.add(&quot;show&quot;, &quot;is-loading&quot;);
+      saveStatus.classList.remove(&quot;is-confirm&quot;);
+      saveStatus.setAttribute(&quot;aria-hidden&quot;, &quot;false&quot;);
+      saveLoadingState.hidden = false;
+      saveConfirmState.hidden = true;
+      saveLoadingText.textContent = message || &quot;Estamos validando tus datos.&quot;;
+    }
+
+    function openSaveConfirmation(options = {}) {
+      saveStatus.classList.add(&quot;show&quot;, &quot;is-confirm&quot;);
+      saveStatus.classList.remove(&quot;is-loading&quot;);
+      saveStatus.setAttribute(&quot;aria-hidden&quot;, &quot;false&quot;);
+      saveLoadingState.hidden = true;
+      saveConfirmState.hidden = false;
+      saveConfirmTitle.textContent = options.title || &quot;Contacto guardado&quot;;
+      saveConfirmDetail.textContent = options.detail || &quot;Tu contacto ya quedó listo.&quot;;
+      saveConfirmMeta.textContent = options.meta || &quot;&quot;;
+      saveConfirmAction.textContent = options.buttonLabel || &quot;Guardar otro&quot;;
+      saveConfirmState.classList.remove(&quot;animate&quot;);
+      if (saveConfirmCheckPath) {
+        saveConfirmCheckPath.style.animation = &quot;none&quot;;
+      }
+      void saveConfirmState.offsetWidth;
+      if (saveConfirmCheckPath) {
+        saveConfirmCheckPath.style.animation = &quot;&quot;;
+      }
+      saveConfirmState.classList.add(&quot;animate&quot;);
+    }
+
+    function closeSaveStatus(runAfter = true) {
+      saveStatus.classList.remove(&quot;show&quot;, &quot;is-loading&quot;, &quot;is-confirm&quot;);
+      saveConfirmState.classList.remove(&quot;animate&quot;);
+      saveStatus.setAttribute(&quot;aria-hidden&quot;, &quot;true&quot;);
+      setTimeout(() =&gt; {
+        saveLoadingState.hidden = true;
+        saveConfirmState.hidden = true;
+        if (runAfter &amp;&amp; typeof __afterSaveConfirm === &quot;function&quot;) {
+          const cb = __afterSaveConfirm;
+          __afterSaveConfirm = null;
+          cb();
+        } else if (!runAfter) {
+          __afterSaveConfirm = null;
+        }
+      }, 220);
+    }
+
+    saveConfirmAction.addEventListener(&quot;click&quot;, () =&gt; {
+      closeSaveStatus(true);
+    });
+
+    saveBtn.addEventListener(&quot;click&quot;, async () =&gt; {
+      const data = validateForm();
+      if (!data) return;
+
+      setSaveButtonLoading(true);
+      openSaveLoading(&quot;Estamos validando y guardando tu contacto...&quot;);
+      const minLoading = waitMs(950);
+
+      let saveTitle = &quot;Contacto guardado&quot;;
+      let syncPending = false;
+
+      try {
+        const contacts = loadContacts();
+        const nowISO = new Date().toISOString();
+        const idx = contacts.findIndex(c =&gt; String(c.phone) === String(data.phone));
+
+        if (idx &gt;= 0) {
+          contacts[idx] = {
+            ...contacts[idx],
+            name: data.name,
+            destino: data.destino,
+            createdAt: contacts[idx].createdAt || nowISO
+          };
+          saveContacts(contacts);
+          saveTitle = &quot;Contacto actualizado&quot;;
+        } else {
+          contacts.push({
+            name: data.name,
+            phone: data.phone,
+            destino: data.destino,
+            createdAt: nowISO
+          });
+          saveContacts(contacts);
+        }
+
+        try {
+          if (window.fsUpsertContact) {
+            const ok = await window.fsUpsertContact(data.phone, {
+              name: data.name,
+              destino: data.destino
+            });
+            syncPending = !ok;
+          }
+        } catch (err) {
+          syncPending = true;
+          console.error(&quot;❌ Error guardando contacto en Firestore:&quot;, err);
+        }
+
+        await minLoading;
+
+        if (syncPending) {
+          showToast(&quot;Se guardó localmente. La sincronización quedó pendiente.&quot;, &quot;error&quot;);
+        } else {
+          showToast(saveTitle + &quot; ✅&quot;, &quot;success&quot;);
+        }
+
+        try { parent.postMessage({ type:&quot;contactsUpdated&quot; }, &quot;*&quot;); } catch (e) {}
+
+        __afterSaveConfirm = () =&gt; {
+          resetContactForm();
+        };
+
+        openSaveConfirmation({
+          title: syncPending ? saveTitle + &quot; localmente&quot; : saveTitle,
+          detail: data.name,
+          meta: formatPhonePretty(data.phone) + &quot; · &quot; + data.destino + (syncPending ? &quot; · Pendiente de sincronizar&quot; : &quot;&quot;),
+          buttonLabel: &quot;Guardar otro&quot;
+        });
+      } catch (err) {
+        await minLoading;
+        console.error(&quot;❌ Error al guardar contacto:&quot;, err);
+        closeSaveStatus(false);
+        setTimeout(() =&gt; {
+          showToast(&quot;No se pudo guardar el contacto.&quot;, &quot;error&quot;);
+        }, 50);
+      } finally {
+        setSaveButtonLoading(false);
+      }
     });
 
     [nameInput, phoneInput].forEach(el =&gt; {
@@ -8974,7 +9974,7 @@ select.yape-save-select{
     window.addEventListener(&quot;pageshow&quot;, () =&gt; {
       phoneInput.value = sanitizePhone(phoneInput.value);
     });
-  
+
 function maskPhoneVoucher(p){
   const clean = String(p||&quot;&quot;).replace(/\D/g,&quot;&quot;).slice(0,9);
   if(clean.length &lt; 3) return clean;
@@ -10053,6 +11053,14 @@ function abrirWhatsApp(){
   window.open(`https://wa.me/${numero}?text=${mensaje}`,&quot;_blank&quot;);
 }
 
+function abrirGrupoWhatsApp(){
+  window.open(&quot;https://chat.whatsapp.com/FjPEs6nSyUeD7DNI3LsFVP?mode=gi_t&quot;,&quot;_blank&quot;,&quot;noopener,noreferrer&quot;);
+}
+
+function abrirAppGratis(){
+  window.open(&quot;https://luqea.xapps.net.pe/login&quot;,&quot;_blank&quot;,&quot;noopener,noreferrer&quot;);
+}
+
 // ===== VOLVER AL HOME (AHORA CIERRA EL PERFIL Y VUELVE AL HOME PADRE) =====
 document.addEventListener(&quot;DOMContentLoaded&quot;, function() {
   const btnBackHome = document.getElementById(&quot;btnBackHome&quot;);
@@ -11112,22 +12120,36 @@ function setUploadState(state){
       renderVerMas(&#x27;all&#x27;);
     }
 
+    const VER_MAS_ANIM_MS = 320;
+    let verMasCloseTimer = null;
+
     function openVerMas(){
       if(!verMasWrap) return;
       buildVerMas();
+      if(verMasCloseTimer){
+        clearTimeout(verMasCloseTimer);
+        verMasCloseTimer = null;
+      }
       verMasWrap.classList.remove(&#x27;hidden&#x27;);
-      verMasWrap.setAttribute(&#x27;aria-hidden&#x27;,&#x27;false&#x27;);
-      // Reproducir cualquier video dentro del sheet
       requestAnimationFrame(()=&gt;{
+        verMasWrap.classList.add(&#x27;show&#x27;);
+        verMasWrap.setAttribute(&#x27;aria-hidden&#x27;,&#x27;false&#x27;);
         verMasWrap.querySelectorAll(&#x27;video&#x27;).forEach(v=&gt;v.play().catch(()=&gt;{}));
       });
     }
 
     function closeVerMas(){
       if(!verMasWrap) return;
+      if(verMasCloseTimer){
+        clearTimeout(verMasCloseTimer);
+      }
       verMasWrap.querySelectorAll(&#x27;video&#x27;).forEach(v=&gt;{ try{v.pause();}catch(e){} });
-      verMasWrap.classList.add(&#x27;hidden&#x27;);
+      verMasWrap.classList.remove(&#x27;show&#x27;);
       verMasWrap.setAttribute(&#x27;aria-hidden&#x27;,&#x27;true&#x27;);
+      verMasCloseTimer = setTimeout(()=&gt;{
+        verMasWrap.classList.add(&#x27;hidden&#x27;);
+        verMasCloseTimer = null;
+      }, VER_MAS_ANIM_MS);
     }
 
     function toggleVerMas(){
@@ -12136,28 +13158,102 @@ window.__mostrarNombreCompletoTemporal = false;
 
     // ✅ Voucher: botones como app real
     (function(){
+      function focusMontoInputSoft(){
+        setTimeout(() =&gt; {
+          try{
+            if(mAmountInp &amp;&amp; typeof mAmountInp.focus === &quot;function&quot;){
+              mAmountInp.focus({ preventScroll:true });
+            }
+          }catch(e){
+            try{ if(mAmountInp &amp;&amp; typeof mAmountInp.focus === &quot;function&quot;) mAmountInp.focus(); }catch(_){}
+          }
+        }, 120);
+      }
+
+      function animateVoucherToMonto(nombre, phone){
+        if(window.__voucherToMontoAnimating) return;
+        window.__voucherToMontoAnimating = true;
+
+        const fromView = voucherView;
+        const toView = montoView;
+        const DURATION = 240;
+        const EASE = &quot;cubic-bezier(.22,.78,.24,1)&quot;;
+        let finished = false;
+
+        function cleanStyles(){
+          [fromView, toView].forEach((el) =&gt; {
+            if(!el) return;
+            el.style.transition = &quot;&quot;;
+            el.style.transform = &quot;&quot;;
+            el.style.opacity = &quot;&quot;;
+            el.style.willChange = &quot;&quot;;
+            el.style.pointerEvents = &quot;&quot;;
+            el.style.zIndex = &quot;&quot;;
+          });
+        }
+
+        function finish(){
+          if(finished) return;
+          finished = true;
+          cleanStyles();
+          showView(toView);
+          focusMontoInputSoft();
+          window.__voucherToMontoAnimating = false;
+        }
+
+        try{ if(document.activeElement &amp;&amp; typeof document.activeElement.blur === &quot;function&quot;) document.activeElement.blur(); }catch(e){}
+
+        goMonto(nombre, phone);
+        mSetOnlyYapearMode(true);
+        mAmountInp.value = &quot;0&quot;;
+        mValidateAmount();
+
+        if(!fromView || !toView){
+          finish();
+          return;
+        }
+
+        fromView.classList.remove(&quot;hidden&quot;);
+        toView.classList.remove(&quot;hidden&quot;);
+
+        fromView.style.transition = &quot;none&quot;;
+        toView.style.transition = &quot;none&quot;;
+        fromView.style.transform = &quot;translate3d(0,0,0)&quot;;
+        fromView.style.opacity = &quot;1&quot;;
+        toView.style.transform = &quot;translate3d(100%,0,0)&quot;;
+        toView.style.opacity = &quot;1&quot;;
+        fromView.style.willChange = &quot;transform,opacity&quot;;
+        toView.style.willChange = &quot;transform,opacity&quot;;
+        fromView.style.pointerEvents = &quot;none&quot;;
+        toView.style.pointerEvents = &quot;none&quot;;
+        fromView.style.zIndex = &quot;6&quot;;
+        toView.style.zIndex = &quot;7&quot;;
+
+        void toView.offsetWidth;
+
+        requestAnimationFrame(() =&gt; {
+          fromView.style.transition = &quot;transform &quot; + DURATION + &quot;ms &quot; + EASE + &quot;, opacity &quot; + DURATION + &quot;ms linear&quot;;
+          toView.style.transition = &quot;transform &quot; + DURATION + &quot;ms &quot; + EASE;
+          fromView.style.transform = &quot;translate3d(-7%,0,0)&quot;;
+          fromView.style.opacity = &quot;0.985&quot;;
+          toView.style.transform = &quot;translate3d(0,0,0)&quot;;
+        });
+
+        setTimeout(finish, DURATION + 40);
+      }
+
       const bNew = document.getElementById(&quot;vNewYapeoBtn&quot;);
       if(bNew){
-        bNew.addEventListener(&quot;click&quot;, ()=&gt;{
-          // ✅ Volver a la pantalla de monto (como la foto) y mostrar SOLO el botón &quot;Yapear&quot;
+        bNew.addEventListener(&quot;click&quot;, () =&gt; {
           const last = (window.__lastRecipient || {});
           const nombre = String(last.nombre || &quot;Sin nombre&quot;);
           const phone = String(last.phone || &quot;&quot;).replace(/\D/g,&quot;&quot;).slice(0,9);
-
-          goMonto(nombre, phone);
-
-          // Monto en 0 y listo para escribir
-          mAmountInp.value = &quot;0&quot;;
-          mValidateAmount();
-          try{ mAmountInp.focus(); }catch(e){}
-
-          // Solo botón Yapear (sin &quot;Otros bancos&quot;)
-          mSetOnlyYapearMode(true);
+          animateVoucherToMonto(nombre, phone);
         });
       }
       const bHelp = document.getElementById(&quot;vHelpBtn&quot;);
       if(bHelp){
-        bHelp.addEventListener(&quot;click&quot;, ()=&gt;{
+        bHelp.addEventListener(&quot;click&quot;, () =&gt; {
           // Solo UI (sin mensajes). Puedes conectar aquí tu pantalla de ayuda si deseas.
         });
       }
@@ -12540,61 +13636,144 @@ function maskPhoneVoucher(p){
       const perfilFrame = document.getElementById(&quot;perfilEditarFrame&quot;);
       const perfilTemplate = document.getElementById(&quot;perfilEditarTemplate&quot;);
       const avatarBtn = document.getElementById(&quot;homeAvatarBtn&quot;);
+      let perfilAnimating = false;
+      let perfilFallbackTimer = null;
+      let perfilLoadPromise = null;
+      let perfilReady = false;
+      let perfilPrewarmDone = false;
 
       function ensurePerfilLoaded(){
-        if(!perfilFrame.getAttribute(&quot;data-loaded&quot;)){
-          perfilFrame.srcdoc = perfilTemplate.innerHTML;
-          perfilFrame.setAttribute(&quot;data-loaded&quot;,&quot;1&quot;);
+        if(perfilReady) return Promise.resolve();
+        if(perfilLoadPromise) return perfilLoadPromise;
+
+        perfilLoadPromise = new Promise((resolve) =&gt; {
+          const finish = () =&gt; {
+            perfilReady = true;
+            try{ perfilFrame.setAttribute(&quot;data-loaded&quot;, &quot;1&quot;); }catch(e){}
+            resolve();
+          };
+
+          try{
+            perfilFrame.addEventListener(&quot;load&quot;, finish, { once:true });
+          }catch(e){
+            finish();
+            return;
+          }
+
+          try{
+            perfilFrame.srcdoc = perfilTemplate.innerHTML;
+          }catch(e){
+            finish();
+          }
+
+          setTimeout(finish, 700);
+        });
+
+        return perfilLoadPromise;
+      }
+
+      function prewarmPerfil(){
+        if(perfilPrewarmDone) return;
+        perfilPrewarmDone = true;
+        ensurePerfilLoaded();
+        requestAnimationFrame(() =&gt; {
+          try{
+            perfilEditarView.style.transition = &quot;none&quot;;
+            perfilEditarView.classList.remove(&quot;slide-in&quot;, &quot;slide-out&quot;);
+            perfilEditarView.style.visibility = &quot;hidden&quot;;
+            perfilEditarView.style.pointerEvents = &quot;none&quot;;
+            perfilEditarView.style.transform = &quot;translate3d(-104%,0,0)&quot;;
+            void perfilEditarView.offsetWidth;
+          }catch(e){}
+          requestAnimationFrame(() =&gt; {
+            perfilEditarView.style.transition = &quot;&quot;;
+            perfilEditarView.style.visibility = &quot;&quot;;
+            perfilEditarView.style.pointerEvents = &quot;&quot;;
+            perfilEditarView.style.transform = &quot;&quot;;
+          });
+        });
+      }
+
+      function clearPerfilFallback(){
+        if(perfilFallbackTimer){
+          clearTimeout(perfilFallbackTimer);
+          perfilFallbackTimer = null;
         }
       }
 
-      function openPerfil(){
-        ensurePerfilLoaded();
+      function finishOpenPerfil(){
+        clearPerfilFallback();
+        perfilAnimating = false;
+        perfilEditarView.classList.remove(&quot;slide-out&quot;);
+      }
 
-        // Mantener home visible debajo mientras entra el perfil
-        homeView.classList.remove(&quot;hidden&quot;);
+      function finishClosePerfil(){
+        clearPerfilFallback();
+        perfilAnimating = false;
+        perfilEditarView.classList.remove(&quot;slide-out&quot;);
+        refreshHomeFromStorage();
+      }
 
-        // Mostrar perfil y animar para que &quot;cubra&quot; el home
+      function runOpenAnimation(){
+        clearPerfilFallback();
         perfilEditarView.classList.remove(&quot;hidden&quot;);
         perfilEditarView.classList.remove(&quot;slide-out&quot;);
-        // Reiniciar posición
-        perfilEditarView.style.transform = &quot;translateX(-100%)&quot;;
+        perfilEditarView.classList.remove(&quot;slide-in&quot;);
         void perfilEditarView.offsetWidth;
 
-        requestAnimationFrame(()=&gt;{
-          perfilEditarView.classList.add(&quot;slide-in&quot;);
-          perfilEditarView.style.transform = &quot;&quot;;
+        requestAnimationFrame(() =&gt; {
+          requestAnimationFrame(() =&gt; {
+            perfilEditarView.classList.add(&quot;slide-in&quot;);
+          });
         });
 
-        const onEnd = (e)=&gt;{
-          if(e.propertyName !== &quot;transform&quot;) return;
-          perfilEditarView.removeEventListener(&quot;transitionend&quot;, onEnd);
-          // Cuando ya cubrió, ocultar home para ahorrar eventos/clicks
-          homeView.classList.add(&quot;hidden&quot;);
+        const onEnd = (e) =&gt; {
+          if(e.target !== perfilEditarView || e.propertyName !== &quot;transform&quot;) return;
+          finishOpenPerfil();
         };
-        perfilEditarView.addEventListener(&quot;transitionend&quot;, onEnd);
+        perfilEditarView.addEventListener(&quot;transitionend&quot;, onEnd, { once:true });
+        perfilFallbackTimer = setTimeout(finishOpenPerfil, 380);
+      }
+
+      function openPerfil(){
+        if(perfilAnimating || perfilEditarView.classList.contains(&quot;slide-in&quot;)) return;
+
+        perfilAnimating = true;
+        ensurePerfilLoaded().then(runOpenAnimation).catch(runOpenAnimation);
       }
 
       function closePerfil(){
-        // Mostrar home debajo para el regreso
-        homeView.classList.remove(&quot;hidden&quot;);
+        if(perfilAnimating || !perfilEditarView.classList.contains(&quot;slide-in&quot;)) return;
 
-        // Salida suave hacia la izquierda
+        perfilAnimating = true;
+        clearPerfilFallback();
+
         perfilEditarView.classList.remove(&quot;slide-in&quot;);
         perfilEditarView.classList.add(&quot;slide-out&quot;);
 
         const onEnd = (e)=&gt;{
-          if(e.propertyName !== &quot;transform&quot;) return;
-          perfilEditarView.removeEventListener(&quot;transitionend&quot;, onEnd);
-          perfilEditarView.classList.add(&quot;hidden&quot;);
-          perfilEditarView.classList.remove(&quot;slide-out&quot;);
-          refreshHomeFromStorage();
+          if(e.target !== perfilEditarView || e.propertyName !== &quot;transform&quot;) return;
+          finishClosePerfil();
         };
-        perfilEditarView.addEventListener(&quot;transitionend&quot;, onEnd);
+        perfilEditarView.addEventListener(&quot;transitionend&quot;, onEnd, { once:true });
+        perfilFallbackTimer = setTimeout(finishClosePerfil, 380);
+      }
+
+      if(document.readyState === &quot;loading&quot;){
+        document.addEventListener(&quot;DOMContentLoaded&quot;, function(){
+          setTimeout(prewarmPerfil, 120);
+        }, { once:true });
+      } else {
+        setTimeout(prewarmPerfil, 120);
+      }
+
+      if(window.requestIdleCallback){
+        requestIdleCallback(prewarmPerfil, { timeout: 900 });
       }
 
       if(avatarBtn){
         avatarBtn.addEventListener(&quot;click&quot;, openPerfil);
+        avatarBtn.addEventListener(&quot;pointerenter&quot;, prewarmPerfil, { once:true });
       }
 
       window.addEventListener(&quot;message&quot;, function(ev){
@@ -12607,6 +13786,13 @@ function maskPhoneVoucher(p){
         }
         if(data &amp;&amp; data.type === &quot;contactsUpdated&quot;){
           // No rompe nada; solo deja listo el autocompletado.
+        }
+        if(data &amp;&amp; data.type === &quot;clearHistory&quot;){
+          try{
+            [&quot;movimientos_v1&quot;, &quot;movimientos_deleted_v1&quot;, &quot;movimientos&quot;, &quot;yapeos&quot;].forEach((key) =&gt; localStorage.removeItem(key));
+          }catch(e){}
+          try{ if(typeof toggleDeleteMode === &quot;function&quot;) toggleDeleteMode(false); }catch(e){}
+          try{ if(typeof renderMovs === &quot;function&quot;) renderMovs(); }catch(e){}
         }
       });
 
@@ -18004,18 +19190,145 @@ window.__YAPE_CONFETTI_DATA = {"v":"5.9.0","fr":40,"ip":0,"op":79,"w":375,"h":81
 (function(){
   const INJECT_CSS = `
   .movVerTodosBtn{display:block;width:100%;text-align:center;background:transparent;border:0;color:#20c7c1;font-weight:500;font-size:16px;line-height:1.2;padding:12px 0 6px;cursor:pointer}
-  .movVerTodosBtn:active{transform:scale(.98);opacity:.9}
-  .yMovOverlay{position:fixed;inset:0;background:#f6f5f8;z-index:999999;display:none;flex-direction:column}
-  .yMovOverlay.show{display:flex}
-  .yMovTop{height:86px;background:#7b1b87;color:#fff;display:flex;align-items:flex-end;padding:0 18px 16px;box-sizing:border-box;position:relative;flex:0 0 auto}
+  .movVerTodosBtn:active{transform:scale(.985);opacity:.9}
+  #voucherView,
+  #rcvVoucher{
+    will-change:transform,opacity;
+    backface-visibility:hidden;
+    -webkit-backface-visibility:hidden;
+    transform:translate3d(0,0,0);
+  }
+  #voucherView.yVoucherNavPrep,
+  #rcvVoucher.yVoucherNavPrep{
+    opacity:1 !important;
+    transform:translate3d(100%,0,0) !important;
+    transition:none !important;
+    pointer-events:none !important;
+  }
+  #voucherView.yVoucherNavRun,
+  #rcvVoucher.yVoucherNavRun{
+    opacity:1 !important;
+    transform:translate3d(0,0,0) !important;
+    transition:transform .34s cubic-bezier(.22,.78,.24,1) !important;
+    pointer-events:auto !important;
+  }
+  .yMovOverlay.to-voucher{
+    opacity:1;
+    visibility:visible;
+    pointer-events:none;
+    transform:translate3d(-22%,0,0) scale(.992);
+    transition:
+      transform .34s cubic-bezier(.22,.78,.24,1),
+      opacity .20s ease,
+      visibility 0s linear 0s;
+  }
+  .yMovOverlay.to-voucher .yMovMonth,
+  .yMovOverlay.to-voucher .yMovRow{
+    transition-delay:0s !important;
+  }
+  .yMovOverlay{
+    position:fixed;
+    inset:0;
+    background:#f6f5f8;
+    z-index:999999;
+    display:flex;
+    flex-direction:column;
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+    transform:translate3d(46px,0,0) scale(.985);
+    transition:
+      transform .42s cubic-bezier(.18,.88,.20,1),
+      opacity .28s ease,
+      visibility 0s linear .42s;
+    will-change:transform,opacity;
+    backface-visibility:hidden;
+    -webkit-backface-visibility:hidden;
+    transform-origin:center center;
+  }
+  .yMovOverlay.show{
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
+    transform:translate3d(0,0,0) scale(1);
+    transition:
+      transform .42s cubic-bezier(.18,.88,.20,1),
+      opacity .28s ease,
+      visibility 0s linear 0s;
+  }
+  .yMovTop{
+    height:86px;
+    background:#7b1b87;
+    color:#fff;
+    display:flex;
+    align-items:flex-end;
+    padding:0 18px 16px;
+    box-sizing:border-box;
+    position:relative;
+    flex:0 0 auto;
+    transform:translate3d(0,-12px,0);
+    opacity:.82;
+    transition:
+      transform .34s cubic-bezier(.22,.78,.24,1) .04s,
+      opacity .22s ease .04s;
+  }
+  .yMovBody{
+    flex:1;
+    overflow:auto;
+    background:#f6f5f8;
+    transform:translate3d(0,18px,0);
+    opacity:.92;
+    transition:
+      transform .38s cubic-bezier(.18,.88,.20,1) .06s,
+      opacity .26s ease .06s;
+  }
+  .yMovOverlay.show .yMovTop,
+  .yMovOverlay.show .yMovBody{
+    transform:translate3d(0,0,0);
+    opacity:1;
+  }
   .yMovBack,.yMovIconBtn{appearance:none;border:0;background:transparent;color:#fff;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center}
   .yMovBack{width:34px;height:34px;font-size:34px;line-height:1;margin-right:8px}
   .yMovTitle{flex:1;text-align:center;font-size:17px !important;font-weight:500;transform:translateX(-10px)}
   .yMovActions{display:flex;gap:18px;margin-left:auto}
   .yMovIconBtn svg{width:28px;height:28px;stroke:#fff;fill:none;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
-  .yMovBody{flex:1;overflow:auto;background:#f6f5f8}
-  .yMovMonth{padding:22px 24px 12px;color:#7b1b87;font-size:15px !important;font-weight:500}
-  .yMovRow{display:flex;align-items:flex-start;justify-content:space-between;padding:18px 24px;border-top:1px solid #e3e0e8;background:#fff;gap:14px}
+  .yMovMonth{
+    padding:22px 24px 12px;
+    color:#7b1b87;
+    font-size:15px !important;
+    font-weight:500;
+    opacity:0;
+    transform:translate3d(0,10px,0);
+    transition:transform .32s cubic-bezier(.18,.88,.20,1) .10s, opacity .24s ease .10s;
+  }
+  .yMovOverlay.show .yMovMonth{
+    opacity:1;
+    transform:translate3d(0,0,0);
+  }
+  .yMovRow{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    padding:18px 24px;
+    border-top:1px solid #e3e0e8;
+    background:#fff;
+    gap:14px;
+    opacity:0;
+    transform:translate3d(0,12px,0);
+    transition:transform .34s cubic-bezier(.18,.88,.20,1), opacity .26s ease;
+  }
+  .yMovOverlay.show .yMovRow{
+    opacity:1;
+    transform:translate3d(0,0,0);
+  }
+  .yMovOverlay.show .yMovRow:nth-of-type(1){transition-delay:.12s}
+  .yMovOverlay.show .yMovRow:nth-of-type(2){transition-delay:.15s}
+  .yMovOverlay.show .yMovRow:nth-of-type(3){transition-delay:.18s}
+  .yMovOverlay.show .yMovRow:nth-of-type(4){transition-delay:.21s}
+  .yMovOverlay.show .yMovRow:nth-of-type(5){transition-delay:.24s}
+  .yMovOverlay.show .yMovRow:nth-of-type(6){transition-delay:.27s}
+  .yMovOverlay.show .yMovRow:nth-of-type(7){transition-delay:.30s}
+  .yMovOverlay.show .yMovRow:nth-of-type(8){transition-delay:.33s}
   .yMovLeft{min-width:0;flex:1}
   .yMovName{font-size:16px !important;font-weight:500 !important;color:#24163f;line-height:1.12;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .yMovDate{margin-top:7px;font-size:13px !important;color:#9c95a8;line-height:1.2}
@@ -18034,11 +19347,7 @@ window.__YAPE_CONFETTI_DATA = {"v":"5.9.0","fr":40,"ip":0,"op":79,"w":375,"h":81
   .yMailInner{padding:18px 16px 14px}
   .yMailTitle{font-size:20px;font-weight:500;text-align:center;color:#333333}
   .yMailSub{font-size:13px;text-align:center;color:#333;margin-top:4px;margin-bottom:12px}
-  .yMailInput{width:100%;box-sizing:border-box;height:54px;border:1px solid #d6d6dd;border-radius:14px;padding:0 14px;font-size:15px;outline:none}
-  .yMailBtns{display:flex;border-top:1px solid #d6d6dd}
-  .yMailBtn{flex:1;border:0;background:#fff;padding:16px 12px;font-size:18px;font-weight:500;color:#0a84ff;cursor:pointer}
-  .yMailBtn + .yMailBtn{border-left:1px solid #d6d6dd}
-  `;
+  .yMailInput{width:100%;box-sizing:border-box;height:54px;border:1px solid #d6d6dd;border-radius:14px;padding:0 14px;font-size:15px;outline:none}`;
 
   const INJECT_JS = `
   (function(){
@@ -18151,6 +19460,53 @@ window.__YAPE_CONFETTI_DATA = {"v":"5.9.0","fr":40,"ip":0,"op":79,"w":375,"h":81
       const min = today0 - ((days-1) * 86400000);
       return list.filter(m=> Number(m.ts || 0) >= min);
     }
+    function openVoucherNativeFromMov(targetId, openFn){
+      const ov = document.getElementById('yMovOverlay');
+      const target = document.getElementById(targetId);
+
+      if(target){
+        try{
+          target.classList.remove('yVoucherNavPrep','yVoucherNavRun');
+          target.classList.add('yVoucherNavPrep');
+        }catch(e){}
+      }
+
+      if(ov){
+        try{
+          ov.classList.add('show');
+          ov.classList.add('to-voucher');
+        }catch(e){}
+      }
+
+      try{
+        openFn();
+      }catch(err){
+        try{ if(target) target.classList.remove('yVoucherNavPrep','yVoucherNavRun'); }catch(e){}
+        try{ if(ov) ov.classList.remove('to-voucher'); }catch(e){}
+        closeOverlay();
+        return;
+      }
+
+      requestAnimationFrame(function(){
+        requestAnimationFrame(function(){
+          try{ if(target) target.classList.add('yVoucherNavRun'); }catch(e){}
+        });
+      });
+
+      setTimeout(function(){
+        try{
+          if(ov){
+            ov.classList.remove('to-voucher');
+            ov.classList.remove('show');
+          }
+          document.body.style.overflow = '';
+        }catch(e){}
+      }, 360);
+
+      setTimeout(function(){
+        try{ if(target) target.classList.remove('yVoucherNavPrep','yVoucherNavRun'); }catch(e){}
+      }, 430);
+    }
     function renderOverlay(){
       const body = document.getElementById('yMovBody');
       if(!body) return;
@@ -18162,23 +19518,62 @@ window.__YAPE_CONFETTI_DATA = {"v":"5.9.0","fr":40,"ip":0,"op":79,"w":375,"h":81
         const m = filtered2[i];
         if(!m) return;
         try{
-          const source = getMovs();
-          const idx = source.findIndex(x=> Number(x.ts||0)===Number(m.ts||0) && String(x.nombre||'')===String(m.nombre||'') && Number(x.monto||0)===Number(m.monto||0));
-          const target = idx >= 0 ? idx : i;
-          const listBox = document.getElementById('movList');
-          if(window.goBackHome && !document.getElementById('homeView').classList.contains('active')) window.goBackHome();
-          setTimeout(function(){
-            try{ if(listBox && listBox.style.display==='none'){ document.getElementById('toggleMovs').click(); } }catch(e){}
-            setTimeout(function(){
-              const item = document.querySelector('#movList .movItem[data-idx="'+target+'"]');
-              if(item) item.click();
-            }, 60);
-          }, 60);
+          const isRecarga = (
+            String(m.tipo||'') === 'recarga' ||
+            String(m.code3||'') === 'RCG' ||
+            String(m.destino||'').toLowerCase().includes('recarga')
+          );
+
+          if(isRecarga && typeof __openRecargaVoucherFromMov === 'function'){
+            openVoucherNativeFromMov('rcvVoucher', function(){ __openRecargaVoucherFromMov(m); });
+            return;
+          }
+
+          if(typeof goVoucher === 'function'){
+            openVoucherNativeFromMov('voucherView', function(){
+              goVoucher({
+                nombre: m.nombre,
+                monto: Math.abs(Number(m.monto || 0)),
+                phone: m.phone || '',
+                destino: m.destino || 'Yape',
+                op8: m.op8 || '00000000',
+                code3: m.code3 || '000',
+                dateObj: new Date(Number(m.ts || Date.now())),
+                noLog: true,
+                fromMov: true,
+                promoSrc: m.promoSrc || '',
+                promoAlt: m.promoAlt || '',
+                msg: m.msg || '',
+                kind: (m.kind || 'out')
+              });
+            });
+          }
         }catch(e){}
       });
     }
-    function openOverlay(){ ensureOverlay(); renderOverlay(); document.getElementById('yMovOverlay').classList.add('show'); document.body.style.overflow='hidden'; }
-    function closeOverlay(){ const ov = document.getElementById('yMovOverlay'); if(ov) ov.classList.remove('show'); document.body.style.overflow=''; }
+    function openOverlay(){
+      ensureOverlay();
+      renderOverlay();
+      const ov = document.getElementById('yMovOverlay');
+      if(!ov) return;
+      try{ cancelAnimationFrame(window.__yMovOpenRaf || 0); }catch(e){}
+      ov.classList.remove('to-voucher');
+      ov.classList.remove('show');
+      void ov.offsetWidth;
+      window.__yMovOpenRaf = requestAnimationFrame(function(){
+        ov.classList.add('show');
+      });
+      document.body.style.overflow='hidden';
+    }
+    function closeOverlay(){
+      const ov = document.getElementById('yMovOverlay');
+      if(!ov) return;
+      ov.classList.remove('to-voucher');
+      ov.classList.remove('show');
+      setTimeout(function(){
+        if(!ov.classList.contains('show')) document.body.style.overflow='';
+      }, 440);
+    }
     window.openMovimientosPantalla = openOverlay;
 
     const origRender = window.renderMovs;
@@ -21822,6 +23217,453 @@ try{
 }catch(e){}
 </script>
 
+
+<script id="edge-swipe-nav-patch">
+(function(){
+  var homeFrame = document.getElementById('homeFrame');
+  if(!homeFrame) return;
+
+  var EDGE_START_PX = 44;
+  var EDGE_BACK_DX = 22;
+  var EDGE_BACK_VELOCITY = 0.32;
+  var VERTICAL_CANCEL_PX = 14;
+
+  function patchProfileFrame(mainDoc){
+    try{
+      var perfilFrame = mainDoc.getElementById('perfilEditarFrame');
+      if(!perfilFrame) return;
+
+      function applyProfilePatch(){
+        try{
+          var pwin = perfilFrame.contentWindow;
+          var pdoc = perfilFrame.contentDocument || (pwin && pwin.document);
+          if(!pdoc || pdoc.__edgeSwipeProfilePatched) return;
+          pdoc.__edgeSwipeProfilePatched = true;
+
+          var style = pdoc.createElement('style');
+          style.id = '__edge_swipe_profile_style';
+          style.textContent = [
+            'html,body{overscroll-behavior-x:none !important;}',
+            '#homeView,#datosView,#agregarContactoView,#perfilScreen,#opcionesScreen{touch-action:pan-y;}'
+          ].join('');
+          (pdoc.head || pdoc.documentElement).appendChild(style);
+
+          var touch = { active:false, startX:0, startY:0, lastX:0, lastY:0, startTime:0 };
+
+          function isVisible(el){
+            if(!el) return false;
+            var cs = pwin.getComputedStyle(el);
+            if(el.classList && el.classList.contains('hidden')) return false;
+            if(el.id === 'opcionesScreen' && el.classList && !el.classList.contains('active') && !el.classList.contains('closing')) return false;
+            return cs.display !== 'none' && cs.visibility !== 'hidden' && cs.opacity !== '0';
+          }
+
+          function shouldIgnoreGesture(target){
+            if(!target) return false;
+            var tag = (target.tagName || '').toLowerCase();
+            if(tag === 'input' || tag === 'textarea' || tag === 'select') return true;
+            if(target.closest && target.closest('[contenteditable="true"], input, textarea, select, .sheet, .option-list')) return false;
+            return false;
+          }
+
+          function goBack(){
+            try{
+              var opciones = pdoc.getElementById('opcionesScreen');
+              if(isVisible(opciones)){
+                if(typeof pwin.volverPerfil === 'function'){ pwin.volverPerfil(); return true; }
+                opciones.classList.remove('active', 'closing');
+                var perfilScreen = pdoc.getElementById('perfilScreen');
+                if(perfilScreen) perfilScreen.classList.add('active');
+                return true;
+              }
+            }catch(e){}
+            try{
+              var datos = pdoc.getElementById('datosView');
+              if(isVisible(datos)){
+                var b1 = pdoc.getElementById('backFromDatos');
+                if(b1){ b1.click(); return true; }
+              }
+            }catch(e){}
+            try{
+              var agregar = pdoc.getElementById('agregarContactoView');
+              if(isVisible(agregar)){
+                var b2 = pdoc.getElementById('backFromAgregarContacto') || pdoc.querySelector('[aria-label="Volver"]');
+                if(b2){ b2.click(); return true; }
+              }
+            }catch(e){}
+            try{
+              pwin.parent && pwin.parent.postMessage({ type:'closePerfil' }, '*');
+              return true;
+            }catch(e){}
+            return false;
+          }
+
+          function onStart(ev){
+            var t = ev.touches && ev.touches[0];
+            if(!t) return;
+            if(t.clientX > EDGE_START_PX) return;
+            if(shouldIgnoreGesture(ev.target)) return;
+            touch.active = true;
+            touch.startX = t.clientX;
+            touch.startY = t.clientY;
+            touch.lastX = t.clientX;
+            touch.lastY = t.clientY;
+            touch.startTime = Date.now();
+          }
+
+          function onMove(ev){
+            if(!touch.active) return;
+            var t = ev.touches && ev.touches[0];
+            if(!t) return;
+            var dx = t.clientX - touch.startX;
+            var dy = t.clientY - touch.startY;
+            touch.lastX = t.clientX;
+            touch.lastY = t.clientY;
+            if(Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > VERTICAL_CANCEL_PX){
+              touch.active = false;
+            }
+          }
+
+          function onEnd(ev){
+            if(!touch.active) return;
+            var t = (ev.changedTouches && ev.changedTouches[0]) || null;
+            var endX = t ? t.clientX : touch.lastX;
+            var dx = endX - touch.startX;
+            var dt = Math.max(1, Date.now() - touch.startTime);
+            var vx = dx / dt;
+            touch.active = false;
+            if(dx >= EDGE_BACK_DX || (dx >= 10 && vx >= EDGE_BACK_VELOCITY)) goBack();
+          }
+
+          pdoc.addEventListener('touchstart', onStart, { passive:true });
+          pdoc.addEventListener('touchmove', onMove, { passive:true });
+          pdoc.addEventListener('touchend', onEnd, { passive:true });
+        }catch(e){}
+      }
+
+      perfilFrame.addEventListener('load', applyProfilePatch);
+      setTimeout(applyProfilePatch, 300);
+      setTimeout(applyProfilePatch, 1200);
+      setTimeout(applyProfilePatch, 2400);
+    }catch(e){}
+  }
+
+  function patchHomeFrame(){
+    try{
+      var win = homeFrame.contentWindow;
+      var doc = homeFrame.contentDocument || (win && win.document);
+      if(!doc || doc.__edgeSwipeNavPatched) return;
+      doc.__edgeSwipeNavPatched = true;
+
+      var style = doc.createElement('style');
+      style.id = '__edge_swipe_nav_style';
+      style.textContent = [
+        'html,body{overscroll-behavior-x:none !important;}',
+        '.view.__edge-nav-managed{transition:transform .22s cubic-bezier(.22,.78,.24,1),opacity .22s ease !important;will-change:transform,opacity;backface-visibility:hidden;-webkit-backface-visibility:hidden;}',
+        '#homeView,#yapearView,#montoView,#banksView,#voucherView,#qrScanView,#qrRegView,#rcOperadora,#rcMonto,#rcvVoucher{touch-action:pan-y;}',
+        '#perfilEditarView{touch-action:pan-y;}'
+      ].join('');
+      (doc.head || doc.documentElement).appendChild(style);
+
+      var VIEW_IDS = ['homeView','yapearView','montoView','banksView','voucherView'];
+      var PRIORITY_IDS = ['voucherView','banksView','montoView','yapearView','homeView'];
+      var navStack = [];
+      var animating = false;
+      var touch = { active:false, startX:0, startY:0, lastX:0, lastY:0, startTime:0 };
+
+      function getById(id){ return doc.getElementById(id); }
+
+      function isVisible(el){
+        if(!el) return false;
+        var cs = win.getComputedStyle(el);
+        if(el.classList && el.classList.contains('hidden')) return false;
+        if(el.getAttribute && el.getAttribute('aria-hidden') === 'true') return false;
+        return cs.display !== 'none' && cs.visibility !== 'hidden' && cs.opacity !== '0';
+      }
+
+      function isVisibleById(id){ return isVisible(getById(id)); }
+
+      function clickIf(selector){
+        var el = doc.querySelector(selector);
+        if(el){ el.click(); return true; }
+        return false;
+      }
+
+      function getVisibleMainViewId(){
+        for(var i=0;i<PRIORITY_IDS.length;i++){
+          var el = getById(PRIORITY_IDS[i]);
+          if(isVisible(el)) return PRIORITY_IDS[i];
+        }
+        return 'homeView';
+      }
+
+      function resetHomeUI(){
+        try{
+          var list = doc.getElementById('movList');
+          var label = doc.getElementById('movLabel');
+          var caret = doc.getElementById('movCaret');
+          if(list){ list.style.display = 'none'; list.scrollTop = 0; }
+          if(label){ label.textContent = 'Mostrar movimientos'; }
+          if(caret){ caret.style.transform = 'rotate(0deg)'; }
+        }catch(e){}
+      }
+
+      function ensureStack(){
+        var currentId = getVisibleMainViewId();
+        if(!navStack.length){
+          navStack = [currentId];
+          return;
+        }
+        if(navStack[navStack.length - 1] !== currentId){
+          var idx = navStack.lastIndexOf(currentId);
+          if(idx >= 0) navStack = navStack.slice(0, idx + 1);
+          else navStack.push(currentId);
+        }
+      }
+
+      function cleanupView(el){
+        if(!el) return;
+        el.classList.remove('__edge-nav-managed');
+        el.style.transform = '';
+        el.style.opacity = '';
+        el.style.zIndex = '';
+      }
+
+      function showOnly(targetEl){
+        VIEW_IDS.forEach(function(id){
+          var el = getById(id);
+          if(!el) return;
+          cleanupView(el);
+          if(el === targetEl) el.classList.remove('hidden');
+          else el.classList.add('hidden');
+        });
+        if(targetEl) targetEl.classList.remove('hidden');
+      }
+
+      function animateSwitch(currentEl, targetEl, direction){
+        if(!targetEl) return;
+        if(!currentEl || currentEl === targetEl){
+          showOnly(targetEl);
+          return;
+        }
+        if(win.__nativeYapearTransitionInstalled && ((currentEl.id === 'homeView' && targetEl.id === 'yapearView') || (currentEl.id === 'yapearView' && targetEl.id === 'homeView'))){
+          showOnly(targetEl);
+          return;
+        }
+        if(animating){
+          showOnly(targetEl);
+          return;
+        }
+
+        animating = true;
+        cleanupView(currentEl);
+        cleanupView(targetEl);
+
+        currentEl.classList.remove('hidden');
+        targetEl.classList.remove('hidden');
+        currentEl.classList.add('__edge-nav-managed');
+        targetEl.classList.add('__edge-nav-managed');
+        currentEl.style.zIndex = '1';
+        targetEl.style.zIndex = '2';
+
+        if(direction === 'back'){
+          targetEl.style.transform = 'translate3d(-16%,0,0)';
+          targetEl.style.opacity = '.985';
+        }else{
+          targetEl.style.transform = 'translate3d(100%,0,0)';
+          targetEl.style.opacity = '1';
+        }
+        currentEl.style.transform = 'translate3d(0,0,0)';
+        currentEl.style.opacity = '1';
+
+        win.requestAnimationFrame(function(){
+          win.requestAnimationFrame(function(){
+            targetEl.style.transform = 'translate3d(0,0,0)';
+            targetEl.style.opacity = '1';
+            currentEl.style.transform = direction === 'back' ? 'translate3d(100%,0,0)' : 'translate3d(-10%,0,0)';
+            currentEl.style.opacity = direction === 'back' ? '1' : '.96';
+          });
+        });
+
+        win.setTimeout(function(){
+          currentEl.classList.add('hidden');
+          cleanupView(currentEl);
+          cleanupView(targetEl);
+          animating = false;
+        }, 230);
+      }
+
+      win.__edgeSwipeGoTo = function(viewOrId, opts){
+        ensureStack();
+        var targetEl = typeof viewOrId === 'string' ? getById(viewOrId) : viewOrId;
+        if(!targetEl || !targetEl.id) return;
+        var currentId = getVisibleMainViewId();
+        var currentEl = getById(currentId);
+
+        if(targetEl.id !== 'homeView') resetHomeUI();
+
+        var direction = opts && opts.direction;
+        if(!direction){
+          var existingIndex = navStack.lastIndexOf(targetEl.id);
+          direction = (existingIndex >= 0 && existingIndex < navStack.length - 1) ? 'back' : 'forward';
+        }
+
+        if(direction === 'back'){
+          var backIndex = navStack.lastIndexOf(targetEl.id);
+          if(backIndex >= 0) navStack = navStack.slice(0, backIndex + 1);
+          else navStack = [targetEl.id];
+        }else if(navStack[navStack.length - 1] !== targetEl.id){
+          navStack.push(targetEl.id);
+        }
+
+        animateSwitch(currentEl, targetEl, direction);
+        if(targetEl.id === 'homeView') win.setTimeout(resetHomeUI, 0);
+      };
+
+      win.showView = function(viewOrId){
+        win.__edgeSwipeGoTo(viewOrId);
+      };
+
+      function closePerfilIfOpen(){
+        var perfil = getById('perfilEditarView');
+        if(perfil && perfil.classList.contains('slide-in')){
+          try{ win.postMessage({ type:'closePerfil' }, '*'); }catch(e){}
+          return true;
+        }
+        return false;
+      }
+
+      function closeVisibleOverlay(){
+        if(isVisibleById('qrScanView') && clickIf('#qrScanClose, #qrScanView .qrScan-close')) return true;
+        if(isVisibleById('qrRegView') && clickIf('#qrRegBack, #qrRegView .qrReg-close')) return true;
+        if(isVisibleById('rcvVoucher') && clickIf('#rcvClose')) return true;
+        if(isVisibleById('rcMonto') && (clickIf('#rcBack2') || clickIf('#rcClose2'))) return true;
+        if(isVisibleById('rcOperadora') && (clickIf('#rcBack1') || clickIf('#rcClose1'))) return true;
+        if(isVisibleById('netModal')){
+          var net = getById('netModal');
+          if(net){ net.classList.add('hidden'); net.setAttribute('aria-hidden','true'); return true; }
+        }
+        var bSheet = getById('bSheetWrap');
+        if(bSheet && !bSheet.classList.contains('hidden')){
+          bSheet.classList.remove('show');
+          win.setTimeout(function(){ try{ bSheet.classList.add('hidden'); }catch(e){} }, 200);
+          return true;
+        }
+        var yModal = getById('yLoadingModal');
+        if(yModal && isVisible(yModal)){
+          yModal.style.display = 'none';
+          return true;
+        }
+        var orders = getById('ordersSheet');
+        if(orders && orders.classList.contains('open')){
+          if(clickIf('#ordersClose')) return true;
+          orders.classList.remove('open');
+          orders.setAttribute('aria-hidden','true');
+          return true;
+        }
+        return false;
+      }
+
+      function goBack(){
+        ensureStack();
+        if(animating) return true;
+        if(closePerfilIfOpen()) return true;
+        if(closeVisibleOverlay()) return true;
+
+        var currentId = getVisibleMainViewId();
+        if(currentId === 'yapearView' && typeof win.__closeYapearNative === 'function'){
+          if(navStack.length > 1) navStack = navStack.slice(0, -1);
+          win.__closeYapearNative();
+          return true;
+        }
+
+        if(navStack.length > 1){
+          var prevId = navStack[navStack.length - 2];
+          var prevEl = getById(prevId);
+          if(prevEl){
+            win.__edgeSwipeGoTo(prevEl, { direction:'back' });
+            return true;
+          }
+        }
+
+        if(currentId === 'voucherView' && clickIf('#vCloseBtn, #voucherView .close-btn')) return true;
+        if(currentId === 'banksView' && clickIf('#bBack, #banksView [aria-label="Volver"]')) return true;
+        if(currentId === 'montoView' && clickIf('#mBack')) return true;
+        if(currentId === 'yapearView' && clickIf('#yBackBtn')) return true;
+        return false;
+      }
+
+      win.__edgeSwipeBack = goBack;
+
+      function shouldIgnoreGesture(target){
+        if(!target) return false;
+        var tag = (target.tagName || '').toLowerCase();
+        if(tag === 'input' || tag === 'textarea' || tag === 'select') return true;
+        if(target.closest && target.closest('[contenteditable="true"], input, textarea, select, .banner, #banner, .movList, .qrScan-upload, .bSheet, .orders-panel')) return true;
+        return false;
+      }
+
+      function onStart(ev){
+        var t = ev.touches && ev.touches[0];
+        if(!t) return;
+        if(t.clientX > EDGE_START_PX) return;
+        if(shouldIgnoreGesture(ev.target)) return;
+        ensureStack();
+        if(navStack.length <= 1 && !closePerfilIfOpen() && !closeVisibleOverlay()){
+          var currentId = getVisibleMainViewId();
+          if(currentId === 'homeView') return;
+        }
+        touch.active = true;
+        touch.startX = t.clientX;
+        touch.startY = t.clientY;
+        touch.lastX = t.clientX;
+        touch.lastY = t.clientY;
+        touch.startTime = Date.now();
+      }
+
+      function onMove(ev){
+        if(!touch.active) return;
+        var t = ev.touches && ev.touches[0];
+        if(!t) return;
+        var dx = t.clientX - touch.startX;
+        var dy = t.clientY - touch.startY;
+        touch.lastX = t.clientX;
+        touch.lastY = t.clientY;
+        if(Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > VERTICAL_CANCEL_PX){
+          touch.active = false;
+        }
+      }
+
+      function onEnd(ev){
+        if(!touch.active) return;
+        var t = (ev.changedTouches && ev.changedTouches[0]) || null;
+        var endX = t ? t.clientX : touch.lastX;
+        var dx = endX - touch.startX;
+        var dt = Math.max(1, Date.now() - touch.startTime);
+        var vx = dx / dt;
+        touch.active = false;
+        if(dx >= EDGE_BACK_DX || (dx >= 10 && vx >= EDGE_BACK_VELOCITY)) goBack();
+      }
+
+      doc.addEventListener('touchstart', onStart, { passive:true });
+      doc.addEventListener('touchmove', onMove, { passive:true });
+      doc.addEventListener('touchend', onEnd, { passive:true });
+
+      ensureStack();
+      patchProfileFrame(doc);
+      win.setTimeout(function(){ patchProfileFrame(doc); }, 1200);
+    }catch(e){
+      console.warn('edge swipe patch failed', e);
+    }
+  }
+
+  homeFrame.addEventListener('load', patchHomeFrame);
+  setTimeout(patchHomeFrame, 500);
+  setTimeout(patchHomeFrame, 1600);
+  setTimeout(patchHomeFrame, 2800);
+})();
+</script>
+
 </body>
 </html>
 
@@ -21852,3 +23694,188 @@ try{
   }
 }
 </style>
+
+
+<script id="outer-yapear-native-transition-fix">
+(function(){
+  function installNativeYapearTransition(){
+    var frame = document.getElementById('homeFrame');
+    if(!frame) return;
+
+    function apply(){
+      var win, doc;
+      try{
+        win = frame.contentWindow;
+        doc = frame.contentDocument || (win && win.document);
+      }catch(e){
+        return;
+      }
+      if(!win || !doc || !doc.documentElement) return;
+      if(win.__nativeYapearTransitionInstalled) return;
+
+      var homeView = doc.getElementById('homeView');
+      var yapearView = doc.getElementById('yapearView');
+      var homeBtn = doc.getElementById('homeYapearBtn');
+      var closeBtn = doc.getElementById('yCloseBtn');
+      var backBtn = doc.getElementById('yBackBtn');
+      if(!homeView || !yapearView || !homeBtn || !closeBtn || !backBtn) return;
+
+      win.__nativeYapearTransitionInstalled = true;
+
+      if(!doc.getElementById('nativeYapearTransitionStyle')){
+        var style = doc.createElement('style');
+        style.id = 'nativeYapearTransitionStyle';
+        style.textContent = [
+          '#homeView.native-yapear-prep, #yapearView.native-yapear-prep{',
+          '  display:block !important;',
+          '  visibility:visible !important;',
+          '  pointer-events:none !important;',
+          '}',
+          '#homeView.native-yapear-prep, #yapearView.native-yapear-prep{',
+          '  backface-visibility:hidden !important;',
+          '  -webkit-backface-visibility:hidden !important;',
+          '  will-change:transform, opacity !important;',
+          '  transform:translate3d(0,0,0);',
+          '}',
+          '#homeView.native-yapear-prep{',
+          '  z-index:21 !important;',
+          '}',
+          '#yapearView.native-yapear-prep{',
+          '  z-index:22 !important;',
+          '}',
+          '#yapearView.native-yapear-prep, #yapearView .yApp{',
+          '  contain:none !important;',
+          '}',
+          '@media (prefers-reduced-motion: reduce){',
+          '  #homeView.native-yapear-prep, #yapearView.native-yapear-prep{',
+          '    transition:none !important;',
+          '  }',
+          '}'
+        ].join('\n');
+        (doc.head || doc.documentElement).appendChild(style);
+      }
+
+      var animating = false;
+      var fallbackTimer = null;
+      var OPEN_MS = 250;
+      var CLOSE_MS = 230;
+      var EASE = 'cubic-bezier(.2,.82,.2,1)';
+
+      function callReset(){
+        try{ if(typeof win.resetYapearUI === 'function') win.resetYapearUI(); }catch(e){}
+      }
+
+      function callShowView(target){
+        try{
+          if(typeof win.showView === 'function'){
+            win.showView(target);
+            return true;
+          }
+        }catch(e){}
+        return false;
+      }
+
+      function clearFallback(){
+        if(fallbackTimer){
+          clearTimeout(fallbackTimer);
+          fallbackTimer = null;
+        }
+      }
+
+      function clearPrep(){
+        [homeView, yapearView].forEach(function(el){
+          if(!el) return;
+          el.classList.remove('native-yapear-prep');
+          el.style.transition = '';
+          el.style.transform = '';
+          el.style.opacity = '';
+          el.style.zIndex = '';
+          el.style.pointerEvents = '';
+        });
+      }
+
+      function prepareViews(){
+        clearPrep();
+        try{ homeView.classList.remove('hidden'); }catch(e){}
+        try{ yapearView.classList.remove('hidden'); }catch(e){}
+        homeView.classList.add('native-yapear-prep');
+        yapearView.classList.add('native-yapear-prep');
+      }
+
+      function finish(target){
+        clearFallback();
+        clearPrep();
+        callShowView(target);
+        animating = false;
+      }
+
+      function animate(opening){
+        if(animating) return;
+        animating = true;
+        if(opening) callReset();
+        prepareViews();
+
+        var duration = opening ? OPEN_MS : CLOSE_MS;
+        var homeToX = opening ? '-3.5%' : '0%';
+        var homeToOpacity = opening ? '0.985' : '1';
+        var yapearFromX = opening ? '100%' : '0%';
+        var yapearToX = opening ? '0%' : '100%';
+
+        homeView.style.transition = 'none';
+        yapearView.style.transition = 'none';
+        homeView.style.transform = opening ? 'translate3d(0,0,0)' : 'translate3d(-3.5%,0,0)';
+        homeView.style.opacity = opening ? '1' : '0.985';
+        yapearView.style.transform = 'translate3d(' + yapearFromX + ',0,0)';
+        yapearView.style.opacity = '1';
+
+        void homeView.offsetWidth;
+
+        homeView.style.transition = 'transform ' + duration + 'ms ' + EASE + ', opacity ' + duration + 'ms linear';
+        yapearView.style.transition = 'transform ' + duration + 'ms ' + EASE;
+
+        requestAnimationFrame(function(){
+          homeView.style.transform = 'translate3d(' + homeToX + ',0,0)';
+          homeView.style.opacity = homeToOpacity;
+          yapearView.style.transform = 'translate3d(' + yapearToX + ',0,0)';
+        });
+
+        fallbackTimer = setTimeout(function(){
+          finish(opening ? yapearView : homeView);
+        }, duration + 34);
+      }
+
+      function intercept(el, handler){
+        if(!el) return;
+        el.addEventListener('click', function(e){
+          try{
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            e.stopPropagation();
+          }catch(err){}
+          handler();
+        }, true);
+      }
+
+      intercept(homeBtn, function(){ animate(true); });
+      intercept(closeBtn, function(){ animate(false); });
+      intercept(backBtn, function(){ animate(false); });
+
+      win.__openYapearNative = function(){ animate(true); };
+      win.__closeYapearNative = function(){ animate(false); };
+    }
+
+    frame.addEventListener('load', function(){ setTimeout(apply, 90); });
+    setTimeout(apply, 90);
+    setTimeout(apply, 420);
+    setTimeout(apply, 1200);
+    setTimeout(apply, 2400);
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', installNativeYapearTransition, { once:true });
+  }else{
+    installNativeYapearTransition();
+  }
+})();
+</script>
+
