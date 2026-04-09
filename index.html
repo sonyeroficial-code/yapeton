@@ -9706,6 +9706,26 @@ select.yape-save-select{
     const saveConfirmBadge = document.getElementById(&quot;saveConfirmBadge&quot;);
     const saveConfirmCheckPath = document.getElementById(&quot;saveConfirmCheckPath&quot;);
 
+    function normalizeContactName(value) {
+      return String(value || &quot;&quot;).replace(/\s+/g, &quot; &quot;).trim();
+    }
+
+    function isBusinessContactName(value) {
+      const raw = normalizeContactName(value);
+      if (!raw) return false;
+
+      const legalEntityRe = /\b(?:s\.?\s*a\.?\s*c\.?|s\.?\s*r\.?\s*l\.?|e\.?\s*i\.?\s*r\.?\s*l\.?|s\.?\s*a\.?\s*s\.?|s\.?\s*a\.?)\b/i;
+      const companyWordsRe = /\b(?:empresa|empresas|corporacion|corporación|grupo|holding|holdings|servicios|soluciones|transportes|inversiones|constructora|constructores|comercial|comerciales|industria|industrial|importaciones|exportaciones|distribuidora|distribuciones|logistica|logística|market|minimarket|bodega|tienda|botica|farmacia|restaurante|polleria|pollería|cevicheria|cevichería|agencia|studio|producciones|consultores|consultoria|consultoría|tecnologia|tecnología|systems|system|hotel|hostal|colegio|universidad|clinica|clínica|laboratorio|ferreteria|ferretería|taller|motorepuestos|cargo|courier|delivery|foods|food|store)\b/i;
+      const upperTokens = raw.split(/\s+/).filter(Boolean);
+      const looksCorporateByCaps = upperTokens.length >= 2 &amp;&amp; upperTokens.every(token =&gt; /[A-ZÁÉÍÓÚÑ]{2,}/.test(token));
+
+      return legalEntityRe.test(raw) || companyWordsRe.test(raw) || looksCorporateByCaps;
+    }
+
+    function detectContactType(name) {
+      return isBusinessContactName(name) ? &quot;empresa&quot; : &quot;persona&quot;;
+    }
+
     let __afterSaveConfirm = null;
 
     function sanitizePhone(value) {
@@ -9782,9 +9802,10 @@ select.yape-save-select{
     });
 
     function validateForm() {
-      const name = nameInput.value.trim();
+      const name = normalizeContactName(nameInput.value);
       const phone = sanitizePhone(phoneInput.value);
       const destino = destinoSelect.value;
+      const contactType = detectContactType(name);
 
       if (!name &amp;&amp; !phone) {
         showToast(&quot;Ingresa tus datos para guardar el contacto.&quot;, &quot;error&quot;);
@@ -9804,7 +9825,7 @@ select.yape-save-select{
         return null;
       }
 
-      return { name, phone, destino };
+      return { name, phone, destino, contactType };
     }
 
     function formatPhonePretty(value) {
@@ -9903,6 +9924,7 @@ select.yape-save-select{
             ...contacts[idx],
             name: data.name,
             destino: data.destino,
+            contactType: data.contactType,
             createdAt: contacts[idx].createdAt || nowISO
           };
           saveContacts(contacts);
@@ -9912,6 +9934,7 @@ select.yape-save-select{
             name: data.name,
             phone: data.phone,
             destino: data.destino,
+            contactType: data.contactType,
             createdAt: nowISO
           });
           saveContacts(contacts);
@@ -9921,7 +9944,8 @@ select.yape-save-select{
           if (window.fsUpsertContact) {
             const ok = await window.fsUpsertContact(data.phone, {
               name: data.name,
-              destino: data.destino
+              destino: data.destino,
+              contactType: data.contactType
             });
             syncPending = !ok;
           }
@@ -10048,7 +10072,8 @@ window.fsUpsertContact = async function(phone9, data){
     const payload = {
       phone: p,
       name: (data?.name || &quot;&quot;).trim(),
-      destino: (data?.destino || &quot;Yape&quot;)
+      destino: (data?.destino || &quot;Yape&quot;),
+      contactType: (data?.contactType || (window.detectContactType ? window.detectContactType((data?.name || &quot;&quot;).trim()) : &quot;persona&quot;))
     };
 
     // createdAt solo al crear (o si faltaba)
@@ -12580,7 +12605,7 @@ function setUploadState(state){
           if(!finalName &amp;&amp; isAutoCompleteEnabled()){
             finalName = autoNameForNumber(only);
           }
-          setTimeout(()=&gt; goMonto((finalName || &quot;Sin nombre&quot;), value), 180);
+          setTimeout(()=&gt; goMonto((finalName || &quot;Sin nombre&quot;), value, (c || null)), 180);
         });
       } else {
         yContactsSection.style.display = &quot;block&quot;;
@@ -12632,12 +12657,34 @@ function maskPhoneVoucher(p){
     const mClose     = document.getElementById(&quot;mClose&quot;);
     const mTapTitle  = document.querySelector(&quot;#montoView .mTitle&quot;);
 
+    function normalizeContactName(value){
+      return String(value || &quot;&quot;).replace(/\s+/g, &quot; &quot;).trim();
+    }
+
+    function isBusinessContactName(value){
+      const raw = normalizeContactName(value);
+      if(!raw) return false;
+
+      const legalEntityRe = /\b(?:s\.?\s*a\.?\s*c\.?|s\.?\s*r\.?\s*l\.?|e\.?\s*i\.?\s*r\.?\s*l\.?|s\.?\s*a\.?\s*s\.?|s\.?\s*a\.?)\b/i;
+      const companyWordsRe = /\b(?:empresa|empresas|corporacion|corporación|grupo|holding|holdings|servicios|soluciones|transportes|inversiones|constructora|constructores|comercial|comerciales|industria|industrial|importaciones|exportaciones|distribuidora|distribuciones|logistica|logística|market|minimarket|bodega|tienda|botica|farmacia|restaurante|polleria|pollería|cevicheria|cevichería|agencia|studio|producciones|consultores|consultoria|consultoría|tecnologia|tecnología|systems|system|hotel|hostal|colegio|universidad|clinica|clínica|laboratorio|ferreteria|ferretería|taller|motorepuestos|cargo|courier|delivery|foods|food|store)\b/i;
+      const upperTokens = raw.split(/\s+/).filter(Boolean);
+      const looksCorporateByCaps = upperTokens.length >= 2 &amp;&amp; upperTokens.every(token =&gt; /[A-ZÁÉÍÓÚÑ]{2,}/.test(token));
+
+      return legalEntityRe.test(raw) || companyWordsRe.test(raw) || looksCorporateByCaps;
+    }
+
+    function detectContactType(name){
+      return isBusinessContactName(name) ? &quot;empresa&quot; : &quot;persona&quot;;
+    }
+
     window.__mostrarNombreCompletoTemporal = false;
     window.__nombreDestinoActualCompleto = &quot;&quot;;
+    window.__currentContactType = &quot;persona&quot;;
 
     function mShouldShowFullNameDestino(){
       const dest = String(window.__currentDestino || &quot;Yape&quot;).trim();
-      return dest === &quot;BCP&quot; || dest === &quot;Plin&quot;;
+      const currentName = String(window.__nombreDestinoActualCompleto || &quot;&quot;).trim();
+      return dest === &quot;BCP&quot; || dest === &quot;Plin&quot; || String(window.__currentContactType || &quot;persona&quot;) === &quot;empresa&quot; || isBusinessContactName(currentName);
     }
 
     function mRenderNombreDestino(){
@@ -12900,9 +12947,13 @@ function maskPhoneVoucher(p){
     
     // ✅ Mascara nombre: primer nombre completo, siguientes 3 letras + *
     
-    // ✅ Mascara nombre: SOLO 2 nombres -&gt; primero completo, segundo 3 letras + *
+    // ✅ Mascara nombre: SOLO personas naturales. Empresas se muestran completas.
     function maskDisplayName(fullName){
-      const parts = String(fullName || &quot;&quot;).trim().split(/\s+/).filter(Boolean);
+      const cleanName = normalizeContactName(fullName);
+      if(!cleanName) return &quot;Sin nombre&quot;;
+      if (isBusinessContactName(cleanName)) return cleanName;
+
+      const parts = cleanName.split(/\s+/).filter(Boolean);
       if(parts.length === 0) return &quot;Sin nombre&quot;;
 
       const first = parts[0];
@@ -12912,7 +12963,7 @@ function maskPhoneVoucher(p){
     }
 
 
-function goMonto(nombre, phone9){
+function goMonto(nombre, phone9, meta){
       showView(montoView);
 
       
@@ -12924,6 +12975,8 @@ function goMonto(nombre, phone9){
       if (msgInp) msgInp.value = &quot;&quot;;
 window.__mostrarNombreCompletoTemporal = false;
       window.__nombreDestinoActualCompleto = String((nombre || &#x27;&#x27;).trim());
+      const resolvedContactType = (meta &amp;&amp; typeof meta === &quot;object&quot; &amp;&amp; meta.contactType) ? String(meta.contactType) : detectContactType(window.__nombreDestinoActualCompleto);
+      window.__currentContactType = resolvedContactType === &quot;empresa&quot; ? &quot;empresa&quot; : &quot;persona&quot;;
       mRenderNombreDestino();
       mActualizarTextoToggleNombre();
       mPhoneFull = String(phone9 || &quot;&quot;).replace(/\D/g,&quot;&quot;).slice(0,9) || &quot;999999000&quot;;
@@ -13929,7 +13982,7 @@ function maskPhoneVoucher(p){
                   setTimeout(()=&gt;{ yModal.style.display = &quot;none&quot;; }, 900);
                 }
                 setTimeout(()=&gt; {
-                  try{ goMonto((c.name || &quot;Sin nombre&quot;), value); }catch(e){}
+                  try{ goMonto((c.name || &quot;Sin nombre&quot;), value, c); }catch(e){}
                 }, 900);
               }, { once:true });
             }
