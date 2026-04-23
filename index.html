@@ -23718,128 +23718,173 @@ try{
 </script>
 
 
-<style id="outer-ios-iframe-safe-fix-note">
-/* parche inyectado para iPhone en vistas Yapear y Monto */
+<!-- iPhone safe-area patch v2 -->
+<style id="__ios_safe_area_outer_patch_v2">
+:root{
+  --outer-safe-top: env(safe-area-inset-top, 0px);
+  --outer-safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+body.mode-login{
+  padding-top: calc(var(--outer-safe-top) + 16px) !important;
+  padding-right: 12px !important;
+  padding-bottom: calc(var(--outer-safe-bottom) + 22px) !important;
+  padding-left: 12px !important;
+  min-height: 100dvh !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+}
+body.mode-login .wrap{
+  width: min(420px, 100%) !important;
+  margin: 0 auto !important;
+  padding-bottom: var(--outer-safe-bottom) !important;
+  box-sizing: border-box !important;
+}
+body.mode-login .topbar{
+  margin-top: 0 !important;
+}
+body.mode-login .panelInner{
+  max-height: calc(100dvh - var(--outer-safe-top) - var(--outer-safe-bottom) - 16px - 22px - 44px - 10px - 10px) !important;
+}
 </style>
-<script id="outer-ios-iframe-safe-fix">
+<script id="__ios_safe_area_runtime_v2">
 (function(){
   var ua = navigator.userAgent || '';
   var isIOS = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && 'ontouchend' in document);
   if(!isIOS) return;
 
-  function injectIntoFrame(){
-    var frame = document.getElementById('homeFrame');
-    if(!frame) return false;
+  var INNER_CSS = [
+    ':root{',
+    '  --ios-safe-top: env(safe-area-inset-top, 0px);',
+    '  --ios-safe-bottom: env(safe-area-inset-bottom, 0px);',
+    '}',
+    'html,body{',
+    '  min-height:100% !important;',
+    '  overflow-x:hidden !important;',
+    '}',
+    'body{',
+    '  padding-top:0 !important;',
+    '}',
+    '.device,.views,.view,.app,.yApp{',
+    '  min-height:100dvh !important;',
+    '}',
+    '#yapearView, #montoView, #opcionesScreen{',
+    '  min-height:100dvh !important;',
+    '}',
+    '#yapearView .yApp{',
+    '  padding-bottom: calc(var(--ios-safe-bottom) + 10px) !important;',
+    '  box-sizing: border-box !important;',
+    '}',
+    '#yapearView .yHeader{',
+    '  padding-top: calc(var(--ios-safe-top) + 10px) !important;',
+    '  padding-right: 16px !important;',
+    '  padding-left: 16px !important;',
+    '  min-height: calc(56px + var(--ios-safe-top)) !important;',
+    '  box-sizing: border-box !important;',
+    '  align-items: center !important;',
+    '}',
+    '#yapearView .ySearch{',
+    '  margin-top: 10px !important;',
+    '}',
+    '#montoView #mContent{',
+    '  padding-top: calc(var(--ios-safe-top) + 12px) !important;',
+    '  box-sizing: border-box !important;',
+    '}',
+    '#montoView #mFooter{',
+    '  padding-bottom: calc(14px + var(--ios-safe-bottom)) !important;',
+    '  box-sizing: border-box !important;',
+    '}',
+    '#opcionesScreen{',
+    '  min-height:100dvh !important;',
+    '}',
+    '#opcionesScreen .opciones-wrapper{',
+    '  min-height:100dvh !important;',
+    '  padding-bottom: calc(22px + var(--ios-safe-bottom)) !important;',
+    '  box-sizing: border-box !important;',
+    '}',
+    '#opcionesScreen .opciones-header{',
+    '  padding-top: calc(var(--ios-safe-top) + 22px) !important;',
+    '  box-sizing: border-box !important;',
+    '}',
+    '#opcionesScreen .opciones-update{',
+    '  margin-top: 0 !important;',
+    '}',
+    '@supports (padding:max(0px)){',
+    '  #yapearView .yHeader{',
+    '    padding-top: max(calc(var(--ios-safe-top) + 10px), 22px) !important;',
+    '  }',
+    '  #opcionesScreen .opciones-header{',
+    '    padding-top: max(calc(var(--ios-safe-top) + 22px), 34px) !important;',
+    '  }',
+    '}',
+    '@media (display-mode: standalone){',
+    '  #yapearView .yHeader{',
+    '    padding-top: calc(var(--ios-safe-top) + 12px) !important;',
+    '  }',
+    '  #montoView #mContent{',
+    '    padding-top: calc(var(--ios-safe-top) + 14px) !important;',
+    '  }',
+    '  #opcionesScreen .opciones-header{',
+    '    padding-top: calc(var(--ios-safe-top) + 24px) !important;',
+    '  }',
+    '}'
+  ].join('\n');
 
-    var doc, win;
+  function upsertStyle(doc, id, css){
     try{
-      win = frame.contentWindow;
-      doc = frame.contentDocument || (win && win.document);
-    }catch(e){
-      return false;
-    }
-    if(!doc || !doc.documentElement || !doc.body) return false;
-
-    try{ doc.documentElement.classList.add('ios-safe-patched'); }catch(e){}
-    try{ doc.body.classList.add('ios-safe-patched'); }catch(e){}
-
-    if(!doc.getElementById('__ios_safe_views_patch')){
-      var style = doc.createElement('style');
-      style.id = '__ios_safe_views_patch';
-      style.textContent = [
-        'html.ios-safe-patched, body.ios-safe-patched{',
-        '  min-height:100% !important;',
-        '  height:100% !important;',
-        '}',
-        'html.ios-safe-patched #yapearView{',
-        '  background:#fff !important;',
-        '}',
-        'html.ios-safe-patched #yapearView .yApp{',
-        '  min-height:100dvh !important;',
-        '  min-height:-webkit-fill-available !important;',
-        '  height:auto !important;',
-        '  background:#fff !important;',
-        '}',
-        'html.ios-safe-patched #yapearView .yHeader{',
-        '  padding-top:calc(env(safe-area-inset-top, 0px) + 10px) !important;',
-        '  padding-right:16px !important;',
-        '  padding-bottom:12px !important;',
-        '  padding-left:16px !important;',
-        '  min-height:calc(52px + env(safe-area-inset-top, 0px)) !important;',
-        '  box-sizing:border-box !important;',
-        '  display:flex !important;',
-        '  align-items:center !important;',
-        '}',
-        'html.ios-safe-patched #yapearView .ySearch{',
-        '  margin-top:12px !important;',
-        '}',
-        'html.ios-safe-patched #yapearView #yContactsSection{',
-        '  padding-bottom:calc(env(safe-area-inset-bottom, 0px) + 18px) !important;',
-        '}',
-        'html.ios-safe-patched #montoView{',
-        '  background:#fff !important;',
-        '}',
-        'html.ios-safe-patched #montoView .mApp{',
-        '  min-height:100dvh !important;',
-        '  min-height:-webkit-fill-available !important;',
-        '  padding-top:env(safe-area-inset-top, 0px) !important;',
-        '  box-sizing:border-box !important;',
-        '  background:#fff !important;',
-        '}',
-        'html.ios-safe-patched #montoView #mContent{',
-        '  top:0 !important;',
-        '  padding-top:8px !important;',
-        '  box-sizing:border-box !important;',
-        '}',
-        'html.ios-safe-patched #montoView .mHeaderLikePhoto{',
-        '  padding-top:4px !important;',
-        '}',
-        'html.ios-safe-patched #montoView #mFooter{',
-        '  padding-bottom:calc(14px + env(safe-area-inset-bottom, 0px)) !important;',
-        '  box-sizing:border-box !important;',
-        '}',
-        'html.ios-safe-patched #montoView #mNameBox,',
-        'html.ios-safe-patched #montoView #mPhoneBox{',
-        '  position:relative !important;',
-        '}',
-        '@supports (-webkit-touch-callout: none){',
-        '  html.ios-safe-patched #yapearView .yApp,',
-        '  html.ios-safe-patched #montoView .mApp{',
-        '    min-height:-webkit-fill-available !important;',
-        '  }',
-        '}',
-      ].join('\n');
-      (doc.head || doc.documentElement).appendChild(style);
-    }
-
-    if(win && typeof win.dispatchEvent === 'function'){
-      try{ win.dispatchEvent(new Event('resize')); }catch(e){}
-    }
-    return true;
+      if(!doc || !doc.documentElement) return;
+      var head = doc.head || doc.documentElement;
+      var style = doc.getElementById(id);
+      if(!style){
+        style = doc.createElement('style');
+        style.id = id;
+        head.appendChild(style);
+      }
+      style.textContent = css;
+    }catch(e){}
   }
 
-  function applyLoop(){
-    injectIntoFrame();
-    setTimeout(injectIntoFrame, 80);
-    setTimeout(injectIntoFrame, 260);
-    setTimeout(injectIntoFrame, 800);
-    setTimeout(injectIntoFrame, 1600);
+  function injectInto(doc){
+    try{
+      upsertStyle(doc, '__ios_inner_safe_patch_v2', INNER_CSS);
+      var frames = doc.querySelectorAll('iframe');
+      frames.forEach(function(fr){
+        try{
+          var sub = fr.contentDocument || (fr.contentWindow && fr.contentWindow.document);
+          if(sub) injectInto(sub);
+        }catch(e){}
+      });
+    }catch(e){}
   }
 
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', applyLoop, {once:true});
-  }else{
-    applyLoop();
+  function apply(){
+    try{
+      injectInto(document);
+      document.querySelectorAll('iframe').forEach(function(fr){
+        try{
+          var sub = fr.contentDocument || (fr.contentWindow && fr.contentWindow.document);
+          if(sub) injectInto(sub);
+        }catch(e){}
+      });
+    }catch(e){}
   }
 
-  window.addEventListener('pageshow', applyLoop, {passive:true});
-  window.addEventListener('orientationchange', applyLoop, {passive:true});
-  window.addEventListener('resize', applyLoop, {passive:true});
-
-  var frame = document.getElementById('homeFrame');
-  if(frame){
-    frame.addEventListener('load', applyLoop);
+  ['DOMContentLoaded','load','pageshow','resize','orientationchange'].forEach(function(ev){
+    window.addEventListener(ev, apply, {passive:true});
+  });
+  if(window.visualViewport){
+    visualViewport.addEventListener('resize', apply, {passive:true});
+    visualViewport.addEventListener('scroll', apply, {passive:true});
   }
+  document.addEventListener('readystatechange', apply, true);
+  document.querySelectorAll('iframe').forEach(function(fr){
+    try{ fr.addEventListener('load', apply, {passive:true}); }catch(e){}
+  });
+  setTimeout(apply, 50);
+  setTimeout(apply, 250);
+  setTimeout(apply, 700);
+  setTimeout(apply, 1500);
+  setTimeout(apply, 3000);
 })();
 </script>
 
