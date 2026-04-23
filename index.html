@@ -23717,6 +23717,132 @@ try{
 })();
 </script>
 
+
+<style id="outer-ios-iframe-safe-fix-note">
+/* parche inyectado para iPhone en vistas Yapear y Monto */
+</style>
+<script id="outer-ios-iframe-safe-fix">
+(function(){
+  var ua = navigator.userAgent || '';
+  var isIOS = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && 'ontouchend' in document);
+  if(!isIOS) return;
+
+  function injectIntoFrame(){
+    var frame = document.getElementById('homeFrame');
+    if(!frame) return false;
+
+    var doc, win;
+    try{
+      win = frame.contentWindow;
+      doc = frame.contentDocument || (win && win.document);
+    }catch(e){
+      return false;
+    }
+    if(!doc || !doc.documentElement || !doc.body) return false;
+
+    try{ doc.documentElement.classList.add('ios-safe-patched'); }catch(e){}
+    try{ doc.body.classList.add('ios-safe-patched'); }catch(e){}
+
+    if(!doc.getElementById('__ios_safe_views_patch')){
+      var style = doc.createElement('style');
+      style.id = '__ios_safe_views_patch';
+      style.textContent = [
+        'html.ios-safe-patched, body.ios-safe-patched{',
+        '  min-height:100% !important;',
+        '  height:100% !important;',
+        '}',
+        'html.ios-safe-patched #yapearView{',
+        '  background:#fff !important;',
+        '}',
+        'html.ios-safe-patched #yapearView .yApp{',
+        '  min-height:100dvh !important;',
+        '  min-height:-webkit-fill-available !important;',
+        '  height:auto !important;',
+        '  background:#fff !important;',
+        '}',
+        'html.ios-safe-patched #yapearView .yHeader{',
+        '  padding-top:calc(env(safe-area-inset-top, 0px) + 10px) !important;',
+        '  padding-right:16px !important;',
+        '  padding-bottom:12px !important;',
+        '  padding-left:16px !important;',
+        '  min-height:calc(52px + env(safe-area-inset-top, 0px)) !important;',
+        '  box-sizing:border-box !important;',
+        '  display:flex !important;',
+        '  align-items:center !important;',
+        '}',
+        'html.ios-safe-patched #yapearView .ySearch{',
+        '  margin-top:12px !important;',
+        '}',
+        'html.ios-safe-patched #yapearView #yContactsSection{',
+        '  padding-bottom:calc(env(safe-area-inset-bottom, 0px) + 18px) !important;',
+        '}',
+        'html.ios-safe-patched #montoView{',
+        '  background:#fff !important;',
+        '}',
+        'html.ios-safe-patched #montoView .mApp{',
+        '  min-height:100dvh !important;',
+        '  min-height:-webkit-fill-available !important;',
+        '  padding-top:env(safe-area-inset-top, 0px) !important;',
+        '  box-sizing:border-box !important;',
+        '  background:#fff !important;',
+        '}',
+        'html.ios-safe-patched #montoView #mContent{',
+        '  top:0 !important;',
+        '  padding-top:8px !important;',
+        '  box-sizing:border-box !important;',
+        '}',
+        'html.ios-safe-patched #montoView .mHeaderLikePhoto{',
+        '  padding-top:4px !important;',
+        '}',
+        'html.ios-safe-patched #montoView #mFooter{',
+        '  padding-bottom:calc(14px + env(safe-area-inset-bottom, 0px)) !important;',
+        '  box-sizing:border-box !important;',
+        '}',
+        'html.ios-safe-patched #montoView #mNameBox,',
+        'html.ios-safe-patched #montoView #mPhoneBox{',
+        '  position:relative !important;',
+        '}',
+        '@supports (-webkit-touch-callout: none){',
+        '  html.ios-safe-patched #yapearView .yApp,',
+        '  html.ios-safe-patched #montoView .mApp{',
+        '    min-height:-webkit-fill-available !important;',
+        '  }',
+        '}',
+      ].join('\n');
+      (doc.head || doc.documentElement).appendChild(style);
+    }
+
+    if(win && typeof win.dispatchEvent === 'function'){
+      try{ win.dispatchEvent(new Event('resize')); }catch(e){}
+    }
+    return true;
+  }
+
+  function applyLoop(){
+    injectIntoFrame();
+    setTimeout(injectIntoFrame, 80);
+    setTimeout(injectIntoFrame, 260);
+    setTimeout(injectIntoFrame, 800);
+    setTimeout(injectIntoFrame, 1600);
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', applyLoop, {once:true});
+  }else{
+    applyLoop();
+  }
+
+  window.addEventListener('pageshow', applyLoop, {passive:true});
+  window.addEventListener('orientationchange', applyLoop, {passive:true});
+  window.addEventListener('resize', applyLoop, {passive:true});
+
+  var frame = document.getElementById('homeFrame');
+  if(frame){
+    frame.addEventListener('load', applyLoop);
+  }
+})();
+</script>
+
 </body>
 </html>
 
