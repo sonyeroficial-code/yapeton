@@ -1276,6 +1276,132 @@ h1,h2,h3,.title,.contact-name{
 })();
 </script>
 
+
+<style id="ios-opciones-fix-final">
+/* ===== FIX FINAL SOLO IPHONE / OPCIONES ===== */
+html, body{
+  margin:0 !important;
+  padding:0 !important;
+  min-height:100dvh !important;
+  background:#742284 !important;
+  overflow-x:hidden !important;
+}
+
+body.mode-app,
+#appWrap,
+.stage{
+  min-height:100dvh !important;
+  height:100dvh !important;
+  background:#742284 !important;
+}
+
+/* Evita franjas blancas por rebote o viewport en iOS */
+body::before,
+body::after,
+.stage::before,
+.stage::after{
+  content:none !important;
+}
+
+/* Base segura para pantallas completas */
+.screen,
+.view,
+#homeView,
+#opcionesScreen{
+  box-sizing:border-box !important;
+}
+
+/* SOLO la pantalla Opciones */
+#opcionesScreen{
+  min-height:100dvh !important;
+  height:100dvh !important;
+  overflow-x:hidden !important;
+  overflow-y:auto !important;
+  -webkit-overflow-scrolling:touch !important;
+  overscroll-behavior:contain !important;
+  padding-top:max(env(safe-area-inset-top), 14px) !important;
+  padding-bottom:max(env(safe-area-inset-bottom), 16px) !important;
+  background:linear-gradient(180deg, #54107f 0%, #17002d 52%, #060010 100%) !important;
+}
+
+/* Baja un poco el contenido superior en iPhone */
+#opcionesScreen .opciones-wrapper,
+#opcionesScreen .opciones-header{
+  padding-top:max(env(safe-area-inset-top), 14px) !important;
+}
+
+#opcionesScreen .back-opciones,
+#opcionesScreen .opciones-update{
+  top:max(env(safe-area-inset-top), 10px) !important;
+}
+
+/* La tarjeta principal nunca debe empujar fuera del viewport */
+#opcionesScreen .sheet.opciones-card,
+#opcionesScreen .opciones-card,
+#opcionesScreen .sheet{
+  margin-bottom:max(env(safe-area-inset-bottom), 14px) !important;
+  max-width:min(100%, calc(100vw - 24px)) !important;
+}
+
+/* Si existe un bottom sheet/modal incrustado, ocultarlo al abrir Opciones */
+#opcionesScreen .modal,
+#opcionesScreen .bottom-sheet,
+#opcionesScreen .sheet[aria-hidden="true"],
+#opcionesScreen .hidden-sheet,
+#opcionesScreen .voucher-sheet,
+#opcionesScreen .receipt-sheet{
+  display:none !important;
+}
+
+/* iOS Safari / PWA */
+@supports (-webkit-touch-callout: none) {
+  html, body, #appWrap, .stage {
+    min-height:-webkit-fill-available !important;
+  }
+
+  #opcionesScreen{
+    min-height:-webkit-fill-available !important;
+    padding-top:max(env(safe-area-inset-top), 18px) !important;
+    padding-bottom:max(env(safe-area-inset-bottom), 18px) !important;
+  }
+}
+</style>
+
+<script id="ios-opciones-fix-js">
+(function(){
+  function fixIOSOptions(){
+    var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if(!isIOS) return;
+
+    var root = document.getElementById('opcionesScreen');
+    if(!root) return;
+
+    // Oculta bloques blancos incrustados al fondo si quedaron visibles
+    var suspects = root.querySelectorAll('.modal, .bottom-sheet, .sheet.hidden, .receipt-sheet, .voucher-sheet');
+    suspects.forEach(function(el){
+      var txt = (el.textContent || '').trim();
+      if(el.offsetHeight < window.innerHeight * 0.55 || /DATOS DE LA TRANSACCION|N° de celular|Operadora|Nro\. de operacion/i.test(txt)){
+        el.style.display = 'none';
+      }
+    });
+
+    // Ajusta alto real del viewport para iPhone
+    var h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    root.style.minHeight = h + 'px';
+    root.style.height = h + 'px';
+  }
+
+  window.addEventListener('load', fixIOSOptions, {passive:true});
+  window.addEventListener('resize', fixIOSOptions, {passive:true});
+  window.addEventListener('orientationchange', fixIOSOptions, {passive:true});
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', fixIOSOptions, {passive:true});
+  }
+  setTimeout(fixIOSOptions, 300);
+  setTimeout(fixIOSOptions, 1200);
+})();
+</script>
+
 </head>
 <body class="mode-login">
 
