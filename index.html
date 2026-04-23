@@ -1276,132 +1276,6 @@ h1,h2,h3,.title,.contact-name{
 })();
 </script>
 
-
-<style id="ios-opciones-fix-final">
-/* ===== FIX FINAL SOLO IPHONE / OPCIONES ===== */
-html, body{
-  margin:0 !important;
-  padding:0 !important;
-  min-height:100dvh !important;
-  background:#742284 !important;
-  overflow-x:hidden !important;
-}
-
-body.mode-app,
-#appWrap,
-.stage{
-  min-height:100dvh !important;
-  height:100dvh !important;
-  background:#742284 !important;
-}
-
-/* Evita franjas blancas por rebote o viewport en iOS */
-body::before,
-body::after,
-.stage::before,
-.stage::after{
-  content:none !important;
-}
-
-/* Base segura para pantallas completas */
-.screen,
-.view,
-#homeView,
-#opcionesScreen{
-  box-sizing:border-box !important;
-}
-
-/* SOLO la pantalla Opciones */
-#opcionesScreen{
-  min-height:100dvh !important;
-  height:100dvh !important;
-  overflow-x:hidden !important;
-  overflow-y:auto !important;
-  -webkit-overflow-scrolling:touch !important;
-  overscroll-behavior:contain !important;
-  padding-top:max(env(safe-area-inset-top), 14px) !important;
-  padding-bottom:max(env(safe-area-inset-bottom), 16px) !important;
-  background:linear-gradient(180deg, #54107f 0%, #17002d 52%, #060010 100%) !important;
-}
-
-/* Baja un poco el contenido superior en iPhone */
-#opcionesScreen .opciones-wrapper,
-#opcionesScreen .opciones-header{
-  padding-top:max(env(safe-area-inset-top), 14px) !important;
-}
-
-#opcionesScreen .back-opciones,
-#opcionesScreen .opciones-update{
-  top:max(env(safe-area-inset-top), 10px) !important;
-}
-
-/* La tarjeta principal nunca debe empujar fuera del viewport */
-#opcionesScreen .sheet.opciones-card,
-#opcionesScreen .opciones-card,
-#opcionesScreen .sheet{
-  margin-bottom:max(env(safe-area-inset-bottom), 14px) !important;
-  max-width:min(100%, calc(100vw - 24px)) !important;
-}
-
-/* Si existe un bottom sheet/modal incrustado, ocultarlo al abrir Opciones */
-#opcionesScreen .modal,
-#opcionesScreen .bottom-sheet,
-#opcionesScreen .sheet[aria-hidden="true"],
-#opcionesScreen .hidden-sheet,
-#opcionesScreen .voucher-sheet,
-#opcionesScreen .receipt-sheet{
-  display:none !important;
-}
-
-/* iOS Safari / PWA */
-@supports (-webkit-touch-callout: none) {
-  html, body, #appWrap, .stage {
-    min-height:-webkit-fill-available !important;
-  }
-
-  #opcionesScreen{
-    min-height:-webkit-fill-available !important;
-    padding-top:max(env(safe-area-inset-top), 18px) !important;
-    padding-bottom:max(env(safe-area-inset-bottom), 18px) !important;
-  }
-}
-</style>
-
-<script id="ios-opciones-fix-js">
-(function(){
-  function fixIOSOptions(){
-    var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-    if(!isIOS) return;
-
-    var root = document.getElementById('opcionesScreen');
-    if(!root) return;
-
-    // Oculta bloques blancos incrustados al fondo si quedaron visibles
-    var suspects = root.querySelectorAll('.modal, .bottom-sheet, .sheet.hidden, .receipt-sheet, .voucher-sheet');
-    suspects.forEach(function(el){
-      var txt = (el.textContent || '').trim();
-      if(el.offsetHeight < window.innerHeight * 0.55 || /DATOS DE LA TRANSACCION|N° de celular|Operadora|Nro\. de operacion/i.test(txt)){
-        el.style.display = 'none';
-      }
-    });
-
-    // Ajusta alto real del viewport para iPhone
-    var h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-    root.style.minHeight = h + 'px';
-    root.style.height = h + 'px';
-  }
-
-  window.addEventListener('load', fixIOSOptions, {passive:true});
-  window.addEventListener('resize', fixIOSOptions, {passive:true});
-  window.addEventListener('orientationchange', fixIOSOptions, {passive:true});
-  if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', fixIOSOptions, {passive:true});
-  }
-  setTimeout(fixIOSOptions, 300);
-  setTimeout(fixIOSOptions, 1200);
-})();
-</script>
-
 </head>
 <body class="mode-login">
 
@@ -24011,6 +23885,122 @@ body.mode-login .panelInner{
   setTimeout(apply, 700);
   setTimeout(apply, 1500);
   setTimeout(apply, 3000);
+})();
+</script>
+
+
+<script id="ios-homeframe-opciones-fix">
+(function(){
+  function isIOSLike(){
+    var ua = navigator.userAgent || '';
+    return /iPhone|iPad|iPod/i.test(ua) || ((/Macintosh/i.test(ua)) && ('ontouchend' in document));
+  }
+
+  function injectFix(doc){
+    if(!doc || doc.getElementById('__ios_opciones_fix')) return;
+    var st = doc.createElement('style');
+    st.id = '__ios_opciones_fix';
+    st.textContent = [
+      ':root{--ios-real-vh:100dvh;}',
+      'html,body{height:100% !important; min-height:100% !important; overflow:hidden !important;}',
+      'body{max-width:none !important; margin:0 !important;}',
+      '.screen{height:var(--ios-real-vh) !important; min-height:var(--ios-real-vh) !important;}',
+      '#perfilScreen{height:var(--ios-real-vh) !important;}',
+      '#opcionesScreen{position:fixed !important; inset:0 !important; width:100% !important; height:var(--ios-real-vh) !important; min-height:var(--ios-real-vh) !important; overflow:hidden !important; z-index:99990 !important; opacity:0 !important; pointer-events:none !important;}',
+      '#opcionesScreen.active{display:block !important; opacity:1 !important; pointer-events:auto !important;}',
+      '#opcionesScreen:not(.active){display:none !important;}',
+      '#opcionesScreen .opciones-wrapper{height:100% !important; min-height:100% !important; display:flex !important; flex-direction:column !important; overflow:hidden !important; padding-bottom:0 !important; background:radial-gradient(circle at 50% 8%, rgba(176,88,255,0.18), rgba(176,88,255,0) 32%), linear-gradient(180deg, #54107f 0%, #17002d 52%, #060010 100%) !important;}',
+      '#opcionesScreen .opciones-header{position:relative !important; flex:0 0 auto !important; min-height:auto !important; height:auto !important; padding:calc(env(safe-area-inset-top) + 18px) 18px 12px !important; overflow:visible !important;}',
+      '#opcionesScreen .back-opciones{position:absolute !important; left:10px !important; top:calc(env(safe-area-inset-top) + 10px) !important; z-index:6 !important;}',
+      '#opcionesScreen .opciones-update{position:absolute !important; right:14px !important; top:calc(env(safe-area-inset-top) + 8px) !important; z-index:6 !important;}',
+      '#opcionesScreen .opciones-hero-text{margin-top:64px !important; padding-top:0 !important; width:100% !important;}',
+      '#opcionesScreen .sheet, #opcionesScreen .sheet.opciones-card{flex:1 1 auto !important; min-height:0 !important; overflow-y:auto !important; overflow-x:hidden !important; -webkit-overflow-scrolling:touch !important; overscroll-behavior:contain !important; margin:12px 14px 0 !important; padding-bottom:calc(env(safe-area-inset-bottom) + 34px) !important;}',
+      '#opcionesScreen.active ~ #rcvVoucher, #opcionesScreen.active ~ #voucherView, #opcionesScreen.active ~ #rcOverlay, #opcionesScreen.active ~ #rcMonto, #opcionesScreen.active ~ #qrScanView{display:none !important;}',
+      '#rcvVoucher{inset:0 !important;}',
+      '.rcvOverlay{position:fixed !important; inset:0 !important;}'
+    ].join('\n');
+    (doc.head || doc.documentElement).appendChild(st);
+
+    var sc = doc.createElement('script');
+    sc.id = '__ios_opciones_fix_js';
+    sc.textContent = "(" + function(){
+      function setVh(){
+        var vv = window.visualViewport;
+        var h = vv && vv.height ? vv.height : window.innerHeight;
+        document.documentElement.style.setProperty('--ios-real-vh', h + 'px');
+      }
+      function sync(){
+        setVh();
+        var opciones = document.getElementById('opcionesScreen');
+        if(!opciones) return;
+        var active = opciones.classList.contains('active');
+        ['rcvVoucher','voucherView','rcOverlay','rcMonto','qrScanView'].forEach(function(id){
+          var el = document.getElementById(id);
+          if(!el) return;
+          if(active){
+            el.setAttribute('data-ios-hidden-by-opciones','1');
+            el.style.display = 'none';
+            el.setAttribute('aria-hidden','true');
+          }else if(el.getAttribute('data-ios-hidden-by-opciones') === '1'){
+            el.style.display = '';
+            el.removeAttribute('data-ios-hidden-by-opciones');
+          }
+        });
+      }
+      var mo = new MutationObserver(sync);
+      function boot(){
+        sync();
+        var opciones = document.getElementById('opcionesScreen');
+        if(opciones) mo.observe(opciones, {attributes:true, attributeFilter:['class','style']});
+      }
+      window.addEventListener('resize', sync, {passive:true});
+      window.addEventListener('orientationchange', sync, {passive:true});
+      if(window.visualViewport){
+        window.visualViewport.addEventListener('resize', sync, {passive:true});
+        window.visualViewport.addEventListener('scroll', sync, {passive:true});
+      }
+      if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true});
+      else boot();
+      setTimeout(sync, 300);
+      setTimeout(sync, 1200);
+    }.toString() + ")();";
+    (doc.body || doc.documentElement).appendChild(sc);
+  }
+
+  function rewriteHomeFrame(){
+    var frame = document.getElementById('homeFrame');
+    if(!frame || frame.dataset.iosRewritten === '1') return;
+    var html = frame.getAttribute('srcdoc') || frame.srcdoc || '';
+    if(!html) return;
+    try{
+      var doc = frame.contentDocument || (frame.contentWindow && frame.contentWindow.document);
+      if(!doc) return;
+      doc.open();
+      doc.write(html);
+      doc.close();
+      frame.dataset.iosRewritten = '1';
+    }catch(e){
+      console.warn('homeFrame rewrite failed', e);
+    }
+  }
+
+  function run(){
+    if(!isIOSLike()) return;
+    rewriteHomeFrame();
+    var frame = document.getElementById('homeFrame');
+    if(!frame) return;
+    var apply = function(){
+      try{ injectFix(frame.contentDocument || (frame.contentWindow && frame.contentWindow.document)); }catch(e){}
+    };
+    frame.addEventListener('load', apply);
+    setTimeout(apply, 120);
+    setTimeout(apply, 700);
+    setTimeout(apply, 1600);
+    setInterval(apply, 2500);
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, {once:true});
+  else run();
 })();
 </script>
 
