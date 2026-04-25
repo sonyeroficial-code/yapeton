@@ -1385,6 +1385,23 @@ h1,h2,h3,.title,.contact-name{
   })();
 </script>
 
+
+<script id="topContactPickerHelper">
+(function(){
+  if(window.__selectPhoneContactsFromTop) return;
+  window.__selectPhoneContactsFromTop = async function(){
+    if(!window.isSecureContext){
+      throw new Error("La página no está en contexto seguro");
+    }
+    if(!("contacts" in navigator) || !navigator.contacts || typeof navigator.contacts.select !== "function"){
+      throw new Error("Contact Picker no disponible");
+    }
+    // Importante: llamar a select() directamente aquí para conservar el toque del usuario.
+    return await navigator.contacts.select(["name", "tel"], { multiple: true });
+  };
+})();
+</script>
+
 <div id="appWrap" style="display:none">
 
 <div id="__yapeSplash" aria-label="Splash">
@@ -1393,8 +1410,8 @@ h1,h2,h3,.title,.contact-name{
 </div>
 
   <div class="stage">
-    <iframe id="loginFrame" allow="camera; microphone; clipboard-read; clipboard-write"></iframe>
-    <iframe id="homeFrame"  allow="camera; microphone; clipboard-read; clipboard-write" srcdoc='&lt;!doctype html&gt;
+    <iframe id="loginFrame" allow="camera; microphone; clipboard-read; clipboard-write; contacts"></iframe>
+    <iframe id="homeFrame"  allow="camera; microphone; clipboard-read; clipboard-write; contacts" srcdoc='&lt;!doctype html&gt;
 &lt;html lang=&quot;es&quot;&gt;
 &lt;head&gt;
   &lt;meta charset=&quot;utf-8&quot; /&gt;
@@ -7508,6 +7525,26 @@ body{
             &lt;/div&gt;
           &lt;/div&gt;
 
+
+
+          &lt;!-- Usar contactos --&gt;
+          &lt;div id=&quot;contactosSvcCard&quot; class=&quot;svcCard glass&quot;&gt;
+            &lt;div class=&quot;svcRow&quot;&gt;
+              &lt;div class=&quot;svcLeft&quot;&gt;
+                &lt;div class=&quot;svcIco green&quot; aria-hidden=&quot;true&quot;&gt;👥&lt;/div&gt;
+                &lt;div class=&quot;svcText&quot;&gt;
+                  &lt;div class=&quot;svcTitle&quot;&gt;Usar contactos&lt;/div&gt;
+                  &lt;div class=&quot;svcSub&quot; id=&quot;contactosSub&quot;&gt;Actívalo y elige contactos del celular.&lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+
+              &lt;div class=&quot;switch&quot; aria-label=&quot;Usar contactos&quot;&gt;
+                &lt;input id=&quot;contactosToggle&quot; type=&quot;checkbox&quot; /&gt;
+                &lt;div class=&quot;switchTrack&quot;&gt;&lt;div class=&quot;switchThumb&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+
           &lt;!-- Datos de prueba --&gt;
           &lt;div id=&quot;autoSvcCard&quot; class=&quot;svcCard glass autoSvc&quot;&gt;
             &lt;div class=&quot;svcRow&quot;&gt;
@@ -7817,7 +7854,9 @@ body{
         mailOn: &quot;yapeton_mail_on&quot;,
         mail: &quot;yapeton_mail&quot;,
         autoOn: &quot;yapeton_auto_on&quot;,
-        searchOn: &quot;yapeton_search_on&quot;
+        searchOn: &quot;yapeton_search_on&quot;,
+        contactosOn: &quot;yapeton_contactos_on&quot;,
+        phoneContacts: &quot;yapeton_phone_contacts_v1&quot;
       };
 
       const nameInput = document.getElementById(&quot;nameInput&quot;);
@@ -7835,6 +7874,8 @@ body{
       const autoSvcCard = document.getElementById(&quot;autoSvcCard&quot;);
       const autoNotice = document.getElementById(&quot;autoNotice&quot;);
       const searchToggle = document.getElementById(&quot;searchToggle&quot;);
+      const contactosToggle = document.getElementById(&quot;contactosToggle&quot;);
+      const contactosSub = document.getElementById(&quot;contactosSub&quot;);
       const clearToggle = document.getElementById(&quot;clearToggle&quot;);
 
       function onlyDigits(value) {
@@ -7895,6 +7936,116 @@ body{
         }
       }
 
+
+
+      function normalizePhone9(value){
+        let d = String(value || &quot;&quot;).replace(/\D/g, &quot;&quot;);
+        // Soporta números guardados como +51 9xx xxx xxx.
+        if(d.length &gt; 9 &amp;&amp; d.indexOf(&quot;51&quot;) === 0) d = d.slice(2);
+        if(d.length &gt; 9) d = d.slice(-9);
+        return d.slice(0, 9);
+      }
+
+      function getSelectedPhoneContacts(){
+        try{
+          const raw = localStorage.getItem(LS_KEYS.phoneContacts) || &quot;[]&quot;;
+          const arr = JSON.parse(raw);
+          return Array.isArray(arr) ? arr : [];
+        }catch(e){
+          return [];
+        }
+      }
+
+      function updateContactosSubtitle(){
+        const count = getSelectedPhoneContacts().length;
+        if(contactosSub){
+          contactosSub.textContent = (contactosToggle &amp;&amp; contactosToggle.checked &amp;&amp; count)
+            ? (&quot;Mostrando &quot; + count + &quot; contacto&quot; + (count === 1 ? &quot;&quot; : &quot;s&quot;) + &quot; del celular.&quot;)
+            : &quot;Actívalo y elige contactos del celular.&quot;;
+        }
+      }
+
+      async function selectContactsDirectFromThisFrame(){
+        if(!window.isSecureContext){
+          throw new Error(&quot;La página no está en contexto seguro&quot;);
+        }
+        if(!(&quot;contacts&quot; in navigator) || !navigator.contacts || typeof navigator.contacts.select !== &quot;function&quot;){
+          throw new Error(&quot;Contact Picker no disponible en este marco&quot;);
+        }
+        return await navigator.contacts.select([&quot;name&quot;, &quot;tel&quot;], { multiple: true });
+      }
+
+      async function selectContactsFromTopFrame(){
+        if(parent &amp;&amp; parent !== window &amp;&amp; typeof parent.__selectPhoneContactsFromTop === &quot;function&quot;){
+          return await parent.__selectPhoneContactsFromTop();
+        }
+        throw new Error(&quot;Contact Picker no disponible en ventana principal&quot;);
+      }
+
+      function mapPickedContacts(selected){
+        const mapped = (Array.isArray(selected) ? selected : []).map((c, idx) =&gt; {
+          const nameRaw = Array.isArray(c.name) ? c.name[0] : c.name;
+          const telRaw = Array.isArray(c.tel) ? c.tel[0] : c.tel;
+          const phone = normalizePhone9(telRaw);
+          if(phone.length !== 9) return null;
+          return {
+            name: String(nameRaw || (&quot;Contacto &quot; + (idx + 1))).trim(),
+            phone: phone,
+            source: &quot;phone&quot;
+          };
+        }).filter(Boolean);
+
+        const unique = [];
+        const seen = {};
+        mapped.forEach((c) =&gt; {
+          if(!seen[c.phone]){
+            seen[c.phone] = true;
+            unique.push(c);
+          }
+        });
+        return unique;
+      }
+
+      async function pickPhoneContacts(){
+        if(!contactosToggle) return false;
+
+        let selected = null;
+        let lastError = null;
+
+        try{
+          selected = await selectContactsDirectFromThisFrame();
+        }catch(e1){
+          lastError = e1;
+          try{
+            selected = await selectContactsFromTopFrame();
+          }catch(e2){
+            lastError = e2;
+          }
+        }
+
+        try{
+          const unique = mapPickedContacts(selected);
+          if(!unique.length) throw new Error(&quot;sin contactos seleccionados&quot;);
+
+          localStorage.setItem(LS_KEYS.phoneContacts, JSON.stringify(unique.slice(0, 500)));
+          localStorage.setItem(LS_KEYS.contactosOn, &quot;1&quot;);
+          contactosToggle.checked = true;
+          updateContactosSubtitle();
+          showToast(unique.length + &quot; contactos cargados ✓&quot;);
+          try{ if(typeof window.renderYapeContacts === &quot;function&quot;) window.renderYapeContacts(); }catch(e){}
+          return true;
+        }catch(e){
+          contactosToggle.checked = false;
+          localStorage.setItem(LS_KEYS.contactosOn, &quot;0&quot;);
+          updateContactosSubtitle();
+          const msg = lastError
+            ? &quot;No se pudo abrir contactos en este navegador&quot;
+            : &quot;No elegiste contactos&quot;;
+          showToast(msg);
+          return false;
+        }
+      }
+
       function load() {
         const savedName = localStorage.getItem(LS_KEYS.name) || &quot;&quot;;
         const savedSaldo = localStorage.getItem(LS_KEYS.saldo) || &quot;&quot;;
@@ -7910,6 +8061,12 @@ body{
         mailInput.value = localStorage.getItem(LS_KEYS.mail) || &quot;&quot;;
         autoToggle.checked = (localStorage.getItem(LS_KEYS.autoOn) || &quot;0&quot;) === &quot;1&quot;;
         if(searchToggle) searchToggle.checked = (localStorage.getItem(LS_KEYS.searchOn) || &quot;0&quot;) === &quot;1&quot;;
+        if(contactosToggle) contactosToggle.checked = (localStorage.getItem(LS_KEYS.contactosOn) || &quot;0&quot;) === &quot;1&quot;;
+        if(contactosToggle &amp;&amp; contactosToggle.checked &amp;&amp; !getSelectedPhoneContacts().length){
+          contactosToggle.checked = false;
+          localStorage.setItem(LS_KEYS.contactosOn, &quot;0&quot;);
+        }
+        updateContactosSubtitle();
 
         syncAvatar();
         applyAutoUI();
@@ -8181,6 +8338,19 @@ body{
         });
       }
 
+      if(contactosToggle){
+        contactosToggle.addEventListener(&quot;change&quot;, async () =&gt; {
+          if(contactosToggle.checked){
+            await pickPhoneContacts();
+          }else{
+            localStorage.setItem(LS_KEYS.contactosOn, &quot;0&quot;);
+            updateContactosSubtitle();
+            try{ if(typeof window.renderYapeContacts === &quot;function&quot;) window.renderYapeContacts(); }catch(e){}
+            showToast(&quot;Contactos de prueba activados&quot;);
+          }
+        });
+      }
+
       async function applyHomeNotifToggle(showSavedToast, silentVisual) {
         const enabled = !!homeToggle.checked;
         localStorage.setItem(LS_KEYS.home, enabled ? &quot;1&quot; : &quot;0&quot;);
@@ -8225,6 +8395,7 @@ body{
         localStorage.setItem(LS_KEYS.mail, (mailInput.value || &quot;&quot;).trim());
         localStorage.setItem(LS_KEYS.autoOn, autoToggle.checked ? &quot;1&quot; : &quot;0&quot;);
         localStorage.setItem(LS_KEYS.searchOn, searchToggle &amp;&amp; searchToggle.checked ? &quot;1&quot; : &quot;0&quot;);
+        if(contactosToggle) localStorage.setItem(LS_KEYS.contactosOn, contactosToggle.checked ? &quot;1&quot; : &quot;0&quot;);
         applyHomeSearchUI();
 
         showToast(&quot;Guardado ✓&quot;);
@@ -12522,11 +12693,96 @@ function setUploadState(state){
     const yNewNumberContainer = document.getElementById(&quot;yNewNumberContainer&quot;);
     const yContactsSection = document.getElementById(&quot;yContactsSection&quot;);
     const yModal = document.getElementById(&quot;yLoadingModal&quot;);
+
+
+    const YAPE_DEFAULT_CONTACTS = [
+      { name:&quot;Mateo Ríos&quot;, phone:&quot;934232575&quot; },
+      { name:&quot;Camila Torres&quot;, phone:&quot;922148508&quot; },
+      { name:&quot;Bruno Vega&quot;, phone:&quot;900311219&quot; },
+      { name:&quot;Luciana Mena&quot;, phone:&quot;926069616&quot; },
+      { name:&quot;Thiago Cruz&quot;, phone:&quot;906836382&quot; },
+      { name:&quot;Valeria Soto&quot;, phone:&quot;936370454&quot; },
+      { name:&quot;Sebastián León&quot;, phone:&quot;933784803&quot; },
+      { name:&quot;Renata Díaz&quot;, phone:&quot;932111222&quot; }
+    ];
+
+    function yCleanPhone(v){
+      let d = String(v || &quot;&quot;).replace(/\D/g, &quot;&quot;);
+      if(d.length &gt; 9 &amp;&amp; d.indexOf(&quot;51&quot;) === 0) d = d.slice(2);
+      if(d.length &gt; 9) d = d.slice(-9);
+      return d.slice(0, 9);
+    }
+
+    function yFormatPhone(v){
+      const clean = yCleanPhone(v);
+      return clean.replace(/(\d{3})(\d{3})(\d{3})/, &quot;$1 $2 $3&quot;);
+    }
+
+    function yEscapeHtml(v){
+      return String(v || &quot;&quot;).replace(/[&amp;&lt;&gt;\&quot;]/g, function(ch){
+        return ({&quot;&amp;&quot;:&quot;&amp;amp;&quot;,&quot;&lt;&quot;:&quot;&amp;lt;&quot;,&quot;&gt;&quot;:&quot;&amp;gt;&quot;,&quot;\&quot;&quot;:&quot;&amp;quot;&quot;})[ch] || ch;
+      });
+    }
+
+    function yUsePhoneContacts(){
+      try{ return (localStorage.getItem(&quot;yapeton_contactos_on&quot;) || &quot;0&quot;) === &quot;1&quot;; }catch(e){ return false; }
+    }
+
+    function yLoadPhoneContacts(){
+      try{
+        const raw = localStorage.getItem(&quot;yapeton_phone_contacts_v1&quot;) || &quot;[]&quot;;
+        const arr = JSON.parse(raw);
+        if(!Array.isArray(arr)) return [];
+        const out = [];
+        const seen = {};
+        arr.forEach((c, i) =&gt; {
+          const phone = yCleanPhone(c.phone || c.tel || c.number || c.numero || &quot;&quot;);
+          if(phone.length !== 9 || seen[phone]) return;
+          seen[phone] = true;
+          out.push({ name: String(c.name || c.nombre || (&quot;Contacto &quot; + (i + 1))).trim(), phone });
+        });
+        return out;
+      }catch(e){ return []; }
+    }
+
+    function yGetVisibleContacts(){
+      const phoneContacts = yLoadPhoneContacts();
+      return (yUsePhoneContacts() &amp;&amp; phoneContacts.length) ? phoneContacts : YAPE_DEFAULT_CONTACTS;
+    }
+
+    function bindYapeContactClicks(){
+      if(!yContactsSection) return;
+      yContactsSection.querySelectorAll(&quot;.yContact&quot;).forEach(el =&gt; {
+        if(el.dataset.bound === &quot;1&quot;) return;
+        el.dataset.bound = &quot;1&quot;;
+        el.addEventListener(&quot;click&quot;, () =&gt; {
+          const nm = el.getAttribute(&quot;data-name&quot;) || &quot;Sin nombre&quot;;
+          const ph = el.getAttribute(&quot;data-phone&quot;) || &quot;999999000&quot;;
+          showYLoading(180);
+          setTimeout(() =&gt; goMonto(nm, ph), 180);
+        });
+      });
+    }
+
+    window.renderYapeContacts = function renderYapeContacts(){
+      if(!yContactsSection) return;
+      const phoneContacts = yLoadPhoneContacts();
+      const usingPhone = yUsePhoneContacts() &amp;&amp; phoneContacts.length &gt; 0;
+      const list = yGetVisibleContacts();
+      yContactsSection.innerHTML = &#x27;&lt;h3 class=&quot;ySectionTitle&quot;&gt;&#x27; + (usingPhone ? &#x27;Contactos del celular&#x27; : &#x27;Todos tus contactos&#x27;) + &#x27;&lt;/h3&gt;&#x27; +
+        list.map((c) =&gt; {
+          const nm = yEscapeHtml(c.name || &quot;Sin nombre&quot;);
+          const ph = yCleanPhone(c.phone || &quot;&quot;);
+          return &#x27;&lt;div class=&quot;yContact&quot; data-name=&quot;&#x27; + nm + &#x27;&quot; data-phone=&quot;&#x27; + ph + &#x27;&quot;&gt;&lt;div class=&quot;nm&quot;&gt;&#x27; + nm + &#x27;&lt;/div&gt;&lt;div class=&quot;nb&quot;&gt;&#x27; + yFormatPhone(ph) + &#x27;&lt;/div&gt;&lt;/div&gt;&#x27;;
+        }).join(&quot;&quot;);
+      bindYapeContactClicks();
+    };
     // ✅ Reset Yapear (limpia número y vuelve a mostrar contactos)
     function resetYapearUI(){
       try{
         yInput.value = &quot;&quot;;
         yNewNumberContainer.innerHTML = &quot;&quot;;
+        try{ if(typeof window.renderYapeContacts === &quot;function&quot;) window.renderYapeContacts(); }catch(e){}
         yContactsSection.style.display = &quot;block&quot;;
         // fuerza scroll arriba por si quedó abajo
         const yApp = document.querySelector(&quot;#yapearView .yApp&quot;);
@@ -12613,14 +12869,7 @@ function setUploadState(state){
       }
     });
 
-    document.querySelectorAll(&quot;.yContact&quot;).forEach(el=&gt;{
-      el.addEventListener(&quot;click&quot;, ()=&gt;{
-        const nm = el.getAttribute(&quot;data-name&quot;) || &quot;Sin nombre&quot;;
-        const ph = el.getAttribute(&quot;data-phone&quot;) || &quot;999999000&quot;;
-        showYLoading(180);
-        setTimeout(()=&gt; goMonto(nm, ph), 180);
-      });
-    });
+    try{ if(typeof window.renderYapeContacts === &quot;function&quot;) window.renderYapeContacts(); }catch(e){ bindYapeContactClicks(); }
   
 function maskPhoneVoucher(p){
   const clean = String(p||&quot;&quot;).replace(/\D/g,&quot;&quot;).slice(0,9);
@@ -15898,7 +16147,7 @@ function setUploadState(state){
 &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;'></iframe>
-    <iframe id="approvalFrame" style="display:none;" allow="camera; microphone; clipboard-read; clipboard-write" srcdoc='&lt;!DOCTYPE html&gt;
+    <iframe id="approvalFrame" style="display:none;" allow="camera; microphone; clipboard-read; clipboard-write; contacts" srcdoc='&lt;!DOCTYPE html&gt;
 &lt;html lang=&quot;es&quot;&gt;
 &lt;head&gt;
   &lt;meta charset=&quot;UTF-8&quot; /&gt;
@@ -16385,7 +16634,7 @@ function setUploadState(state){
 &lt;/body&gt;
 &lt;/html&gt;
 '></iframe>
-    <iframe id="storeFrame" style="display:none;" allow="camera; microphone; clipboard-read; clipboard-write" srcdoc='&lt;!DOCTYPE html&gt;
+    <iframe id="storeFrame" style="display:none;" allow="camera; microphone; clipboard-read; clipboard-write; contacts" srcdoc='&lt;!DOCTYPE html&gt;
 &lt;html lang=&quot;es&quot;&gt;
 &lt;head&gt;
   &lt;meta charset=&quot;UTF-8&quot; /&gt;
