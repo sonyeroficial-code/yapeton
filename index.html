@@ -3939,6 +3939,17 @@ html body #qrScanView .qrScan-bottom{
 }
 &lt;/style&gt;
 
+&lt;style id=&quot;hide-promos-realtime-style&quot;&gt;
+/* Ocultar promociones en tiempo real: inicio + voucher nativo */
+html.yapeton-hide-promos .bannerWrap,
+html.yapeton-hide-promos #banner,
+html.yapeton-hide-promos #dots,
+html.yapeton-hide-promos #voucherView .promo-wrap{
+  display:none !important;
+  visibility:hidden !important;
+}
+&lt;/style&gt;
+
 
 &lt;style&gt;
 /* ===== AJUSTE VISUAL DATOS TRANSACCIÓN ===== */
@@ -7508,6 +7519,24 @@ body{
             &lt;/div&gt;
           &lt;/div&gt;
 
+          &lt;!-- Ocultar promociones --&gt;
+          &lt;div class=&quot;svcCard glass&quot;&gt;
+            &lt;div class=&quot;svcRow&quot;&gt;
+              &lt;div class=&quot;svcLeft&quot;&gt;
+                &lt;div class=&quot;svcIco green&quot; aria-hidden=&quot;true&quot;&gt;🎟️&lt;/div&gt;
+                &lt;div class=&quot;svcText&quot;&gt;
+                  &lt;div class=&quot;svcTitle&quot;&gt;Ocultar promociones&lt;/div&gt;
+                  &lt;div class=&quot;svcSub&quot;&gt;Oculta anuncios del inicio y promociones del comprobante.&lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+
+              &lt;div class=&quot;switch&quot; aria-label=&quot;Ocultar promociones&quot;&gt;
+                &lt;input id=&quot;hidePromosToggle&quot; type=&quot;checkbox&quot; /&gt;
+                &lt;div class=&quot;switchTrack&quot;&gt;&lt;div class=&quot;switchThumb&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+
           &lt;!-- Datos de prueba --&gt;
           &lt;div id=&quot;autoSvcCard&quot; class=&quot;svcCard glass autoSvc&quot;&gt;
             &lt;div class=&quot;svcRow&quot;&gt;
@@ -8232,6 +8261,75 @@ body{
       });
 
       load();
+    })();
+
+    /* ===== Ocultar promociones en tiempo real ===== */
+    (function(){
+      const HIDE_PROMOS_KEY = &quot;yapeton_hide_promos&quot;;
+
+      function readEnabled(){
+        try{ return (localStorage.getItem(HIDE_PROMOS_KEY) || &quot;0&quot;) === &quot;1&quot;; }catch(e){ return false; }
+      }
+
+      function localToast(msg){
+        const t = document.getElementById(&quot;toast&quot;);
+        if(!t) return;
+        t.textContent = msg;
+        t.classList.add(&quot;show&quot;);
+        clearTimeout(localToast._timer);
+        localToast._timer = setTimeout(() =&gt; t.classList.remove(&quot;show&quot;), 1200);
+      }
+
+      function applyHidePromos(){
+        const enabled = readEnabled();
+        const root = document.documentElement;
+        const body = document.body;
+        if(root) root.classList.toggle(&quot;yapeton-hide-promos&quot;, enabled);
+        if(body) body.classList.toggle(&quot;yapeton-hide-promos&quot;, enabled);
+
+        [&quot;.bannerWrap&quot;, &quot;#banner&quot;, &quot;#dots&quot;, &quot;#voucherView .promo-wrap&quot;].forEach((selector) =&gt; {
+          document.querySelectorAll(selector).forEach((el) =&gt; {
+            el.style.display = enabled ? &quot;none&quot; : &quot;&quot;;
+            el.style.visibility = enabled ? &quot;hidden&quot; : &quot;&quot;;
+          });
+        });
+
+        try{
+          if(parent &amp;&amp; parent !== window){
+            parent.postMessage({ type:&quot;hidePromosToggle&quot;, enabled: enabled }, &quot;*&quot;);
+          }
+        }catch(e){}
+      }
+
+      function setupHidePromosToggle(){
+        const toggle = document.getElementById(&quot;hidePromosToggle&quot;);
+        if(toggle){
+          toggle.checked = readEnabled();
+          if(!toggle.__hidePromosBound){
+            toggle.__hidePromosBound = true;
+            toggle.addEventListener(&quot;change&quot;, () =&gt; {
+              try{ localStorage.setItem(HIDE_PROMOS_KEY, toggle.checked ? &quot;1&quot; : &quot;0&quot;); }catch(e){}
+              applyHidePromos();
+              localToast(toggle.checked ? &quot;Promociones ocultas ✓&quot; : &quot;Promociones visibles&quot;);
+            });
+          }
+        }
+        applyHidePromos();
+      }
+
+      if(document.readyState === &quot;loading&quot;){
+        document.addEventListener(&quot;DOMContentLoaded&quot;, setupHidePromosToggle, { once:true });
+      }else{
+        setupHidePromosToggle();
+      }
+
+      window.addEventListener(&quot;storage&quot;, (e) =&gt; {
+        if(!e || e.key === HIDE_PROMOS_KEY) setupHidePromosToggle();
+      });
+      window.__applyHidePromos = applyHidePromos;
+      setTimeout(setupHidePromosToggle, 250);
+      setTimeout(applyHidePromos, 900);
+      setInterval(applyHidePromos, 1500);
     })();
 
     function maskPhoneVoucher(p){
@@ -20475,6 +20573,18 @@ html.ios-final-fix iframe{
     }
     if(!idoc || !idoc.body) return;
 
+    var hidePromos = false;
+    try{
+      var docStorage = (doc.defaultView && doc.defaultView.localStorage) ? doc.defaultView.localStorage : window.localStorage;
+      hidePromos = (docStorage.getItem('yapeton_hide_promos') || '0') === '1';
+    }catch(e){
+      try{ hidePromos = (window.localStorage.getItem('yapeton_hide_promos') || '0') === '1'; }catch(_e){}
+    }
+    try{
+      idoc.documentElement.classList.toggle('yapeton-hide-promos', hidePromos);
+      idoc.body.classList.toggle('yapeton-hide-promos', hidePromos);
+    }catch(e){}
+
     if(!idoc.getElementById('baucher-inner-fix')){
       var innerStyle = idoc.createElement('style');
       innerStyle.id = 'baucher-inner-fix';
@@ -20486,9 +20596,17 @@ html.ios-final-fix iframe{
         '.monto label{display:flex!important;align-items:flex-start!important;gap:0!important;}',
         '.monto label > span:last-child{font-size:12.6vw!important;font-weight:700!important;line-height:1!important;letter-spacing:-0.01em!important;font-stretch:normal!important;}',
         '.monto .currency-s{font-size:8vw!important;font-weight:900!important;line-height:1!important;margin-top:.08vw!important;margin-right:1vw!important;}',
-        '.nombre{font-weight:700!important;}'
+        '.nombre{font-weight:700!important;}',
+        '.yapeton-hide-promos .paraServicios{display:none!important;visibility:hidden!important;height:0!important;overflow:hidden!important;margin:0!important;padding:0!important;}',
+        '.yapeton-hide-promos #promoFrame{display:none!important;visibility:hidden!important;}'
       ].join('');
       (idoc.head || idoc.documentElement).appendChild(innerStyle);
+    }
+
+    var embeddedPromoSection = idoc.querySelector('.paraServicios');
+    if(embeddedPromoSection){
+      embeddedPromoSection.style.display = hidePromos ? 'none' : '';
+      embeddedPromoSection.style.visibility = hidePromos ? 'hidden' : '';
     }
 
     var innerClose = idoc.querySelector('.close-btn-yape');
@@ -20624,6 +20742,21 @@ html.ios-final-fix iframe{
   }
 
   function boot(){
+    if(!window.__hidePromosRealtimeHooked){
+      window.__hidePromosRealtimeHooked = true;
+      window.addEventListener('message', function(ev){
+        var data = ev && ev.data ? ev.data : {};
+        if(data.type === 'hidePromosToggle'){
+          setTimeout(patchHomeVoucher, 0);
+          setTimeout(patchHomeVoucher, 120);
+        }
+      });
+      window.addEventListener('storage', function(ev){
+        if(!ev || ev.key === 'yapeton_hide_promos'){
+          setTimeout(patchHomeVoucher, 0);
+        }
+      });
+    }
     patchHomeVoucher();
     var frame = document.getElementById('homeFrame');
     if(frame && !frame.__baucherHooked){
@@ -23714,6 +23847,230 @@ try{
   setTimeout(patchHomeFrame, 500);
   setTimeout(patchHomeFrame, 1600);
   setTimeout(patchHomeFrame, 2800);
+})();
+</script>
+
+
+<script id="hide-promos-home-v2">
+(function(){
+  var KEY = 'yapeton_hide_promos';
+
+  function frame(){
+    return document.getElementById('homeFrame');
+  }
+
+  function frameWin(){
+    var f = frame();
+    try{ return f ? f.contentWindow : null; }catch(e){ return null; }
+  }
+
+  function frameDoc(){
+    var w = frameWin();
+    try{ return (w && w.document && w.document.documentElement) ? w.document : null; }catch(e){ return null; }
+  }
+
+  function nestedVoucherDoc(doc){
+    try{
+      var fr = doc && doc.getElementById('baucher-embed-frame');
+      return (fr && fr.contentDocument && fr.contentDocument.documentElement) ? fr.contentDocument : null;
+    }catch(e){ return null; }
+  }
+
+  function isOn(){
+    var v = '0';
+    try{ v = localStorage.getItem(KEY) || v; }catch(e){}
+    try{
+      var w = frameWin();
+      if(w && w.localStorage) v = w.localStorage.getItem(KEY) || v;
+    }catch(e){}
+    return v === '1';
+  }
+
+  function saveState(on){
+    var v = on ? '1' : '0';
+    try{ localStorage.setItem(KEY, v); }catch(e){}
+    try{
+      var w = frameWin();
+      if(w && w.localStorage) w.localStorage.setItem(KEY, v);
+    }catch(e){}
+  }
+
+  function ensureStyle(doc){
+    if(!doc || !doc.head || doc.getElementById('hide-promos-home-v2-style')) return;
+    var s = doc.createElement('style');
+    s.id = 'hide-promos-home-v2-style';
+    s.textContent = [
+      'html.yapeton-hide-promos .bannerWrap,',
+      'body.yapeton-hide-promos .bannerWrap,',
+      'html.yapeton-hide-promos #banner,',
+      'body.yapeton-hide-promos #banner,',
+      'html.yapeton-hide-promos #bannerInner,',
+      'body.yapeton-hide-promos #bannerInner,',
+      'html.yapeton-hide-promos #dots,',
+      'body.yapeton-hide-promos #dots,',
+      'html.yapeton-hide-promos .dots,',
+      'body.yapeton-hide-promos .dots,',
+      'html.yapeton-hide-promos #voucherView .promo-wrap,',
+      'body.yapeton-hide-promos #voucherView .promo-wrap,',
+      'html.yapeton-hide-promos .paraServicios,',
+      'body.yapeton-hide-promos .paraServicios{',
+      '  display:none!important;',
+      '  visibility:hidden!important;',
+      '  opacity:0!important;',
+      '  height:0!important;',
+      '  min-height:0!important;',
+      '  max-height:0!important;',
+      '  margin:0!important;',
+      '  padding:0!important;',
+      '  overflow:hidden!important;',
+      '  pointer-events:none!important;',
+      '}'
+    ].join('\n');
+    doc.head.appendChild(s);
+  }
+
+  function forceNode(el, hide){
+    if(!el) return;
+    if(hide){
+      if(!el.hasAttribute('data-hide-promos-old-display')){
+        el.setAttribute('data-hide-promos-old-display', el.style.display || '');
+      }
+      el.style.setProperty('display', 'none', 'important');
+      el.style.setProperty('visibility', 'hidden', 'important');
+      el.style.setProperty('opacity', '0', 'important');
+      el.style.setProperty('height', '0', 'important');
+      el.style.setProperty('min-height', '0', 'important');
+      el.style.setProperty('max-height', '0', 'important');
+      el.style.setProperty('margin', '0', 'important');
+      el.style.setProperty('padding', '0', 'important');
+      el.style.setProperty('overflow', 'hidden', 'important');
+      el.style.setProperty('pointer-events', 'none', 'important');
+      el.setAttribute('data-hide-promos-active', '1');
+    }else if(el.getAttribute('data-hide-promos-active') === '1'){
+      var oldDisplay = el.getAttribute('data-hide-promos-old-display') || '';
+      el.style.removeProperty('visibility');
+      el.style.removeProperty('opacity');
+      el.style.removeProperty('height');
+      el.style.removeProperty('min-height');
+      el.style.removeProperty('max-height');
+      el.style.removeProperty('margin');
+      el.style.removeProperty('padding');
+      el.style.removeProperty('overflow');
+      el.style.removeProperty('pointer-events');
+      if(oldDisplay) el.style.display = oldDisplay;
+      else el.style.removeProperty('display');
+      el.removeAttribute('data-hide-promos-active');
+    }
+  }
+
+  function applyToDoc(doc, on){
+    if(!doc || !doc.documentElement) return;
+    ensureStyle(doc);
+    try{
+      doc.documentElement.classList.toggle('yapeton-hide-promos', on);
+      if(doc.body) doc.body.classList.toggle('yapeton-hide-promos', on);
+    }catch(e){}
+
+    [
+      '.bannerWrap',
+      '#banner',
+      '#bannerInner',
+      '#dots',
+      '.dots',
+      '#voucherView .promo-wrap',
+      '.paraServicios'
+    ].forEach(function(sel){
+      try{
+        Array.prototype.forEach.call(doc.querySelectorAll(sel), function(el){
+          forceNode(el, on);
+        });
+      }catch(e){}
+    });
+
+    try{
+      var toggle = doc.getElementById('hidePromosToggle');
+      if(toggle){
+        if(toggle.checked !== on) toggle.checked = on;
+        if(!toggle.__hidePromosHomeV2){
+          toggle.__hidePromosHomeV2 = true;
+          toggle.addEventListener('change', function(){
+            var enabled = !!toggle.checked;
+            saveState(enabled);
+            applyAll();
+            try{
+              if(window !== parent) parent.postMessage({ type:'hidePromosToggle', enabled: enabled }, '*');
+            }catch(e){}
+          }, true);
+        }
+      }
+    }catch(e){}
+  }
+
+  function applyAll(){
+    var on = isOn();
+
+    try{ document.documentElement.classList.toggle('yapeton-hide-promos', on); }catch(e){}
+    var doc = frameDoc();
+    applyToDoc(doc, on);
+
+    var vdoc = nestedVoucherDoc(doc);
+    applyToDoc(vdoc, on);
+
+    try{
+      var w = frameWin();
+      if(w && typeof w.__applyHidePromos === 'function') w.__applyHidePromos();
+    }catch(e){}
+  }
+
+  function hookFrameLoad(){
+    var f = frame();
+    if(f && !f.__hidePromosHomeV2Load){
+      f.__hidePromosHomeV2Load = true;
+      f.addEventListener('load', function(){
+        setTimeout(applyAll, 0);
+        setTimeout(applyAll, 120);
+        setTimeout(applyAll, 600);
+      });
+    }
+  }
+
+  window.addEventListener('message', function(ev){
+    var data = (ev && ev.data) || {};
+    if(data && data.type === 'hidePromosToggle'){
+      if(Object.prototype.hasOwnProperty.call(data, 'enabled')) saveState(!!data.enabled);
+      setTimeout(applyAll, 0);
+      setTimeout(applyAll, 80);
+      setTimeout(applyAll, 250);
+    }
+    if(data && data.type === 'profileUpdated'){
+      setTimeout(applyAll, 80);
+      setTimeout(applyAll, 300);
+    }
+  });
+
+  window.addEventListener('storage', function(ev){
+    if(!ev || ev.key === KEY) applyAll();
+  });
+
+  function boot(){
+    hookFrameLoad();
+    applyAll();
+    setTimeout(applyAll, 80);
+    setTimeout(applyAll, 250);
+    setTimeout(applyAll, 700);
+    setTimeout(applyAll, 1500);
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', boot, { once:true });
+  }else{
+    boot();
+  }
+
+  setInterval(function(){
+    hookFrameLoad();
+    applyAll();
+  }, 500);
 })();
 </script>
 
