@@ -25061,6 +25061,360 @@ try{
 })();
 </script>
 
+
+
+<!-- ===== RESPONSIVE ESCALA X ESCALA: PANTALLA YAPEAR MONTO ===== -->
+<script id="monto-responsive-scale-patch">
+(function(){
+  if(window.__montoResponsiveScalePatch) return;
+  window.__montoResponsiveScalePatch = true;
+
+  function cssText(){ return `
+    /* Pantalla Yapear a: escala real por ancho y alto */
+    :root{
+      --m-vh: 100dvh;
+      --m-vw: 100vw;
+      --m-x: clamp(12px, 4.2vw, 18px);
+      --m-footer-h: clamp(108px, 15.5vh, 148px);
+      --m-purple-real: #7b1fa2;
+      --m-green-real: #21a98f;
+    }
+
+    #montoView{
+      width:100% !important;
+      height:var(--m-vh) !important;
+      min-height:var(--m-vh) !important;
+      background:#fff !important;
+      overflow:hidden !important;
+      color:#222 !important;
+    }
+
+    #montoView .mApp{
+      width:100% !important;
+      height:var(--m-vh) !important;
+      min-height:var(--m-vh) !important;
+      background:#fff !important;
+      overflow:hidden !important;
+      position:relative !important;
+    }
+
+    #montoView #mContent{
+      position:absolute !important;
+      top:0 !important;
+      left:0 !important;
+      right:0 !important;
+      bottom:var(--m-footer-h) !important;
+      overflow:hidden !important;
+      padding:calc(env(safe-area-inset-top, 0px) + clamp(8px, 2.4vh, 18px)) var(--m-x) 8px !important;
+      background:#fff !important;
+      display:flex !important;
+      flex-direction:column !important;
+      align-items:stretch !important;
+    }
+
+    #montoView .mHeaderLikePhoto{
+      position:relative !important;
+      min-height:clamp(38px, 5.8vh, 48px) !important;
+      display:flex !important;
+      align-items:center !important;
+      justify-content:flex-start !important;
+      padding:0 !important;
+      flex:0 0 auto !important;
+    }
+
+    #montoView .mHeaderLikePhoto #mBack{
+      width:clamp(30px, 8vw, 40px) !important;
+      height:clamp(30px, 8vw, 40px) !important;
+      display:grid !important;
+      place-items:center !important;
+      font-size:clamp(24px, 7vw, 34px) !important;
+      color:#777 !important;
+      line-height:1 !important;
+      margin:0 !important;
+      flex:0 0 auto !important;
+    }
+
+    #montoView .mHeaderLikePhoto .mTitle{
+      margin-left:clamp(10px, 3.8vw, 22px) !important;
+      font-size:clamp(22px, 4.9vw, 28px) !important;
+      line-height:1 !important;
+      font-weight:400 !important;
+      color:#111 !important;
+      white-space:nowrap !important;
+    }
+
+    #montoView .mHeaderLikePhoto #mClose{
+      position:absolute !important;
+      right:0 !important;
+      top:50% !important;
+      transform:translateY(-50%) !important;
+      width:clamp(34px, 9vw, 46px) !important;
+      height:clamp(34px, 9vw, 46px) !important;
+      display:grid !important;
+      place-items:center !important;
+      font-size:clamp(26px, 6vw, 34px) !important;
+      font-weight:300 !important;
+      color:#777 !important;
+      line-height:1 !important;
+      margin:0 !important;
+    }
+
+    #montoView #mNameBox{
+      margin-top:clamp(28px, 5.5vh, 48px) !important;
+      width:100% !important;
+      max-width:100% !important;
+      text-align:center !important;
+      font-size:clamp(25px, 6.2vw, 34px) !important;
+      line-height:1.08 !important;
+      font-weight:400 !important;
+      color:var(--m-purple-real) !important;
+      white-space:nowrap !important;
+      overflow:hidden !important;
+      text-overflow:ellipsis !important;
+      padding:0 clamp(18px, 7vw, 42px) !important;
+      min-height:clamp(30px, 7vw, 40px) !important;
+      flex:0 0 auto !important;
+    }
+
+    #montoView .mPhoneWrap{
+      margin-top:clamp(4px, 1vh, 8px) !important;
+      min-height:clamp(16px, 3.6vh, 24px) !important;
+      flex:0 0 auto !important;
+    }
+
+    #montoView #mPhoneBox,
+    #montoView #mPhoneInput{
+      font-size:clamp(12px, 3vw, 16px) !important;
+      color:#9a9a9a !important;
+      line-height:1.2 !important;
+    }
+
+    #montoView .mAmount{
+      margin-top:clamp(58px, 10.5vh, 96px) !important;
+      text-align:center !important;
+      flex:0 0 auto !important;
+    }
+
+    #montoView #mAmountInput{
+      width:100% !important;
+      max-width:100% !important;
+      height:clamp(64px, 12.2vh, 92px) !important;
+      min-height:0 !important;
+      padding:0 !important;
+      border:0 !important;
+      outline:0 !important;
+      background:transparent !important;
+      text-align:center !important;
+      font-size:clamp(64px, 15.5vw, 92px) !important;
+      line-height:.95 !important;
+      font-weight:300 !important;
+      color:var(--m-purple-real) !important;
+      caret-color:var(--m-purple-real) !important;
+      letter-spacing:-0.055em !important;
+    }
+
+    #montoView .montoLimitWrap{
+      margin:clamp(14px, 2.8vh, 26px) 0 0 !important;
+      display:flex !important;
+      justify-content:center !important;
+      flex:0 0 auto !important;
+    }
+
+    #montoView #mLimitPill{
+      max-width:100% !important;
+      margin:0 auto !important;
+      padding:0 clamp(2px, 1vw, 6px) !important;
+      background:transparent !important;
+      border:0 !important;
+      color:#818181 !important;
+      font-size:clamp(13px, 3.45vw, 17px) !important;
+      line-height:1.25 !important;
+      font-weight:400 !important;
+      text-align:center !important;
+      white-space:normal !important;
+      overflow-wrap:normal !important;
+    }
+
+    #montoView #mErrorPill{
+      font-size:clamp(11px, 3vw, 14px) !important;
+      margin-top:clamp(10px, 2.2vh, 18px) !important;
+    }
+
+    #montoView #mFooter{
+      position:absolute !important;
+      left:0 !important;
+      right:0 !important;
+      bottom:0 !important;
+      width:100% !important;
+      min-height:var(--m-footer-h) !important;
+      background:#fff !important;
+      padding:clamp(8px, 2vh, 16px) var(--m-x) calc(clamp(12px, 2.2vh, 18px) + env(safe-area-inset-bottom, 0px)) !important;
+      z-index:50 !important;
+      transform:translateY(var(--mKb, 0px)) !important;
+      display:flex !important;
+      flex-direction:column !important;
+      justify-content:flex-end !important;
+    }
+
+    #montoView .mMessage{
+      margin:0 0 clamp(12px, 2.1vh, 20px) !important;
+      flex:0 0 auto !important;
+    }
+
+    #montoView #mMsgInput{
+      width:100% !important;
+      height:clamp(30px, 4.6vh, 38px) !important;
+      padding:0 6px clamp(5px, 1vh, 8px) !important;
+      border:0 !important;
+      border-bottom:2px solid #cfcfcf !important;
+      border-radius:0 !important;
+      text-align:center !important;
+      font-size:clamp(15px, 3.9vw, 20px) !important;
+      line-height:1.1 !important;
+      color:#222 !important;
+      background:transparent !important;
+      outline:0 !important;
+    }
+
+    #montoView #mMsgInput::placeholder{
+      color:#8a8a8a !important;
+      opacity:1 !important;
+      font-weight:400 !important;
+    }
+
+    #montoView .mButtons{
+      display:flex !important;
+      gap:clamp(10px, 3vw, 16px) !important;
+      width:100% !important;
+      flex:0 0 auto !important;
+      flex-wrap:nowrap !important;
+    }
+
+    #montoView .mBtn{
+      flex:1 1 0 !important;
+      min-width:0 !important;
+      height:clamp(48px, 6vh, 56px) !important;
+      padding:0 clamp(8px, 3.4vw, 18px) !important;
+      border-radius:clamp(12px, 3vw, 16px) !important;
+      font-size:clamp(15px, 3.8vw, 20px) !important;
+      line-height:1 !important;
+      font-weight:400 !important;
+      white-space:nowrap !important;
+    }
+
+    #montoView #mOtherBanks{
+      border:2px solid var(--m-green-real) !important;
+      background:#fff !important;
+      color:#179f8d !important;
+    }
+
+    #montoView #mYapearBtn{
+      background:var(--m-green-real) !important;
+      color:#fff !important;
+      border:0 !important;
+    }
+
+    #montoView .mButtons.onlyYapear #mOtherBanks{display:none !important;}
+    #montoView .mButtons.onlyYapear #mYapearBtn{width:100% !important; flex-basis:100% !important;}
+
+    @media (max-height: 720px){
+      :root{ --m-footer-h: clamp(116px, 18vh, 152px); }
+      #montoView #mNameBox{ margin-top:clamp(20px, 4vh, 34px) !important; }
+      #montoView .mAmount{ margin-top:clamp(36px, 7.5vh, 60px) !important; }
+      #montoView #mAmountInput{ font-size:clamp(58px, 14vw, 78px) !important; height:clamp(58px, 10vh, 78px) !important; }
+      #montoView .montoLimitWrap{ margin-top:clamp(12px, 2.2vh, 20px) !important; }
+    }
+
+    @media (max-height: 620px){
+      :root{ --m-footer-h: 112px; }
+      #montoView #mContent{ padding-top:calc(env(safe-area-inset-top, 0px) + 6px) !important; }
+      #montoView .mHeaderLikePhoto{ min-height:38px !important; }
+      #montoView #mNameBox{ margin-top:18px !important; font-size:clamp(22px, 7vw, 30px) !important; }
+      #montoView .mAmount{ margin-top:34px !important; }
+      #montoView #mAmountInput{ font-size:clamp(58px, 18vw, 86px) !important; height:64px !important; }
+      #montoView #mLimitPill{ font-size:clamp(13px, 3.8vw, 16px) !important; }
+      #montoView #mMsgInput{ font-size:clamp(15px, 4.2vw, 19px) !important; height:30px !important; }
+      #montoView .mBtn{ height:48px !important; font-size:clamp(15px, 4.2vw, 19px) !important; }
+    }
+
+
+
+    @media (min-width: 520px){
+      /* En emuladores o pantallas anchas no debe agrandarse como tablet; se mantiene tamaño app móvil. */
+      #montoView #mContent{ padding-left:18px !important; padding-right:18px !important; }
+      #montoView .mHeaderLikePhoto{ min-height:48px !important; }
+      #montoView .mHeaderLikePhoto .mTitle{ font-size:28px !important; }
+      #montoView #mNameBox{ margin-top:42px !important; font-size:34px !important; }
+      #montoView #mPhoneBox, #montoView #mPhoneInput{ font-size:16px !important; }
+      #montoView .mAmount{ margin-top:82px !important; }
+      #montoView #mAmountInput{ font-size:92px !important; height:92px !important; }
+      #montoView #mLimitPill{ font-size:17px !important; }
+      #montoView #mFooter{ min-height:148px !important; padding-left:18px !important; padding-right:18px !important; }
+      #montoView #mMsgInput{ font-size:20px !important; height:38px !important; }
+      #montoView .mBtn{ height:56px !important; font-size:20px !important; border-radius:16px !important; }
+    }
+
+    @media (max-width: 340px){
+      #montoView .mHeaderLikePhoto .mTitle{ font-size:22px !important; margin-left:8px !important; }
+      #montoView #mNameBox{ font-size:24px !important; padding-left:32px !important; padding-right:32px !important; }
+      #montoView #mAmountInput{ font-size:70px !important; }
+      #montoView .mButtons{ gap:10px !important; }
+      #montoView .mBtn{ font-size:15px !important; padding-left:6px !important; padding-right:6px !important; }
+    }
+  `;}
+
+  function inject(doc){
+    if(!doc || !doc.head) return;
+    if(doc.getElementById('monto-responsive-scale-style')) return;
+    var st = doc.createElement('style');
+    st.id = 'monto-responsive-scale-style';
+    st.textContent = cssText();
+    doc.head.appendChild(st);
+  }
+
+  function updateVars(doc){
+    try{
+      var win = doc.defaultView || window;
+      var vv = win.visualViewport;
+      var w = vv ? vv.width : win.innerWidth;
+      var h = vv ? vv.height : win.innerHeight;
+      doc.documentElement.style.setProperty('--m-vw', w + 'px');
+      doc.documentElement.style.setProperty('--m-vh', h + 'px');
+    }catch(e){}
+  }
+
+  function install(){
+    var frame = document.getElementById('homeFrame');
+    if(!frame) return;
+    function run(){
+      try{
+        var doc = frame.contentDocument || (frame.contentWindow && frame.contentWindow.document);
+        if(!doc) return;
+        inject(doc);
+        updateVars(doc);
+        var win = frame.contentWindow;
+        if(win && !win.__montoResponsiveVarsBound){
+          win.__montoResponsiveVarsBound = true;
+          win.addEventListener('resize', function(){ updateVars(doc); }, {passive:true});
+          win.addEventListener('orientationchange', function(){ setTimeout(function(){ updateVars(doc); }, 80); }, {passive:true});
+          if(win.visualViewport){
+            win.visualViewport.addEventListener('resize', function(){ updateVars(doc); }, {passive:true});
+          }
+        }
+      }catch(e){}
+    }
+    run();
+    frame.addEventListener('load', run);
+    setTimeout(run, 300);
+    setTimeout(run, 1000);
+    setTimeout(run, 2500);
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install, {once:true});
+  else install();
+})();
+</script>
+
 </body>
 </html>
 
@@ -29282,5 +29636,1205 @@ try{
   }, 250);
   window.addEventListener('load', run, false);
   document.addEventListener('DOMContentLoaded', run, false);
+})();
+</script>
+
+<script id="monto-small-phone-balance-patch">
+(function(){
+  function cssText(){ return `
+    /* Balance final para celulares pequenos: no achica toda la vista y evita que botones/textos se corten */
+    #montoView,
+    #montoView .mApp{
+      width:100vw !important;
+      max-width:100vw !important;
+      min-width:100vw !important;
+      height:var(--m-vh, 100dvh) !important;
+      min-height:var(--m-vh, 100dvh) !important;
+      background:#fff !important;
+    }
+
+    @media (max-width: 390px){
+      :root{ --m-x: 14px; }
+      #montoView #mContent{
+        padding-left:14px !important;
+        padding-right:14px !important;
+      }
+      #montoView #mNameBox{
+        font-size:clamp(25px, 7.4vw, 30px) !important;
+        padding-left:22px !important;
+        padding-right:22px !important;
+        margin-top:clamp(24px, 5.2vh, 38px) !important;
+      }
+      #montoView .mAmount{
+        margin-top:clamp(46px, 8.4vh, 74px) !important;
+      }
+      #montoView #mAmountInput{
+        font-size:clamp(66px, 20vw, 82px) !important;
+        height:clamp(66px, 11.5vh, 82px) !important;
+      }
+      #montoView #mLimitPill{
+        font-size:clamp(13px, 4.15vw, 16px) !important;
+        max-width:96% !important;
+      }
+      #montoView #mFooter{
+        padding-left:14px !important;
+        padding-right:14px !important;
+      }
+      #montoView .mButtons{
+        gap:10px !important;
+      }
+      #montoView .mBtn{
+        height:50px !important;
+        font-size:clamp(14px, 4.25vw, 16px) !important;
+        padding-left:4px !important;
+        padding-right:4px !important;
+        overflow:hidden !important;
+        text-overflow:clip !important;
+        letter-spacing:-0.02em !important;
+      }
+      #montoView #mOtherBanks{
+        flex:0.96 1 0 !important;
+      }
+      #montoView #mYapearBtn{
+        flex:1.04 1 0 !important;
+      }
+    }
+
+    @media (max-width: 360px){
+      :root{ --m-footer-h: 118px; --m-x: 12px; }
+      #montoView #mContent{
+        bottom:118px !important;
+        padding-left:12px !important;
+        padding-right:12px !important;
+        padding-top:calc(env(safe-area-inset-top, 0px) + 8px) !important;
+      }
+      #montoView .mHeaderLikePhoto{
+        min-height:40px !important;
+      }
+      #montoView .mHeaderLikePhoto .mTitle{
+        font-size:23px !important;
+        margin-left:8px !important;
+      }
+      #montoView .mHeaderLikePhoto #mBack,
+      #montoView .mHeaderLikePhoto #mClose{
+        width:34px !important;
+        height:34px !important;
+      }
+      #montoView .mHeaderLikePhoto #mBack{ font-size:27px !important; }
+      #montoView .mHeaderLikePhoto #mClose{ font-size:29px !important; }
+      #montoView #mNameBox{
+        margin-top:20px !important;
+        font-size:25px !important;
+        min-height:30px !important;
+      }
+      #montoView .mPhoneWrap{ margin-top:4px !important; }
+      #montoView .mAmount{ margin-top:38px !important; }
+      #montoView #mAmountInput{
+        font-size:68px !important;
+        height:66px !important;
+      }
+      #montoView .montoLimitWrap{ margin-top:12px !important; }
+      #montoView #mLimitPill{
+        font-size:13.5px !important;
+        line-height:1.22 !important;
+      }
+      #montoView #mFooter{
+        min-height:118px !important;
+        padding:8px 12px calc(10px + env(safe-area-inset-bottom, 0px)) !important;
+      }
+      #montoView .mMessage{ margin-bottom:10px !important; }
+      #montoView #mMsgInput{
+        height:30px !important;
+        font-size:15px !important;
+      }
+      #montoView .mButtons{ gap:9px !important; }
+      #montoView .mBtn{
+        height:48px !important;
+        border-radius:13px !important;
+        font-size:14px !important;
+        padding-left:2px !important;
+        padding-right:2px !important;
+      }
+    }
+
+    @media (max-width: 330px){
+      #montoView .mButtons{ gap:8px !important; }
+      #montoView .mBtn{ font-size:13px !important; }
+      #montoView #mOtherBanks{ flex:.92 1 0 !important; }
+      #montoView #mYapearBtn{ flex:1.08 1 0 !important; }
+      #montoView #mNameBox{ font-size:23px !important; }
+      #montoView #mAmountInput{ font-size:62px !important; }
+    }
+
+    @media (max-height: 590px){
+      :root{ --m-footer-h: 112px; }
+      #montoView #mContent{ bottom:112px !important; }
+      #montoView #mNameBox{ margin-top:16px !important; font-size:24px !important; }
+      #montoView .mAmount{ margin-top:26px !important; }
+      #montoView #mAmountInput{ font-size:62px !important; height:60px !important; }
+      #montoView .montoLimitWrap{ margin-top:8px !important; }
+      #montoView #mFooter{ min-height:112px !important; }
+      #montoView .mBtn{ height:46px !important; }
+    }
+  `; }
+
+  function inject(doc){
+    if(!doc || !doc.head) return;
+    var old = doc.getElementById('monto-small-phone-balance-style');
+    if(old) old.remove();
+    var st = doc.createElement('style');
+    st.id = 'monto-small-phone-balance-style';
+    st.textContent = cssText();
+    doc.head.appendChild(st);
+  }
+
+  function run(){
+    var frame = document.getElementById('homeFrame');
+    if(!frame) return;
+    try{
+      var doc = frame.contentDocument || (frame.contentWindow && frame.contentWindow.document);
+      inject(doc);
+    }catch(e){}
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, {once:true});
+  else run();
+  window.addEventListener('load', run, {once:true});
+  setTimeout(run, 300);
+  setTimeout(run, 1200);
+  setTimeout(run, 2600);
+})();
+</script>
+<script id="monto-small-phone-soft-reduce-patch">
+(function(){
+  function cssText(){ return `
+    /* Ajuste fino final: en celulares pequeños se ve un poco más compacto sin volver a encoger toda la pantalla */
+    @media (max-width: 390px){
+      #montoView #mContent{
+        padding-left:13px !important;
+        padding-right:13px !important;
+      }
+      #montoView .mHeaderLikePhoto{
+        min-height:38px !important;
+      }
+      #montoView .mHeaderLikePhoto .mTitle{
+        font-size:22px !important;
+        margin-left:8px !important;
+      }
+      #montoView .mHeaderLikePhoto #mBack,
+      #montoView .mHeaderLikePhoto #mClose{
+        width:32px !important;
+        height:32px !important;
+      }
+      #montoView .mHeaderLikePhoto #mBack{ font-size:25px !important; }
+      #montoView .mHeaderLikePhoto #mClose{ font-size:27px !important; }
+      #montoView #mNameBox{
+        margin-top:19px !important;
+        font-size:24px !important;
+        min-height:28px !important;
+        padding-left:24px !important;
+        padding-right:24px !important;
+      }
+      #montoView .mPhoneWrap{ margin-top:3px !important; min-height:16px !important; }
+      #montoView #mPhoneBox,
+      #montoView #mPhoneInput{ font-size:12px !important; }
+      #montoView .mAmount{ margin-top:34px !important; }
+      #montoView #mAmountInput{
+        font-size:62px !important;
+        height:60px !important;
+        line-height:.92 !important;
+      }
+      #montoView .montoLimitWrap{ margin-top:10px !important; }
+      #montoView #mLimitPill{
+        font-size:12.8px !important;
+        line-height:1.18 !important;
+        max-width:94% !important;
+      }
+      #montoView #mFooter{
+        min-height:112px !important;
+        padding-left:13px !important;
+        padding-right:13px !important;
+        padding-top:7px !important;
+      }
+      #montoView .mMessage{ margin-bottom:9px !important; }
+      #montoView #mMsgInput{
+        height:28px !important;
+        font-size:14px !important;
+        padding-bottom:5px !important;
+      }
+      #montoView .mButtons{ gap:9px !important; }
+      #montoView .mBtn{
+        height:45px !important;
+        border-radius:12px !important;
+        font-size:13.5px !important;
+        padding-left:2px !important;
+        padding-right:2px !important;
+      }
+    }
+
+    @media (max-width: 360px){
+      #montoView #mContent{
+        bottom:108px !important;
+        padding-left:11px !important;
+        padding-right:11px !important;
+        padding-top:calc(env(safe-area-inset-top, 0px) + 7px) !important;
+      }
+      #montoView .mHeaderLikePhoto{ min-height:36px !important; }
+      #montoView .mHeaderLikePhoto .mTitle{ font-size:21px !important; }
+      #montoView .mHeaderLikePhoto #mBack,
+      #montoView .mHeaderLikePhoto #mClose{ width:30px !important; height:30px !important; }
+      #montoView .mHeaderLikePhoto #mBack{ font-size:24px !important; }
+      #montoView .mHeaderLikePhoto #mClose{ font-size:26px !important; }
+      #montoView #mNameBox{
+        margin-top:17px !important;
+        font-size:23px !important;
+        min-height:27px !important;
+      }
+      #montoView .mAmount{ margin-top:30px !important; }
+      #montoView #mAmountInput{ font-size:58px !important; height:56px !important; }
+      #montoView #mLimitPill{ font-size:12.2px !important; }
+      #montoView #mFooter{
+        min-height:108px !important;
+        padding:7px 11px calc(9px + env(safe-area-inset-bottom, 0px)) !important;
+      }
+      #montoView #mMsgInput{ height:27px !important; font-size:13.5px !important; }
+      #montoView .mButtons{ gap:8px !important; }
+      #montoView .mBtn{ height:43px !important; font-size:13px !important; border-radius:11px !important; }
+    }
+
+    @media (max-width: 330px){
+      #montoView .mHeaderLikePhoto .mTitle{ font-size:20px !important; }
+      #montoView #mNameBox{ font-size:21.5px !important; padding-left:20px !important; padding-right:20px !important; }
+      #montoView .mAmount{ margin-top:26px !important; }
+      #montoView #mAmountInput{ font-size:54px !important; height:52px !important; }
+      #montoView #mLimitPill{ font-size:11.8px !important; }
+      #montoView .mBtn{ font-size:12.4px !important; height:42px !important; }
+    }
+
+    @media (max-height: 590px){
+      #montoView #mNameBox{ margin-top:14px !important; }
+      #montoView .mAmount{ margin-top:22px !important; }
+      #montoView #mAmountInput{ font-size:54px !important; height:52px !important; }
+      #montoView .montoLimitWrap{ margin-top:7px !important; }
+      #montoView #mFooter{ min-height:104px !important; }
+      #montoView #mContent{ bottom:104px !important; }
+      #montoView .mBtn{ height:41px !important; }
+    }
+  `; }
+
+  function inject(doc){
+    if(!doc || !doc.head) return;
+    var old = doc.getElementById('monto-small-phone-soft-reduce-style');
+    if(old) old.remove();
+    var st = doc.createElement('style');
+    st.id = 'monto-small-phone-soft-reduce-style';
+    st.textContent = cssText();
+    doc.head.appendChild(st);
+  }
+
+  function run(){
+    var frame = document.getElementById('homeFrame');
+    if(!frame) return;
+    try{
+      var doc = frame.contentDocument || (frame.contentWindow && frame.contentWindow.document);
+      inject(doc);
+    }catch(e){}
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, {once:true});
+  else run();
+  window.addEventListener('load', run, {once:true});
+  setTimeout(run, 300);
+  setTimeout(run, 1200);
+  setTimeout(run, 2600);
+  setTimeout(run, 4200);
+})();
+</script>
+
+<!-- ===== AJUSTE FINAL CELULARES PEQUENOS: PANTALLA YAPEAR MONTO ===== -->
+<script id="monto-tiny-phone-final-reduce-patch">
+(function(){
+  function cssText(){ return `
+    /* Solo celulares pequenos: baja tamanos sin encoger toda la pantalla */
+    @media (max-width: 390px){
+      #montoView #mContent{
+        padding-left:12px !important;
+        padding-right:12px !important;
+        padding-top:calc(env(safe-area-inset-top, 0px) + 7px) !important;
+        bottom:104px !important;
+      }
+      #montoView .mHeaderLikePhoto{
+        min-height:34px !important;
+      }
+      #montoView .mHeaderLikePhoto .mTitle{
+        font-size:20px !important;
+        margin-left:7px !important;
+        font-weight:400 !important;
+      }
+      #montoView .mHeaderLikePhoto #mBack,
+      #montoView .mHeaderLikePhoto #mClose{
+        width:29px !important;
+        height:29px !important;
+      }
+      #montoView .mHeaderLikePhoto #mBack{font-size:23px !important;}
+      #montoView .mHeaderLikePhoto #mClose{font-size:25px !important;}
+
+      #montoView #mNameBox{
+        margin-top:15px !important;
+        font-size:21.5px !important;
+        line-height:1.05 !important;
+        min-height:25px !important;
+        padding-left:22px !important;
+        padding-right:22px !important;
+      }
+      #montoView .mPhoneWrap{
+        margin-top:2px !important;
+        min-height:14px !important;
+      }
+      #montoView #mPhoneBox,
+      #montoView #mPhoneInput{
+        font-size:11px !important;
+        line-height:1.1 !important;
+      }
+      #montoView .mAmount{
+        margin-top:27px !important;
+      }
+      #montoView #mAmountInput{
+        font-size:52px !important;
+        height:50px !important;
+        line-height:.9 !important;
+      }
+      #montoView .montoLimitWrap{
+        margin-top:8px !important;
+      }
+      #montoView #mLimitPill{
+        font-size:11.8px !important;
+        line-height:1.16 !important;
+        max-width:92% !important;
+      }
+      #montoView #mFooter{
+        min-height:104px !important;
+        padding:6px 12px calc(8px + env(safe-area-inset-bottom, 0px)) !important;
+      }
+      #montoView .mMessage{
+        margin-bottom:8px !important;
+      }
+      #montoView #mMsgInput{
+        height:26px !important;
+        font-size:13px !important;
+        padding-bottom:4px !important;
+        border-bottom-width:2px !important;
+      }
+      #montoView .mButtons{
+        gap:8px !important;
+      }
+      #montoView .mBtn{
+        height:41px !important;
+        border-radius:10px !important;
+        font-size:12.2px !important;
+        padding-left:1px !important;
+        padding-right:1px !important;
+        letter-spacing:-.03em !important;
+      }
+      #montoView #mOtherBanks{
+        flex:.98 1 0 !important;
+      }
+      #montoView #mYapearBtn{
+        flex:1.02 1 0 !important;
+      }
+    }
+
+    @media (max-width: 350px){
+      #montoView #mContent{
+        bottom:100px !important;
+        padding-left:10px !important;
+        padding-right:10px !important;
+      }
+      #montoView .mHeaderLikePhoto{min-height:32px !important;}
+      #montoView .mHeaderLikePhoto .mTitle{font-size:19px !important;}
+      #montoView .mHeaderLikePhoto #mBack,
+      #montoView .mHeaderLikePhoto #mClose{width:27px !important;height:27px !important;}
+      #montoView .mHeaderLikePhoto #mBack{font-size:22px !important;}
+      #montoView .mHeaderLikePhoto #mClose{font-size:24px !important;}
+      #montoView #mNameBox{margin-top:13px !important;font-size:20px !important;min-height:24px !important;}
+      #montoView .mAmount{margin-top:23px !important;}
+      #montoView #mAmountInput{font-size:48px !important;height:46px !important;}
+      #montoView #mLimitPill{font-size:11.2px !important;}
+      #montoView #mFooter{min-height:100px !important;padding-left:10px !important;padding-right:10px !important;}
+      #montoView #mMsgInput{height:25px !important;font-size:12.5px !important;}
+      #montoView .mButtons{gap:7px !important;}
+      #montoView .mBtn{height:39px !important;font-size:11.6px !important;border-radius:9px !important;}
+    }
+
+    @media (max-height: 610px){
+      #montoView #mNameBox{margin-top:12px !important;}
+      #montoView .mAmount{margin-top:20px !important;}
+      #montoView #mAmountInput{font-size:48px !important;height:46px !important;}
+      #montoView .montoLimitWrap{margin-top:6px !important;}
+      #montoView #mFooter{min-height:98px !important;}
+      #montoView #mContent{bottom:98px !important;}
+      #montoView .mBtn{height:38px !important;}
+      #montoView #mMsgInput{height:24px !important;}
+    }
+  `; }
+
+  function inject(doc){
+    if(!doc || !doc.head) return;
+    var old = doc.getElementById('monto-tiny-phone-final-reduce-style');
+    if(old) old.remove();
+    var st = doc.createElement('style');
+    st.id = 'monto-tiny-phone-final-reduce-style';
+    st.textContent = cssText();
+    doc.head.appendChild(st);
+  }
+
+  function run(){
+    try{
+      var frame = document.getElementById('homeFrame');
+      if(!frame) return;
+      var doc = frame.contentDocument || (frame.contentWindow && frame.contentWindow.document);
+      inject(doc);
+    }catch(e){}
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, {once:true});
+  else run();
+  window.addEventListener('load', run, {once:true});
+  window.addEventListener('resize', run, {passive:true});
+  window.addEventListener('orientationchange', run, {passive:true});
+  setTimeout(run, 250);
+  setTimeout(run, 900);
+  setTimeout(run, 1800);
+  setTimeout(run, 3500);
+})();
+</script>
+
+<!-- ===== AJUSTE RESPONSIVE PANTALLA BANCOS: YAPEAR A ===== -->
+<script id="banks-view-responsive-patch">
+(function(){
+  function cssText(){ return `
+    /* Pantalla Bancos - escala por ancho y alto sin deformar */
+    #banksView{
+      background:#fff !important;
+      overflow:hidden !important;
+    }
+    #banksView .bApp{
+      width:100% !important;
+      height:100% !important;
+      min-height:100dvh !important;
+      background:#fff !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+      -webkit-overflow-scrolling:touch !important;
+    }
+    #banksView .bPurpleStrip{
+      height:clamp(20px, 4.1vh, 28px) !important;
+      flex:0 0 auto !important;
+      background:#762083 !important;
+    }
+    #banksView .bHeader{
+      height:clamp(52px, 8.3vh, 64px) !important;
+      padding:0 clamp(12px, 3.4vw, 22px) !important;
+      gap:clamp(6px, 2vw, 10px) !important;
+      background:#fff !important;
+      border-bottom:0 !important;
+      box-shadow:none !important;
+    }
+    #banksView #bBack,
+    #banksView #bClose{
+      width:clamp(30px, 8.5vw, 36px) !important;
+      height:clamp(30px, 8.5vw, 36px) !important;
+      border-radius:10px !important;
+      flex:0 0 auto !important;
+    }
+    #banksView #bBack span{
+      font-size:clamp(21px, 6vw, 26px) !important;
+      font-weight:600 !important;
+      color:#21162f !important;
+    }
+    #banksView #bClose span{
+      font-size:clamp(29px, 8.4vw, 38px) !important;
+      font-weight:300 !important;
+      color:#21162f !important;
+    }
+    #banksView .bHeader div div{
+      font-size:clamp(20px, 5.4vw, 22px) !important;
+      font-weight:700 !important;
+      color:#241831 !important;
+      letter-spacing:-.2px !important;
+      line-height:1 !important;
+    }
+    #banksView .bBody{
+      padding:clamp(10px, 3vw, 14px) clamp(12px, 3.6vw, 16px) calc(24px + env(safe-area-inset-bottom, 0px)) !important;
+      background:#fff !important;
+      min-height:auto !important;
+      box-sizing:border-box !important;
+    }
+    #banksView .bCard{
+      height:clamp(52px, 8.4vh, 58px) !important;
+      min-height:0 !important;
+      padding:0 clamp(14px, 4vw, 18px) !important;
+      border-radius:clamp(10px, 3vw, 13px) !important;
+      gap:clamp(12px, 3.5vw, 14px) !important;
+      box-shadow:0 6px 13px rgba(37,26,50,.12) !important;
+    }
+    #banksView .bCard .bLogo{
+      width:clamp(34px, 9.4vw, 38px) !important;
+      height:clamp(34px, 9.4vw, 38px) !important;
+      flex:0 0 clamp(34px, 9.4vw, 38px) !important;
+    }
+    #banksView .bCard .bLogo img{
+      width:clamp(24px, 7vw, 27px) !important;
+      height:clamp(24px, 7vw, 27px) !important;
+    }
+    #banksView .bCard > div:last-child{
+      font-size:clamp(15px, 4.4vw, 16px) !important;
+      font-weight:700 !important;
+      color:#111 !important;
+      line-height:1.1 !important;
+    }
+    #banksView .bSectionTitle{
+      margin:clamp(15px, 4.2vw, 20px) 4px clamp(10px, 3vw, 12px) !important;
+      color:#7b168f !important;
+      font-size:clamp(15px, 4.35vw, 16px) !important;
+      font-weight:700 !important;
+      line-height:1.14 !important;
+      overflow-wrap:normal !important;
+      word-break:normal !important;
+    }
+    #banksView .bList{
+      display:flex !important;
+      flex-direction:column !important;
+      gap:clamp(7px, 2.2vw, 9px) !important;
+      padding-bottom:20px !important;
+    }
+    #banksView .bRow{
+      min-height:clamp(48px, 7.8vh, 54px) !important;
+      height:auto !important;
+      display:flex !important;
+      align-items:center !important;
+      gap:clamp(12px, 3.4vw, 14px) !important;
+      padding:0 clamp(14px, 4vw, 18px) !important;
+      border-radius:clamp(10px, 3vw, 12px) !important;
+      box-shadow:0 5px 11px rgba(37,26,50,.10) !important;
+      box-sizing:border-box !important;
+    }
+    #banksView .bBankIcon{
+      width:clamp(34px, 9.4vw, 38px) !important;
+      height:clamp(34px, 9.4vw, 38px) !important;
+      min-width:clamp(34px, 9.4vw, 38px) !important;
+      min-height:clamp(34px, 9.4vw, 38px) !important;
+      flex:0 0 clamp(34px, 9.4vw, 38px) !important;
+      border-radius:999px !important;
+      display:grid !important;
+      place-items:center !important;
+    }
+    #banksView .bBankIcon svg{
+      width:clamp(18px, 5.3vw, 20px) !important;
+      height:clamp(18px, 5.3vw, 20px) !important;
+    }
+    #banksView .bBankName{
+      font-size:clamp(15px, 4.35vw, 16px) !important;
+      font-weight:700 !important;
+      line-height:1.08 !important;
+      color:#0f0f13 !important;
+      overflow-wrap:anywhere !important;
+    }
+
+    @media (max-width:390px){
+      #banksView .bPurpleStrip{height:22px !important;}
+      #banksView .bHeader{height:56px !important;padding-left:14px !important;padding-right:14px !important;}
+      #banksView .bHeader div div{font-size:21px !important;}
+      #banksView #bBack,#banksView #bClose{width:32px !important;height:32px !important;}
+      #banksView #bBack span{font-size:22px !important;}
+      #banksView #bClose span{font-size:32px !important;}
+      #banksView .bBody{padding:10px 13px calc(18px + env(safe-area-inset-bottom,0px)) !important;}
+      #banksView .bCard{height:52px !important;padding:0 14px !important;}
+      #banksView .bCard .bLogo{width:34px !important;height:34px !important;flex-basis:34px !important;}
+      #banksView .bCard .bLogo img{width:24px !important;height:24px !important;}
+      #banksView .bCard > div:last-child{font-size:15px !important;}
+      #banksView .bSectionTitle{font-size:15px !important;margin:15px 4px 10px !important;}
+      #banksView .bList{gap:7px !important;}
+      #banksView .bRow{min-height:48px !important;padding:0 14px !important;gap:12px !important;}
+      #banksView .bBankIcon{width:34px !important;height:34px !important;min-width:34px !important;min-height:34px !important;flex-basis:34px !important;}
+      #banksView .bBankIcon svg{width:18px !important;height:18px !important;}
+      #banksView .bBankName{font-size:15px !important;}
+    }
+
+    @media (max-width:350px){
+      #banksView .bPurpleStrip{height:20px !important;}
+      #banksView .bHeader{height:52px !important;padding-left:12px !important;padding-right:12px !important;}
+      #banksView .bHeader div div{font-size:20px !important;}
+      #banksView #bBack,#banksView #bClose{width:30px !important;height:30px !important;}
+      #banksView #bBack span{font-size:21px !important;}
+      #banksView #bClose span{font-size:30px !important;}
+      #banksView .bBody{padding-left:11px !important;padding-right:11px !important;}
+      #banksView .bCard{height:49px !important;border-radius:10px !important;}
+      #banksView .bSectionTitle{font-size:14px !important;margin-top:13px !important;margin-bottom:9px !important;}
+      #banksView .bRow{min-height:45px !important;border-radius:10px !important;}
+      #banksView .bBankName{font-size:14px !important;}
+    }
+
+    @media (max-height:640px){
+      #banksView .bPurpleStrip{height:20px !important;}
+      #banksView .bHeader{height:50px !important;}
+      #banksView .bBody{padding-top:8px !important;}
+      #banksView .bCard{height:48px !important;}
+      #banksView .bSectionTitle{margin-top:12px !important;margin-bottom:8px !important;}
+      #banksView .bList{gap:6px !important;}
+      #banksView .bRow{min-height:44px !important;}
+      #banksView .bBankIcon{width:32px !important;height:32px !important;min-width:32px !important;min-height:32px !important;flex-basis:32px !important;}
+      #banksView .bBankName{font-size:14px !important;}
+    }
+  `; }
+
+  function inject(doc){
+    if(!doc || !doc.head) return;
+    var old = doc.getElementById('banks-view-responsive-style');
+    if(old) old.remove();
+    var st = doc.createElement('style');
+    st.id = 'banks-view-responsive-style';
+    st.textContent = cssText();
+    doc.head.appendChild(st);
+  }
+
+  function run(){
+    try{
+      var frame = document.getElementById('homeFrame');
+      if(!frame) return;
+      var doc = frame.contentDocument || (frame.contentWindow && frame.contentWindow.document);
+      inject(doc);
+    }catch(e){}
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, {once:true});
+  else run();
+  window.addEventListener('load', run, {once:true});
+  window.addEventListener('resize', run, {passive:true});
+  window.addEventListener('orientationchange', run, {passive:true});
+  setTimeout(run, 250);
+  setTimeout(run, 900);
+  setTimeout(run, 1800);
+  setTimeout(run, 3500);
+})();
+</script>
+
+<!-- ===== AJUSTE FINO V2 BANCOS CELULARES PEQUENOS ===== -->
+<script id="banks-view-responsive-patch-v2">
+(function(){
+  function cssText(){ return `
+    /* Bancos: ajuste mas compacto SOLO en pantallas pequenas */
+    @media (max-width:390px), (max-height:670px){
+      #banksView .bPurpleStrip{height:18px !important;}
+      #banksView .bHeader{
+        height:46px !important;
+        padding-left:12px !important;
+        padding-right:12px !important;
+      }
+      #banksView #bBack,
+      #banksView #bClose{
+        width:28px !important;
+        height:28px !important;
+      }
+      #banksView #bBack span{font-size:20px !important;}
+      #banksView #bClose span{font-size:28px !important;}
+      #banksView .bHeader div div{
+        font-size:18px !important;
+        font-weight:700 !important;
+      }
+      #banksView .bBody{
+        padding:8px 11px calc(14px + env(safe-area-inset-bottom,0px)) !important;
+      }
+      #banksView .bCard{
+        height:44px !important;
+        padding:0 12px !important;
+        gap:10px !important;
+        border-radius:9px !important;
+        box-shadow:0 4px 9px rgba(37,26,50,.09) !important;
+      }
+      #banksView .bCard .bLogo{
+        width:30px !important;
+        height:30px !important;
+        min-width:30px !important;
+        min-height:30px !important;
+        flex:0 0 30px !important;
+      }
+      #banksView .bCard .bLogo img{
+        width:21px !important;
+        height:21px !important;
+      }
+      #banksView .bCard > div:last-child{
+        font-size:13.5px !important;
+        font-weight:700 !important;
+      }
+      #banksView .bSectionTitle{
+        font-size:13.5px !important;
+        margin:11px 3px 7px !important;
+        line-height:1.08 !important;
+      }
+      #banksView .bList{
+        gap:6px !important;
+        padding-bottom:12px !important;
+      }
+      #banksView .bRow{
+        min-height:40px !important;
+        padding:0 12px !important;
+        gap:10px !important;
+        border-radius:9px !important;
+        box-shadow:0 4px 9px rgba(37,26,50,.08) !important;
+      }
+      #banksView .bBankIcon{
+        width:30px !important;
+        height:30px !important;
+        min-width:30px !important;
+        min-height:30px !important;
+        flex:0 0 30px !important;
+      }
+      #banksView .bBankIcon svg{
+        width:16px !important;
+        height:16px !important;
+      }
+      #banksView .bBankName{
+        font-size:13.5px !important;
+        font-weight:700 !important;
+        line-height:1.05 !important;
+      }
+    }
+
+    @media (max-width:340px), (max-height:610px){
+      #banksView .bPurpleStrip{height:16px !important;}
+      #banksView .bHeader{height:42px !important;}
+      #banksView .bHeader div div{font-size:17px !important;}
+      #banksView #bBack,#banksView #bClose{width:26px !important;height:26px !important;}
+      #banksView #bBack span{font-size:18px !important;}
+      #banksView #bClose span{font-size:25px !important;}
+      #banksView .bBody{padding:7px 10px 12px !important;}
+      #banksView .bCard{height:40px !important;}
+      #banksView .bCard .bLogo,
+      #banksView .bBankIcon{
+        width:28px !important;
+        height:28px !important;
+        min-width:28px !important;
+        min-height:28px !important;
+        flex-basis:28px !important;
+      }
+      #banksView .bCard .bLogo img{width:20px !important;height:20px !important;}
+      #banksView .bCard > div:last-child,
+      #banksView .bBankName{font-size:12.8px !important;}
+      #banksView .bSectionTitle{font-size:12.8px !important;margin-top:9px !important;margin-bottom:6px !important;}
+      #banksView .bList{gap:5px !important;}
+      #banksView .bRow{min-height:38px !important;}
+      #banksView .bBankIcon svg{width:15px !important;height:15px !important;}
+    }
+  `; }
+
+  function inject(doc){
+    if(!doc || !doc.head) return;
+    var old = doc.getElementById('banks-view-responsive-style-v2');
+    if(old) old.remove();
+    var st = doc.createElement('style');
+    st.id = 'banks-view-responsive-style-v2';
+    st.textContent = cssText();
+    doc.head.appendChild(st);
+  }
+
+  function run(){
+    try{
+      var frame = document.getElementById('homeFrame');
+      if(!frame) return;
+      var doc = frame.contentDocument || (frame.contentWindow && frame.contentWindow.document);
+      inject(doc);
+    }catch(e){}
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, {once:true});
+  else run();
+  window.addEventListener('load', run, {once:true});
+  window.addEventListener('resize', run, {passive:true});
+  window.addEventListener('orientationchange', run, {passive:true});
+  setTimeout(run, 250);
+  setTimeout(run, 900);
+  setTimeout(run, 1800);
+  setTimeout(run, 3500);
+})();
+</script>
+
+<!-- ===== AJUSTE RESPONSIVE YAPEAR CONTACTOS ===== -->
+<script id="yapear-contactos-responsive-patch-v2">
+(function(){
+  function cssText(){ return `
+    /* Yapear contactos: escala mas pequena y proporcional */
+    #yapearView{
+      background:#fff !important;
+      overflow:hidden !important;
+    }
+    #yapearView .yApp{
+      width:100% !important;
+      height:100% !important;
+      min-height:100dvh !important;
+      background:#fff !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+      -webkit-overflow-scrolling:touch !important;
+      touch-action:pan-y !important;
+      overscroll-behavior:contain !important;
+    }
+
+    /* Normal: ya no crece tanto en pantallas grandes */
+    #yapearView .yHeader{
+      height:auto !important;
+      min-height:clamp(48px, 7.1vh, 58px) !important;
+      padding:calc(env(safe-area-inset-top,0px) + clamp(6px, 1.35vh, 10px)) clamp(13px, 3.1vw, 20px) clamp(6px, 1.2vh, 10px) !important;
+      gap:clamp(7px, 1.6vw, 11px) !important;
+      border-bottom:1px solid #eeeeee !important;
+      box-sizing:border-box !important;
+      flex:0 0 auto !important;
+    }
+    #yapearView .yTitle{
+      font-size:clamp(20px, 4.8vw, 28px) !important;
+      line-height:1.05 !important;
+      font-weight:400 !important;
+      color:#151515 !important;
+      flex:1 1 auto !important;
+      min-width:0 !important;
+    }
+    #yapearView .yBack{
+      font-size:clamp(19px, 4.3vw, 25px) !important;
+      width:clamp(20px, 4.8vw, 28px) !important;
+      height:clamp(25px, 5.8vw, 32px) !important;
+      display:flex !important;
+      align-items:center !important;
+      justify-content:center !important;
+      margin-right:0 !important;
+      color:#686868 !important;
+      flex:0 0 auto !important;
+    }
+    #yapearView .yClose{
+      font-size:clamp(24px, 5.6vw, 34px) !important;
+      width:clamp(30px, 6.8vw, 38px) !important;
+      height:clamp(30px, 6.8vw, 38px) !important;
+      display:flex !important;
+      align-items:center !important;
+      justify-content:center !important;
+      margin-left:auto !important;
+      margin-right:0 !important;
+      color:#707070 !important;
+      flex:0 0 auto !important;
+    }
+    #yapearView .ySearch{
+      margin:clamp(12px, 3vw, 18px) clamp(13px, 3.1vw, 20px) clamp(26px, 4.9vh, 50px) !important;
+      min-height:clamp(44px, 6.7vh, 54px) !important;
+      border-radius:999px !important;
+      padding:0 clamp(13px, 3vw, 18px) !important;
+      gap:clamp(8px, 1.9vw, 12px) !important;
+      background:#eeeeee !important;
+      box-sizing:border-box !important;
+    }
+    #yapearView .ySearchIcon{
+      width:clamp(20px, 4.7vw, 27px) !important;
+      height:clamp(20px, 4.7vw, 27px) !important;
+      flex:0 0 clamp(20px, 4.7vw, 27px) !important;
+      color:#8d8d8d !important;
+      opacity:.78 !important;
+      position:relative !important;
+      overflow:hidden !important;
+    }
+    #yapearView .ySearchIconImg{display:none !important;}
+    #yapearView .ySearchIcon::before{
+      content:"";
+      position:absolute;
+      width:52%;
+      height:52%;
+      border:2px solid currentColor;
+      border-radius:999px;
+      left:18%;
+      top:14%;
+      box-sizing:border-box;
+    }
+    #yapearView .ySearchIcon::after{
+      content:"";
+      position:absolute;
+      width:38%;
+      height:2px;
+      background:currentColor;
+      border-radius:999px;
+      left:50%;
+      top:60%;
+      transform:rotate(45deg);
+      transform-origin:left center;
+    }
+    #yapearView .ySearch input{
+      height:100% !important;
+      min-height:clamp(44px, 6.7vh, 54px) !important;
+      font-size:clamp(14px, 3.35vw, 18px) !important;
+      font-weight:400 !important;
+      color:#333 !important;
+      line-height:1.15 !important;
+    }
+    #yapearView .ySearch input::placeholder{color:#777 !important;}
+    #yapearView #yContactsSection{
+      padding-bottom:calc(env(safe-area-inset-bottom,0px) + 14px) !important;
+    }
+    #yapearView .ySectionTitle{
+      padding:0 clamp(13px, 3.1vw, 20px) clamp(26px, 4.5vh, 44px) !important;
+      margin:0 !important;
+      font-size:clamp(18px, 4.25vw, 24px) !important;
+      line-height:1.12 !important;
+      font-weight:650 !important;
+      color:#111 !important;
+    }
+    #yapearView .yContact,
+    #yapearView .yNewNumber{
+      padding:clamp(10px, 2.05vh, 16px) clamp(13px, 3.1vw, 20px) !important;
+      min-height:clamp(56px, 8.8vh, 74px) !important;
+      border-bottom:1px solid #eeeeee !important;
+      box-sizing:border-box !important;
+    }
+    #yapearView .yContact .nm,
+    #yapearView .yNewNumber .nm{
+      font-size:clamp(15.5px, 3.65vw, 20px) !important;
+      line-height:1.12 !important;
+      font-weight:400 !important;
+      color:#171717 !important;
+      white-space:nowrap !important;
+      overflow:hidden !important;
+      text-overflow:ellipsis !important;
+    }
+    #yapearView .yContact .nb,
+    #yapearView .yNewNumber .nb{
+      margin-top:clamp(3px, .7vh, 5px) !important;
+      font-size:clamp(14px, 3.2vw, 17px) !important;
+      line-height:1.1 !important;
+      font-weight:400 !important;
+      color:#8b8b8b !important;
+    }
+
+    /* Celulares pequenos: escala mas baja */
+    @media (max-width:390px), (max-height:690px){
+      #yapearView .yHeader{
+        min-height:44px !important;
+        padding-top:calc(env(safe-area-inset-top,0px) + 5px) !important;
+        padding-left:11px !important;
+        padding-right:11px !important;
+        padding-bottom:5px !important;
+      }
+      #yapearView .yTitle{font-size:20px !important;}
+      #yapearView .yBack{font-size:18px !important;width:20px !important;height:26px !important;}
+      #yapearView .yClose{font-size:25px !important;width:29px !important;height:29px !important;}
+      #yapearView .ySearch{
+        margin:10px 11px 22px !important;
+        min-height:43px !important;
+        padding:0 12px !important;
+      }
+      #yapearView .ySearch input{
+        min-height:43px !important;
+        font-size:13.5px !important;
+      }
+      #yapearView .ySearchIcon{
+        width:18px !important;
+        height:18px !important;
+        flex-basis:18px !important;
+      }
+      #yapearView .ySectionTitle{
+        padding:0 11px 20px !important;
+        font-size:18px !important;
+      }
+      #yapearView .yContact,
+      #yapearView .yNewNumber{
+        min-height:50px !important;
+        padding:8px 11px !important;
+      }
+      #yapearView .yContact .nm,
+      #yapearView .yNewNumber .nm{font-size:15px !important;}
+      #yapearView .yContact .nb,
+      #yapearView .yNewNumber .nb{font-size:13px !important;margin-top:3px !important;}
+    }
+
+    /* Muy pequeno o muy bajito */
+    @media (max-width:340px), (max-height:610px){
+      #yapearView .yHeader{min-height:40px !important;padding-left:9px !important;padding-right:9px !important;}
+      #yapearView .yTitle{font-size:18px !important;}
+      #yapearView .yBack{font-size:16px !important;width:18px !important;height:24px !important;}
+      #yapearView .yClose{font-size:22px !important;width:26px !important;height:26px !important;}
+      #yapearView .ySearch{margin:8px 9px 18px !important;min-height:39px !important;}
+      #yapearView .ySearch input{min-height:39px !important;font-size:12px !important;}
+      #yapearView .ySearchIcon{width:16px !important;height:16px !important;flex-basis:16px !important;}
+      #yapearView .ySearchIcon::before{border-width:1.6px !important;}
+      #yapearView .ySearchIcon::after{height:1.6px !important;}
+      #yapearView .ySectionTitle{font-size:16px !important;padding:0 9px 16px !important;}
+      #yapearView .yContact,
+      #yapearView .yNewNumber{min-height:44px !important;padding:7px 9px !important;}
+      #yapearView .yContact .nm,
+      #yapearView .yNewNumber .nm{font-size:13.5px !important;}
+      #yapearView .yContact .nb,
+      #yapearView .yNewNumber .nb{font-size:12px !important;}
+    }
+  `; }
+
+  function inject(doc){
+    if(!doc || !doc.head) return;
+    var old1 = doc.getElementById('yapear-contactos-responsive-style-v1');
+    var old2 = doc.getElementById('yapear-contactos-responsive-style-v2');
+    if(old1) old1.remove();
+    if(old2) old2.remove();
+    var st = doc.createElement('style');
+    st.id = 'yapear-contactos-responsive-style-v2';
+    st.textContent = cssText();
+    doc.head.appendChild(st);
+  }
+
+  function run(){
+    try{
+      var frame = document.getElementById('homeFrame');
+      if(!frame) return;
+      var doc = frame.contentDocument || (frame.contentWindow && frame.contentWindow.document);
+      inject(doc);
+    }catch(e){}
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, {once:true});
+  else run();
+  window.addEventListener('load', run, {once:true});
+  window.addEventListener('resize', run, {passive:true});
+  window.addEventListener('orientationchange', run, {passive:true});
+  setTimeout(run, 250);
+  setTimeout(run, 900);
+  setTimeout(run, 1800);
+  setTimeout(run, 3500);
+})();
+</script>
+
+<!-- ===== AJUSTE RESPONSIVE YAPEAR CONTACTOS V3 MAS COMPACTO ===== -->
+<script id="yapear-contactos-responsive-patch-v3">
+(function(){
+  function cssText(){ return `
+    /* V3: Contactos mas compacto en normal y pequeno */
+    #yapearView .yHeader{
+      min-height:clamp(40px, 5.9vh, 48px) !important;
+      padding:calc(env(safe-area-inset-top,0px) + clamp(4px,.9vh,7px)) clamp(10px,2.55vw,15px) clamp(4px,.8vh,7px) !important;
+      gap:clamp(5px,1.2vw,8px) !important;
+    }
+    #yapearView .yTitle{
+      font-size:clamp(18px,3.9vw,23px) !important;
+      line-height:1.02 !important;
+      font-weight:400 !important;
+    }
+    #yapearView .yBack{
+      font-size:clamp(16px,3.45vw,21px) !important;
+      width:clamp(18px,3.8vw,24px) !important;
+      height:clamp(22px,4.8vw,28px) !important;
+    }
+    #yapearView .yClose{
+      font-size:clamp(21px,4.7vw,28px) !important;
+      width:clamp(25px,5.5vw,32px) !important;
+      height:clamp(25px,5.5vw,32px) !important;
+    }
+    #yapearView .ySearch{
+      margin:clamp(9px,2.2vw,14px) clamp(10px,2.55vw,15px) clamp(18px,3.4vh,34px) !important;
+      min-height:clamp(36px,5.35vh,44px) !important;
+      padding:0 clamp(10px,2.4vw,14px) !important;
+      gap:clamp(6px,1.45vw,9px) !important;
+    }
+    #yapearView .ySearchIcon{
+      width:clamp(16px,3.6vw,22px) !important;
+      height:clamp(16px,3.6vw,22px) !important;
+      flex:0 0 clamp(16px,3.6vw,22px) !important;
+    }
+    #yapearView .ySearchIcon::before{border-width:1.7px !important;}
+    #yapearView .ySearchIcon::after{height:1.7px !important;}
+    #yapearView .ySearch input{
+      min-height:clamp(36px,5.35vh,44px) !important;
+      height:clamp(36px,5.35vh,44px) !important;
+      font-size:clamp(12.2px,2.7vw,15.2px) !important;
+      line-height:1.05 !important;
+    }
+    #yapearView .ySectionTitle{
+      padding:0 clamp(10px,2.55vw,15px) clamp(18px,3.2vh,32px) !important;
+      font-size:clamp(16.5px,3.55vw,21px) !important;
+      line-height:1.08 !important;
+      font-weight:650 !important;
+    }
+    #yapearView .yContact,
+    #yapearView .yNewNumber{
+      min-height:clamp(44px,7vh,58px) !important;
+      padding:clamp(7px,1.45vh,11px) clamp(10px,2.55vw,15px) !important;
+    }
+    #yapearView .yContact .nm,
+    #yapearView .yNewNumber .nm{
+      font-size:clamp(13.5px,2.95vw,17px) !important;
+      line-height:1.08 !important;
+    }
+    #yapearView .yContact .nb,
+    #yapearView .yNewNumber .nb{
+      margin-top:clamp(2px,.45vh,4px) !important;
+      font-size:clamp(12.2px,2.55vw,15px) !important;
+      line-height:1.05 !important;
+    }
+
+    @media (max-width:390px), (max-height:690px){
+      #yapearView .yHeader{min-height:38px !important;padding-left:8px !important;padding-right:8px !important;padding-top:calc(env(safe-area-inset-top,0px) + 4px) !important;padding-bottom:4px !important;}
+      #yapearView .yTitle{font-size:17px !important;}
+      #yapearView .yBack{font-size:15px !important;width:17px !important;height:22px !important;}
+      #yapearView .yClose{font-size:21px !important;width:24px !important;height:24px !important;}
+      #yapearView .ySearch{margin:7px 8px 15px !important;min-height:34px !important;padding:0 10px !important;}
+      #yapearView .ySearch input{min-height:34px !important;height:34px !important;font-size:11.5px !important;}
+      #yapearView .ySearchIcon{width:14px !important;height:14px !important;flex-basis:14px !important;}
+      #yapearView .ySearchIcon::before{border-width:1.45px !important;}
+      #yapearView .ySearchIcon::after{height:1.45px !important;}
+      #yapearView .ySectionTitle{padding:0 8px 13px !important;font-size:15px !important;}
+      #yapearView .yContact,
+      #yapearView .yNewNumber{min-height:39px !important;padding:6px 8px !important;}
+      #yapearView .yContact .nm,
+      #yapearView .yNewNumber .nm{font-size:12.6px !important;}
+      #yapearView .yContact .nb,
+      #yapearView .yNewNumber .nb{font-size:11.2px !important;margin-top:2px !important;}
+    }
+
+    @media (max-width:340px), (max-height:610px){
+      #yapearView .yHeader{min-height:34px !important;padding-left:7px !important;padding-right:7px !important;}
+      #yapearView .yTitle{font-size:15.5px !important;}
+      #yapearView .yBack{font-size:14px !important;width:15px !important;height:20px !important;}
+      #yapearView .yClose{font-size:19px !important;width:22px !important;height:22px !important;}
+      #yapearView .ySearch{margin:6px 7px 12px !important;min-height:31px !important;padding:0 9px !important;}
+      #yapearView .ySearch input{min-height:31px !important;height:31px !important;font-size:10.5px !important;}
+      #yapearView .ySearchIcon{width:13px !important;height:13px !important;flex-basis:13px !important;}
+      #yapearView .ySectionTitle{font-size:13.8px !important;padding:0 7px 10px !important;}
+      #yapearView .yContact,
+      #yapearView .yNewNumber{min-height:35px !important;padding:5px 7px !important;}
+      #yapearView .yContact .nm,
+      #yapearView .yNewNumber .nm{font-size:11.5px !important;}
+      #yapearView .yContact .nb,
+      #yapearView .yNewNumber .nb{font-size:10.4px !important;}
+    }
+  `; }
+
+  function inject(doc){
+    if(!doc || !doc.head) return;
+    var old = doc.getElementById('yapear-contactos-responsive-style-v3');
+    if(old) old.remove();
+    var st = doc.createElement('style');
+    st.id = 'yapear-contactos-responsive-style-v3';
+    st.textContent = cssText();
+    doc.head.appendChild(st);
+  }
+
+  function run(){
+    try{
+      var frame = document.getElementById('homeFrame');
+      if(!frame) return;
+      var doc = frame.contentDocument || (frame.contentWindow && frame.contentWindow.document);
+      inject(doc);
+    }catch(e){}
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, {once:true});
+  else run();
+  window.addEventListener('load', run, {once:true});
+  window.addEventListener('resize', run, {passive:true});
+  window.addEventListener('orientationchange', run, {passive:true});
+  setTimeout(run, 250);
+  setTimeout(run, 900);
+  setTimeout(run, 1800);
+  setTimeout(run, 3500);
 })();
 </script>
