@@ -30318,3 +30318,567 @@ try{
   setTimeout(run, 3500);
 })();
 </script>
+
+<!-- ===== FIX RESPONSIVE HOME CORREGIDO ===== -->
+<script id="home-responsive-fix-corregido">
+(function(){
+  var STYLE_ID = 'home-responsive-fix-corregido-style';
+
+  function cssText(){ return `
+/* ===== Home responsive corregido =====
+   No toca rutas de imagenes ni la logica de movimientos. */
+:root{
+  --side: clamp(14px, 4vw, 18px) !important;
+  --tileSize: clamp(42px, 12vw, 52px) !important;
+  --tileRadius: clamp(14px, 4vw, 17px) !important;
+  --tileGapRow: clamp(8px, 1.45vh, 12px) !important;
+  --tileGapCol: clamp(7px, 2.4vw, 10px) !important;
+  --bannerH: clamp(96px, 18vh, 150px) !important;
+  --curve: clamp(18px, 4.6vw, 24px) !important;
+  --btnRadius: clamp(12px, 3.5vw, 14px) !important;
+}
+
+html, body{
+  width:100% !important;
+  min-height:100% !important;
+  overflow-x:hidden !important;
+  background:#333333 !important;
+}
+body{
+  margin:0 !important;
+}
+.device{
+  width:100vw !important;
+  height:100dvh !important;
+  max-width:100vw !important;
+  max-height:100dvh !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+}
+.views, .view{
+  width:100% !important;
+  height:100% !important;
+  max-width:100% !important;
+}
+#homeView{
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  -webkit-overflow-scrolling:touch !important;
+  touch-action:pan-y !important;
+  background:#333333 !important;
+}
+#homeView .app{
+  min-height:100dvh !important;
+  height:auto !important;
+  display:flex !important;
+  flex-direction:column !important;
+}
+#homeView .top{
+  padding-top:calc(clamp(8px, 1.4vh, 12px) + env(safe-area-inset-top, 0px)) !important;
+  padding-left:var(--side) !important;
+  padding-right:var(--side) !important;
+  padding-bottom:clamp(4px, .8vh, 8px) !important;
+  flex:0 0 auto !important;
+}
+#homeView .header{
+  padding:clamp(7px, 1.3vh, 10px) 0 clamp(8px, 1.4vh, 12px) !important;
+  gap:clamp(9px, 2.7vw, 12px) !important;
+}
+#homeView .avatar,
+#homeView .circleIcon{
+  width:clamp(34px, 9vw, 40px) !important;
+  height:clamp(34px, 9vw, 40px) !important;
+  min-width:clamp(34px, 9vw, 40px) !important;
+  min-height:clamp(34px, 9vw, 40px) !important;
+}
+#homeView .avatar svg,
+#homeView .circleIcon svg{
+  width:clamp(18px, 5vw, 21px) !important;
+  height:clamp(18px, 5vw, 21px) !important;
+}
+#homeView .headerRight{
+  gap:clamp(8px, 2.5vw, 10px) !important;
+}
+#homeView .headerSearchBox{
+  height:clamp(40px, 5.4vh, 44px) !important;
+  border-radius:999px !important;
+  padding-left:clamp(13px, 3.5vw, 16px) !important;
+  padding-right:clamp(13px, 3.5vw, 16px) !important;
+}
+#homeView .headerSearchText,
+#homeView .hello{
+  font-size:clamp(15px, 4.1vw, 18px) !important;
+}
+
+#homeView .grid{
+  grid-template-columns:repeat(4, minmax(0,1fr)) !important;
+  gap:var(--tileGapRow) var(--tileGapCol) !important;
+  align-items:start !important;
+  padding-bottom:clamp(2px, .5vh, 6px) !important;
+}
+#homeView .gridItem,
+#homeView .item{
+  min-height:clamp(82px, 11.8vh, 108px) !important;
+  gap:clamp(5px, .9vh, 8px) !important;
+  justify-content:flex-start !important;
+}
+#homeView .tile{
+  width:var(--tileSize) !important;
+  height:var(--tileSize) !important;
+  border-radius:var(--tileRadius) !important;
+}
+#homeView .tileImg,
+#homeView .tileVid{
+  width:70% !important;
+  height:70% !important;
+  object-fit:contain !important;
+}
+#homeView .gridItem .label,
+#homeView .item .label,
+#homeView .label{
+  width:min(92px, 100%) !important;
+  min-height:calc(clamp(11px, 3.25vw, 14px) * 2.1) !important;
+  max-height:calc(clamp(11px, 3.25vw, 14px) * 2.25) !important;
+  font-size:clamp(11px, 3.25vw, 14px) !important;
+  line-height:1.06 !important;
+  overflow:hidden !important;
+  text-align:center !important;
+  display:flex !important;
+  align-items:flex-start !important;
+  justify-content:center !important;
+  word-break:normal !important;
+  overflow-wrap:normal !important;
+}
+#homeView .tileBadge{
+  top:-8px !important;
+  right:-8px !important;
+  font-size:clamp(8px, 2.2vw, 9px) !important;
+  padding:3px 6px !important;
+}
+#homeView .tile.tileVerTodo{
+  background:transparent !important;
+  box-shadow:none !important;
+}
+#homeView .verTodoRing{
+  width:calc(var(--tileSize) + 8px) !important;
+  height:calc(var(--tileSize) + 8px) !important;
+}
+#homeView .verTodoPlus{
+  width:calc(var(--tileSize) * .56) !important;
+  height:calc(var(--tileSize) * .56) !important;
+}
+
+#homeView .bannerWrap{
+  margin-top:clamp(8px, 1.5vh, 14px) !important;
+}
+#homeView .banner{
+  height:var(--bannerH) !important;
+  width:92% !important;
+  max-width:100% !important;
+}
+#homeView .slide{
+  margin-top:clamp(7px, 1.4vh, 15px) !important;
+  height:calc(100% - clamp(7px, 1.4vh, 15px)) !important;
+}
+#homeView .dots{
+  margin-top:clamp(7px, 1.2vh, 14px) !important;
+  padding-bottom:0 !important;
+}
+
+#homeView .panel{
+  flex:1 0 auto !important;
+  min-height:0 !important;
+  margin-top:clamp(12px, 2vh, 18px) !important;
+  padding:clamp(12px, 2vh, 14px) var(--side) calc(clamp(12px, 2vh, 14px) + env(safe-area-inset-bottom, 0px)) !important;
+  gap:clamp(9px, 1.5vh, 12px) !important;
+  overflow:visible !important;
+  border-top-left-radius:var(--curve) !important;
+  border-top-right-radius:var(--curve) !important;
+}
+#homeView #saldoCard,
+#homeView #movCard{
+  width:100% !important;
+  max-width:100% !important;
+  border-radius:clamp(14px, 4vw, 18px) !important;
+}
+#homeView #saldoCard{
+  padding:clamp(11px, 1.7vh, 14px) clamp(13px, 3.5vw, 16px) !important;
+  margin-top:0 !important;
+}
+#homeView #movCard{
+  overflow:hidden !important;
+}
+#homeView #movCard .movHeader{
+  padding:clamp(11px, 1.7vh, 14px) clamp(13px, 3.5vw, 16px) !important;
+}
+#homeView #saldoTitle,
+#homeView #movLabel{
+  font-size:clamp(14px, 3.7vw, 16px) !important;
+  line-height:1.12 !important;
+  min-width:0 !important;
+}
+#homeView #saldoAmount{
+  font-size:clamp(14px, 3.75vw, 17px) !important;
+  white-space:nowrap !important;
+  margin-left:auto !important;
+}
+#homeView .pIcon,
+#homeView .movIcon{
+  width:clamp(24px, 6.5vw, 28px) !important;
+  height:clamp(24px, 6.5vw, 28px) !important;
+  flex:0 0 clamp(24px, 6.5vw, 28px) !important;
+}
+#homeView .pIcon img,
+#homeView .pIconImg,
+#homeView .movIcon img{
+  max-width:100% !important;
+  max-height:100% !important;
+  object-fit:contain !important;
+}
+#homeView .movList{
+  max-height:min(36vh, 360px) !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  -webkit-overflow-scrolling:touch !important;
+  touch-action:pan-y !important;
+}
+#homeView .movItem{
+  padding:clamp(10px, 1.7vh, 12px) 0 !important;
+}
+#homeView .movName,
+#homeView .movAmt{
+  font-size:clamp(13px, 3.55vw, 15px) !important;
+}
+#homeView .movDate{
+  font-size:clamp(11px, 3vw, 12px) !important;
+}
+#homeView .btnRow{
+  gap:clamp(12px, 4vw, 16px) !important;
+  margin-top:auto !important;
+  padding-top:clamp(4px, .8vh, 8px) !important;
+}
+#homeView #homeEscanearQrBtn,
+#homeView #homeYapearBtn{
+  height:clamp(46px, 6.4vh, 52px) !important;
+  min-height:clamp(46px, 6.4vh, 52px) !important;
+  border-radius:var(--btnRadius) !important;
+  font-size:clamp(13px, 3.6vw, 15px) !important;
+  gap:clamp(7px, 2.2vw, 10px) !important;
+  white-space:nowrap !important;
+}
+#homeView .btnIcon,
+#homeView #homeEscanearQrBtn .btnIcon,
+#homeView #homeYapearBtn .btnIcon{
+  width:clamp(18px, 5.2vw, 20px) !important;
+  height:clamp(18px, 5.2vw, 20px) !important;
+  object-fit:contain !important;
+}
+
+@media (min-width:521px){
+  /* En previews anchos no agranda los iconos del home. */
+  #homeView .tile{ width:52px !important; height:52px !important; }
+  #homeView .gridItem, #homeView .item{ min-height:104px !important; }
+  #homeView .label{ font-size:14px !important; }
+}
+
+@media (max-height:720px){
+  :root{
+    --tileSize:clamp(39px, 11vw, 46px) !important;
+    --tileGapRow:6px !important;
+    --tileGapCol:6px !important;
+    --bannerH:clamp(78px, 15vh, 112px) !important;
+  }
+  #homeView .top{ padding-top:calc(6px + env(safe-area-inset-top, 0px)) !important; }
+  #homeView .header{ padding-top:5px !important; padding-bottom:6px !important; }
+  #homeView .avatar, #homeView .circleIcon{ width:32px !important; height:32px !important; min-width:32px !important; min-height:32px !important; }
+  #homeView .headerSearchBox{ height:36px !important; }
+  #homeView .headerSearchText, #homeView .hello{ font-size:14px !important; }
+  #homeView .gridItem, #homeView .item{ min-height:62px !important; gap:4px !important; }
+  #homeView .gridItem .label, #homeView .item .label, #homeView .label{ font-size:10.5px !important; min-height:22px !important; max-height:24px !important; }
+  #homeView .bannerWrap{ margin-top:6px !important; }
+  #homeView .dots{ margin-top:5px !important; }
+  #homeView .panel{ margin-top:8px !important; padding-top:9px !important; gap:7px !important; }
+  #homeView #saldoCard, #homeView #movCard .movHeader{ padding-top:9px !important; padding-bottom:9px !important; }
+  #homeView #saldoTitle, #homeView #movLabel{ font-size:13px !important; }
+  #homeView #saldoAmount{ font-size:13px !important; }
+  #homeView #homeEscanearQrBtn, #homeView #homeYapearBtn{ height:40px !important; min-height:40px !important; font-size:12px !important; }
+}
+
+@media (max-width:360px), (max-height:640px){
+  :root{
+    --side:12px !important;
+    --tileSize:40px !important;
+    --bannerH:74px !important;
+  }
+  #homeView .gridItem, #homeView .item{ min-height:58px !important; }
+  #homeView .banner{ width:90% !important; }
+  #homeView .btnRow{ gap:9px !important; }
+  #homeView #homeEscanearQrBtn, #homeView #homeYapearBtn{ font-size:11.5px !important; }
+  #homeView .btnIcon{ width:16px !important; height:16px !important; }
+}
+`; }
+
+  function removeBadPatches(doc){
+    if(!doc) return;
+    ['home-responsive-autoscale-style-gpt','home-responsive-autoscale-patch'].forEach(function(id){
+      try{ var n = doc.getElementById(id); if(n) n.remove(); }catch(e){}
+    });
+  }
+
+  function inject(doc){
+    if(!doc || !doc.head) return;
+    removeBadPatches(doc);
+    var old = doc.getElementById(STYLE_ID);
+    if(old) old.remove();
+    var st = doc.createElement('style');
+    st.id = STYLE_ID;
+    st.textContent = cssText();
+    doc.head.appendChild(st);
+  }
+
+  function run(){
+    removeBadPatches(document);
+    var frame = document.getElementById('homeFrame');
+    if(!frame) return;
+    try{
+      var doc = frame.contentDocument || (frame.contentWindow && frame.contentWindow.document);
+      inject(doc);
+    }catch(e){}
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, {once:true});
+  else run();
+
+  window.addEventListener('load', run, {once:true});
+  window.addEventListener('resize', run, {passive:true});
+  window.addEventListener('orientationchange', run, {passive:true});
+  setTimeout(run, 100);
+  setTimeout(run, 400);
+  setTimeout(run, 1000);
+  setTimeout(run, 2200);
+  setTimeout(run, 4200);
+})();
+</script>
+
+
+<!-- ===== PATCH FINAL BANNER RESPONSIVE ===== -->
+<script id="home-banner-scale-fix-final">
+(function(){
+  var STYLE_ID = 'home-banner-scale-fix-final-style';
+  function cssText(){ return `
+/* Banner sin espacio blanco ni doble anuncio visible */
+#homeView{
+  --peek:0px !important;
+  --slideGap:0px !important;
+}
+#homeView .bannerWrap{
+  width:100% !important;
+  display:flex !important;
+  justify-content:center !important;
+  overflow:hidden !important;
+  margin-top:clamp(10px, 1.8vh, 16px) !important;
+}
+#homeView .banner{
+  width:92% !important;
+  max-width:92% !important;
+  height:clamp(108px, 18.5vh, 150px) !important;
+  border-radius:clamp(16px, 4.5vw, 20px) !important;
+  overflow:hidden !important;
+  background:transparent !important;
+}
+#homeView .bannerInner{
+  height:100% !important;
+  display:flex !important;
+  gap:0 !important;
+}
+#homeView .slide{
+  flex:0 0 100% !important;
+  width:100% !important;
+  min-width:100% !important;
+  max-width:100% !important;
+  height:100% !important;
+  margin-top:0 !important;
+  border-radius:inherit !important;
+  overflow:hidden !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+#homeView .bannerBgImg{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  max-width:none !important;
+  object-fit:cover !important;
+  object-position:center center !important;
+  display:block !important;
+  border-radius:inherit !important;
+  background:transparent !important;
+}
+@media (max-height:720px){
+  #homeView .banner{ height:clamp(98px, 17vh, 128px) !important; }
+}
+@media (max-width:360px), (max-height:640px){
+  #homeView .banner{ width:92% !important; max-width:92% !important; height:clamp(90px, 16vh, 112px) !important; }
+  #homeView .bannerWrap{ margin-top:8px !important; }
+}
+`; }
+
+  function inject(doc){
+    if(!doc || !doc.head) return;
+    var old = doc.getElementById(STYLE_ID);
+    if(old) old.remove();
+    var st = doc.createElement('style');
+    st.id = STYLE_ID;
+    st.textContent = cssText();
+    doc.head.appendChild(st);
+    try{
+      var inner = doc.getElementById('bannerInner');
+      if(inner){
+        inner.style.gap = '0px';
+        inner.style.columnGap = '0px';
+      }
+      doc.documentElement.style.setProperty('--peek','0px');
+      doc.documentElement.style.setProperty('--slideGap','0px');
+    }catch(e){}
+  }
+
+  function run(){
+    var frame = document.getElementById('homeFrame');
+    if(!frame) return;
+    try{
+      var doc = frame.contentDocument || (frame.contentWindow && frame.contentWindow.document);
+      inject(doc);
+    }catch(e){}
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, {once:true});
+  else run();
+  window.addEventListener('load', run, {once:true});
+  window.addEventListener('resize', run, {passive:true});
+  window.addEventListener('orientationchange', run, {passive:true});
+  setTimeout(run, 100);
+  setTimeout(run, 400);
+  setTimeout(run, 1000);
+  setTimeout(run, 2200);
+})();
+</script>
+
+<!-- ===== FIX FINAL SUAVE: solo banner responsive, iconos originales intactos ===== -->
+<script id="home-banner-only-fix">
+(function(){
+  var STYLE_ID = 'home-banner-only-fix-style';
+
+  function cssText(){ return `
+/* Corrige solo el banner/carrusel. No toca iconos, saldo, movimientos ni botones. */
+#homeView .bannerWrap{
+  overflow:hidden !important;
+  margin-top:clamp(10px, 1.6vh, 15px) !important;
+}
+#homeView .banner{
+  width:92% !important;
+  max-width:92% !important;
+  border-radius:clamp(16px, 4.5vw, 20px) !important;
+  overflow:hidden !important;
+  background:transparent !important;
+}
+#homeView .bannerInner,
+#homeView .slide{
+  height:100% !important;
+}
+#homeView .bannerInner{
+  gap:0 !important;
+  column-gap:0 !important;
+}
+#homeView .slide{
+  flex:0 0 100% !important;
+  width:100% !important;
+  min-width:100% !important;
+  max-width:100% !important;
+  margin-top:0 !important;
+  border-radius:inherit !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+#homeView .bannerBgImg{
+  width:100% !important;
+  height:100% !important;
+  max-width:none !important;
+  object-fit:fill !important;
+  object-position:center center !important;
+  display:block !important;
+  border-radius:inherit !important;
+}
+@media (max-height:690px){
+  #homeView .bannerWrap{ margin-top:7px !important; }
+  #homeView .panel{ margin-top:8px !important; }
+}
+`; }
+
+  function resizeBanner(doc){
+    var win = doc.defaultView || window;
+    var banner = doc.getElementById('banner');
+    var inner = doc.getElementById('bannerInner');
+    if(!banner || !inner) return;
+
+    doc.documentElement.style.setProperty('--peek','0px');
+    doc.documentElement.style.setProperty('--slideGap','0px');
+    inner.style.gap = '0px';
+    inner.style.columnGap = '0px';
+
+    var w = banner.getBoundingClientRect().width || (win.innerWidth * .92);
+    var vh = (win.visualViewport && win.visualViewport.height) || win.innerHeight || 720;
+    var imgs = Array.prototype.slice.call(doc.querySelectorAll('#homeView .bannerBgImg'));
+    var ratio = 2.58;
+    for(var i=0;i<imgs.length;i++){
+      if(imgs[i].naturalWidth && imgs[i].naturalHeight){ ratio = imgs[i].naturalWidth / imgs[i].naturalHeight; break; }
+    }
+    if(!isFinite(ratio) || ratio < 1.8 || ratio > 4) ratio = 2.58;
+
+    var ideal = w / ratio;
+    var minH = vh <= 640 ? 86 : 100;
+    var maxH = Math.min(vh * 0.21, 158);
+    var h = Math.max(minH, Math.min(ideal, maxH));
+    banner.style.height = Math.round(h) + 'px';
+
+    imgs.forEach(function(img){
+      img.style.objectFit = 'fill';
+      img.style.width = '100%';
+      img.style.height = '100%';
+      img.onload = function(){ resizeBanner(doc); };
+    });
+  }
+
+  function inject(doc){
+    if(!doc || !doc.head) return;
+    var old = doc.getElementById(STYLE_ID);
+    if(old) old.remove();
+    var st = doc.createElement('style');
+    st.id = STYLE_ID;
+    st.textContent = cssText();
+    doc.head.appendChild(st);
+    resizeBanner(doc);
+  }
+
+  function run(){
+    var frame = document.getElementById('homeFrame');
+    if(!frame) return;
+    try{
+      var doc = frame.contentDocument || (frame.contentWindow && frame.contentWindow.document);
+      inject(doc);
+    }catch(e){}
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, {once:true});
+  else run();
+  window.addEventListener('load', run, {once:true});
+  window.addEventListener('resize', run, {passive:true});
+  window.addEventListener('orientationchange', run, {passive:true});
+  setTimeout(run, 80);
+  setTimeout(run, 250);
+  setTimeout(run, 700);
+  setTimeout(run, 1400);
+  setTimeout(run, 2600);
+  setTimeout(run, 4200);
+})();
+</script>
