@@ -3737,6 +3737,12 @@ body.mode-login #loginWrap .sonyerFinalTitle .brandOwner{
 }
 </style>
 
+
+<style>
+#voucherView .card.bank-voucher-mode .security-row{display:none !important;}
+#voucherView .card.bank-voucher-mode .section-title{margin-top:10px;}
+#voucherView .card.bank-voucher-mode .vMsg{margin-top:10px;margin-bottom:12px;}
+</style>
 </head>
 <body class="mode-login">
 
@@ -5088,6 +5094,7 @@ html, body { height: 100%; }
       flex:0 0 auto;
     }
     .msg-icon-img{width:26px;height:26px;display:block;object-fit:contain;}
+    .msg-icon-svg{width:23px;height:23px;display:block;}
     #voucherView .vMsgIcon img{
       width:26px;height:26px;
       display:block;
@@ -7056,10 +7063,8 @@ html.yapeton-hide-promos #voucherView .promo-wrap{
               &lt;div class=&quot;mIcon clickable&quot; id=&quot;mClose&quot; style=&quot;user-select:none;&quot;&gt;✕&lt;/div&gt;
             &lt;/div&gt;
 
-            &lt;div class=&quot;mName&quot; id=&quot;mNameBox&quot; contenteditable=&quot;true&quot; data-placeholder=&quot;Sin nombre&quot;
-                 style=&quot;margin-top:12px;text-align:center;font-size:22px;font-weight:500 !important;color:var(--mPurple);outline:none;cursor:text;display:block;font-family:-apple-system,BlinkMacSystemFont,&quot;Helvetica Neue&quot;,Arial,sans-serif;font-synthesis:none;-webkit-font-smoothing:antialiased;&quot;&gt;
-              Sin nombre
-            &lt;/div&gt;
+            &lt;div class=&quot;mName&quot; id=&quot;mNameBox&quot; contenteditable=&quot;true&quot; data-placeholder=&quot;Editar nombre&quot;
+                 style=&quot;margin-top:12px;text-align:center;font-size:22px;font-weight:500 !important;color:var(--mPurple);outline:none;cursor:text;display:block;font-family:-apple-system,BlinkMacSystemFont,&quot;Helvetica Neue&quot;,Arial,sans-serif;font-synthesis:none;-webkit-font-smoothing:antialiased;&quot;&gt;&lt;/div&gt;
 
             &lt;div class=&quot;mPhoneWrap&quot; style=&quot;margin-top:6px;display:flex;justify-content:center;align-items:center;min-height:18px;&quot;&gt;
               &lt;div class=&quot;mPhone clickable&quot; id=&quot;mPhoneBox&quot; title=&quot;Toca para editar número&quot;
@@ -7124,9 +7129,19 @@ html.yapeton-hide-promos #voucherView .promo-wrap{
             #mAmountInput{ font-weight:300 !important; font-family:-apple-system,BlinkMacSystemFont,&quot;Helvetica Neue&quot;,Arial,sans-serif !important; letter-spacing:-0.04em !important; font-synthesis:none !important; -webkit-font-smoothing:antialiased !important; text-rendering:geometricPrecision !important; -webkit-text-stroke:0 transparent !important; }
             #mNameBox[contenteditable=&quot;true&quot;]:empty:before{
               content: attr(data-placeholder);
-              color: #b7b7b7;
-              font-weight:500;
+              color: rgba(123,123,123,.34);
+              font-weight:400;
+              font-size:18px !important;
+              letter-spacing:0 !important;
             }
+            #montoView #mNameBox.yNameEmpty::before{
+              content: attr(data-placeholder) !important;
+              color: rgba(123,123,123,.34) !important;
+              font-weight:400 !important;
+              font-size:18px !important;
+              letter-spacing:0 !important;
+            }
+
           
 /* ===== FIX SCROLL MOVIMIENTOS ===== */
 .movList{
@@ -7361,7 +7376,7 @@ html.yapeton-hide-promos #voucherView .promo-wrap{
               &lt;!-- MENSAJE (solo si existe) --&gt;
               &lt;div class=&quot;vMsg&quot; id=&quot;vMsgWrap&quot; style=&quot;display:none;&quot;&gt;
                 &lt;div class=&quot;vMsgIcon&quot; aria-hidden=&quot;true&quot;&gt;
-                  &lt;img src=&quot;msg-icon.png&quot; class=&quot;msg-icon-img&quot; alt=&quot;mensaje&quot;&gt;
+                  &lt;svg class=&quot;msg-icon-svg&quot; viewBox=&quot;0 0 24 24&quot; aria-hidden=&quot;true&quot; style=&quot;width:23px;height:23px;display:block&quot; fill=&quot;none&quot; stroke=&quot;#111111&quot; stroke-width=&quot;1.45&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;&gt;&lt;path d=&quot;M8 18.5c-2.8 0-5-2.1-5-4.8v-3.4C3 7.6 5.2 5.5 8 5.5h8c2.8 0 5 2.1 5 4.8v3.4c0 2.6-2.2 4.8-5 4.8h-5.3l-3.7 2.8c-.5.4-1.2 0-.9-.6l1.1-2.2H8z&quot;&gt;&lt;/path&gt;&lt;path d=&quot;M9 10.5h6&quot;&gt;&lt;/path&gt;&lt;path d=&quot;M9 14h4.5&quot;&gt;&lt;/path&gt;&lt;/svg&gt;
                 &lt;/div&gt;
                 &lt;div class=&quot;vMsgText&quot; id=&quot;vMsgText&quot;&gt;&lt;/div&gt;
               &lt;/div&gt;
@@ -15563,7 +15578,7 @@ function setUploadState(state){
           if(!finalName &amp;&amp; isAutoCompleteEnabled()){
             finalName = autoNameForNumber(only);
           }
-          setTimeout(()=&gt; goMonto((finalName || &quot;Sin nombre&quot;), value, (c || null)), 180);
+          setTimeout(()=&gt; goMonto((finalName || &quot;&quot;), value, (c || null)), 180);
         });
       } else {
         yContactsSection.style.display = &quot;block&quot;;
@@ -15645,10 +15660,22 @@ function maskPhoneVoucher(p){
       return dest === &quot;BCP&quot; || dest === &quot;Plin&quot; || String(window.__currentContactType || &quot;persona&quot;) === &quot;empresa&quot; || isBusinessContactName(currentName);
     }
 
+    function mIsUnknownRecipientName(value){
+      const clean = String(value || "").replace(/\s+/g, " ").trim().toLowerCase();
+      return !clean || clean === "sin nombre" || clean === "sin nom" || clean === "sin nom*" || clean === "editar nombre";
+    }
+
     function mRenderNombreDestino(){
       const base = String(window.__nombreDestinoActualCompleto || &quot;&quot;).trim();
       if(!mNameBox) return;
-      mNameBox.textContent = base ? ((window.__mostrarNombreCompletoTemporal || mShouldShowFullNameDestino()) ? base : maskDisplayName(base)) : &quot;Sin nombre&quot;;
+      if(mIsUnknownRecipientName(base)){
+        mNameBox.textContent = &quot;&quot;;
+        mNameBox.classList.add(&quot;yNameEmpty&quot;);
+        mNameBox.setAttribute(&quot;data-placeholder&quot;, &quot;Editar nombre&quot;);
+        return;
+      }
+      mNameBox.classList.remove(&quot;yNameEmpty&quot;);
+      mNameBox.textContent = (window.__mostrarNombreCompletoTemporal || mShouldShowFullNameDestino()) ? base : maskDisplayName(base);
     }
 
     function mAnimarToggleNombre(el){
@@ -15736,16 +15763,25 @@ function maskPhoneVoucher(p){
 
     function mSyncNombreDestinoActual(){
       const t = String((mNameBox?.textContent || &quot;&quot;)).replace(/\s+/g, &quot; &quot;).trim();
-      window.__nombreDestinoActualCompleto = t;
+      window.__nombreDestinoActualCompleto = mIsUnknownRecipientName(t) ? &quot;&quot; : t;
       if(mNameBox &amp;&amp; document.activeElement === mNameBox){
         mNameBox.dataset.userEdited = &quot;1&quot;;
+        mNameBox.classList.remove(&quot;yNameEmpty&quot;);
       }
-      return t;
+      return window.__nombreDestinoActualCompleto;
     }
 
     function mCleanName(){
       const t = mSyncNombreDestinoActual();
+      if(mIsUnknownRecipientName(t)){
+        window.__nombreDestinoActualCompleto = &quot;&quot;;
+        mNameBox.textContent = &quot;&quot;;
+        mNameBox.classList.add(&quot;yNameEmpty&quot;);
+        mNameBox.setAttribute(&quot;data-placeholder&quot;, &quot;Editar nombre&quot;);
+        return;
+      }
       const fueEditadoManual = !!(mNameBox &amp;&amp; mNameBox.dataset.userEdited === &quot;1&quot;);
+      mNameBox.classList.remove(&quot;yNameEmpty&quot;);
       mNameBox.textContent = t ? t : &quot;&quot;;
       if(!window.__mostrarNombreCompletoTemporal &amp;&amp; !mShouldShowFullNameDestino() &amp;&amp; t &amp;&amp; !fueEditadoManual){
         mNameBox.textContent = maskDisplayName(t);
@@ -15755,7 +15791,16 @@ function maskPhoneVoucher(p){
     mNameBox.addEventListener(&quot;focus&quot;, ()=&gt;{
       if(mNameBox) mNameBox.dataset.userEdited = &quot;1&quot;;
       const t = String(window.__nombreDestinoActualCompleto || &quot;&quot;).trim();
-      if(mNameBox &amp;&amp; t) mNameBox.textContent = t;
+      if(mNameBox){
+        if(mIsUnknownRecipientName(t)){
+          mNameBox.textContent = &quot;&quot;;
+          mNameBox.classList.add(&quot;yNameEmpty&quot;);
+          mNameBox.setAttribute(&quot;data-placeholder&quot;, &quot;Editar nombre&quot;);
+        }else{
+          mNameBox.classList.remove(&quot;yNameEmpty&quot;);
+          mNameBox.textContent = t;
+        }
+      }
     });
     mNameBox.addEventListener(&quot;input&quot;, mSyncNombreDestinoActual);
     mNameBox.addEventListener(&quot;blur&quot;, mCleanName);
@@ -15794,8 +15839,8 @@ function maskPhoneVoucher(p){
       let digits = (a + b).replace(/\D/g, &quot;&quot;);
       let tooLong = false;
 
-      if(digits.length &gt; 4){
-        digits = digits.slice(0, 4);
+      if(digits.length &gt; 5){
+        digits = digits.slice(0, 5);
         tooLong = true;
         if(firstDot !== -1){
           const keepA = Math.min(a.replace(/\D/g,&quot;&quot;).length, digits.length);
@@ -15908,11 +15953,12 @@ function maskPhoneVoucher(p){
     // ✅ Mascara nombre: SOLO personas naturales. Empresas se muestran completas.
     function maskDisplayName(fullName){
       const cleanName = normalizeContactName(fullName);
-      if(!cleanName) return &quot;Sin nombre&quot;;
+      if(typeof mIsUnknownRecipientName === &quot;function&quot; &amp;&amp; mIsUnknownRecipientName(cleanName)) return &quot;&quot;;
+      if(!cleanName) return &quot;&quot;;
       if (isBusinessContactName(cleanName)) return cleanName;
 
       const parts = cleanName.split(/\s+/).filter(Boolean);
-      if(parts.length === 0) return &quot;Sin nombre&quot;;
+      if(parts.length === 0) return &quot;&quot;;
 
       const first = parts[0];
       const second = parts[1] ? parts[1].slice(0,3) + &quot;*&quot; : &quot;&quot;;
@@ -15932,7 +15978,7 @@ function goMonto(nombre, phone9, meta){
       const msgInp = document.getElementById(&quot;mMsgInput&quot;);
       if (msgInp) msgInp.value = &quot;&quot;;
 window.__mostrarNombreCompletoTemporal = false;
-      window.__nombreDestinoActualCompleto = String((nombre || &#x27;&#x27;).trim());
+      window.__nombreDestinoActualCompleto = mIsUnknownRecipientName(nombre) ? &quot;&quot; : String((nombre || &#x27;&#x27;).trim());
       const resolvedContactType = (meta &amp;&amp; typeof meta === &quot;object&quot; &amp;&amp; meta.contactType) ? String(meta.contactType) : detectContactType(window.__nombreDestinoActualCompleto);
       window.__currentContactType = resolvedContactType === &quot;empresa&quot; ? &quot;empresa&quot; : &quot;persona&quot;;
       mRenderNombreDestino();
@@ -16189,6 +16235,15 @@ window.__mostrarNombreCompletoTemporal = false;
     const vOp     = document.getElementById(&quot;vOp&quot;);
     const vMsgWrap = document.getElementById(&quot;vMsgWrap&quot;);
     const vMsgText = document.getElementById(&quot;vMsgText&quot;);
+    const vCard = document.querySelector(&quot;#voucherView .card&quot;);
+    const vSecurityRow = document.querySelector(&quot;#voucherView .security-row&quot;);
+
+    function setVoucherLayoutMode(useYapeLayout){
+      try{
+        if(vCard) vCard.classList.toggle(&quot;bank-voucher-mode&quot;, !useYapeLayout);
+        if(vSecurityRow) vSecurityRow.style.display = useYapeLayout ? &quot;flex&quot; : &quot;none&quot;;
+      }catch(e){}
+    }
 
     function getLast3DigitsFromOperation(value){
       const digits = String(value ?? &quot;&quot;).replace(/\D/g, &quot;&quot;);
@@ -16530,10 +16585,15 @@ const isFromMov = payload &amp;&amp; payload.fromMov;
           vTitle.textContent = (payload &amp;&amp; payload.kind === &quot;in&quot;) ? &quot;¡Te Yapearon!&quot; : &quot;¡Yapeaste!&quot;;
         }
       }catch(e){}
-      vAmount.textContent = String(payload.monto ?? &quot;0&quot;);
+      vAmount.textContent = __yFmtAmountPlain(payload.monto ?? &quot;0&quot;);
       const __voucherNombreCompleto = String(payload.nombre ?? &#x27;Sin nombre&#x27;);
-      const __destinoVoucher = String(payload?.destino ?? &#x27;Yape&#x27;);
-      vName.textContent   = (window.__mostrarNombreCompletoTemporal || __destinoVoucher === &#x27;BCP&#x27; || __destinoVoucher === &#x27;Plin&#x27;)
+      const __destinoVoucher = String(payload?.destino ?? &#x27;Yape&#x27;).trim() || &#x27;Yape&#x27;;
+      const __destinoVoucherLower = __destinoVoucher.toLowerCase();
+      const __voucherEsYape = __destinoVoucherLower === &#x27;yape&#x27;;
+      const __voucherEsRecarga = __destinoVoucherLower.includes(&#x27;recarga&#x27;);
+      const __voucherUsaModoYape = (__voucherEsYape || __voucherEsRecarga);
+      setVoucherLayoutMode(__voucherUsaModoYape);
+      vName.textContent = (window.__mostrarNombreCompletoTemporal || (!__voucherEsYape && !__voucherEsRecarga))
         ? __voucherNombreCompleto
         : maskDisplayName(__voucherNombreCompleto);
       window.__mostrarNombreCompletoTemporal = false;
@@ -16572,7 +16632,7 @@ const isFromMov = payload &amp;&amp; payload.fromMov;
       /*MOV_LOG*/
       try{
         if(!payload || !payload.noLog){
-          addMovimiento(String(payload.nombre ?? &quot;Sin nombre&quot;), Number(payload.monto ?? 0), {
+          addMovimiento(String(payload.nombre ?? &quot;Sin nombre&quot;), (payload.monto ?? 0), {
             ts: (payload.dateObj ? payload.dateObj.getTime() : Date.now()),
             phone: payload.phone,
             destino: payload.destino,
@@ -16581,6 +16641,7 @@ const isFromMov = payload &amp;&amp; payload.fromMov;
             promoSrc: (chosenPromo &amp;&amp; chosenPromo.src) ? chosenPromo.src : &quot;&quot;,
             promoAlt: (chosenPromo &amp;&amp; chosenPromo.alt) ? chosenPromo.alt : &quot;&quot;,
             msg: (__usedMsgForMov || &quot;&quot;),
+            nombreCompleto: String(payload.nombre ?? &quot;&quot;),
             kind: (payload.kind || &quot;out&quot;)
           });
         }
@@ -16630,7 +16691,11 @@ const isFromMov = payload &amp;&amp; payload.fromMov;
     window.__confettiAllowNext = false; }catch(e){}
       if(!mYapearBtn.classList.contains(&quot;active&quot;)) return;
 
-      const nombre = (mNameBox.textContent || &quot;&quot;).trim() || &quot;Sin nombre&quot;;
+      const __nombreVisibleActual = (mNameBox.textContent || &quot;&quot;).trim();
+      const __nombreCompletoActual = String(window.__nombreDestinoActualCompleto || &quot;&quot;).replace(/\s+/g, &quot; &quot;).trim();
+      const nombre = (__nombreCompletoActual && __nombreCompletoActual.toLowerCase() !== &quot;sin nombre&quot; && __nombreCompletoActual.toLowerCase() !== &quot;sin nom*&quot;)
+        ? __nombreCompletoActual
+        : __nombreVisibleActual;
       const phone  = mPhoneFull;
       const monto  = (mAmountInp.value || &quot;0&quot;).trim();
 
@@ -16983,7 +17048,7 @@ function maskPhoneVoucher(p){
                   setTimeout(()=&gt;{ yModal.style.display = &quot;none&quot;; }, 900);
                 }
                 setTimeout(()=&gt; {
-                  try{ goMonto((c.name || &quot;Sin nombre&quot;), value, c); }catch(e){}
+                  try{ goMonto((c.name || &quot;&quot;), value, c); }catch(e){}
                 }, 900);
               }, { once:true });
             }
@@ -17095,10 +17160,18 @@ function maskPhoneVoucher(p){
     function __ySaveMovs(arr){
       localStorage.setItem(MOV_KEY, JSON.stringify(arr));
     }
+    function __yFmtAmountPlain(value){
+      const raw = String(value ?? &quot;&quot;).trim();
+      const cleaned = raw.replace(/[^0-9.\-]/g, &quot;&quot;);
+      const n = Number(cleaned || raw || 0);
+      if(!isFinite(n)) return &quot;0&quot;;
+      const hasDecimal = cleaned.includes(&quot;.&quot;) || Math.abs(n % 1) &gt; 0;
+      const abs = Math.abs(n);
+      return hasDecimal ? abs.toFixed(2) : String(Math.trunc(abs));
+    }
     function __yFmtMoney(n){
-      const num = Number(n || 0);
-      const abs = Math.abs(num).toFixed(2);
-      return (num &lt; 0 ? &quot;-S/ &quot; : &quot;S/ &quot;) + abs;
+      const num = Number(String(n ?? 0).replace(/[^0-9.\-]/g, &quot;&quot;) || 0);
+      return (num &lt; 0 ? &quot;-S/ &quot; : &quot;S/ &quot;) + Math.abs(num).toFixed(2);
     }
     function __yFmtDate(ts){
       const d = new Date(ts);
@@ -17129,7 +17202,14 @@ function maskPhoneVoucher(p){
         const monto = Number(m.monto || 0);
         const isNeg = monto &lt; 0;
         const isIncoming = String(m.kind||&quot;&quot;).toLowerCase() === &quot;in&quot;;
-        const displayName = ((String(m.destino||&quot;Yape&quot;)===&quot;BCP&quot; || String(m.destino||&quot;Yape&quot;)===&quot;Plin&quot;) ? (m.nombre || &quot;Sin nombre&quot;) : maskDisplayName(m.nombre || &quot;Sin nombre&quot;));
+        const dest = String(m.destino || &quot;Yape&quot;).trim() || &quot;Yape&quot;;
+        const rawName = String(m.nombreCompleto || m.nombre || &quot;Sin nombre&quot;).trim() || &quot;Sin nombre&quot;;
+        const destLower = dest.toLowerCase();
+        const isYapeDest = destLower === &quot;yape&quot;;
+        const isRecargaDest = destLower.includes(&quot;recarga&quot;);
+        const displayName = (isYapeDest || isRecargaDest)
+          ? maskDisplayName(rawName)
+          : (dest + &quot; - &quot; + rawName);
         const title = isIncoming ? &quot;Te yapearon&quot; : displayName;
         const sub = isIncoming ? ((displayName || &quot;Alguien&quot;) + &quot; · &quot; + __yFmtDate(m.ts)) : __yFmtDate(m.ts);
         return `
@@ -17172,8 +17252,8 @@ function maskPhoneVoucher(p){
             }
 
             goVoucher({
-              nombre: m2.nombre,
-              monto: Math.abs(Number(m2.monto || 0)),
+              nombre: m2.nombreCompleto || m2.nombre,
+              monto: __yFmtAmountPlain(m2.montoText || m2.monto || 0),
               phone: m2.phone || &quot;&quot;,
               destino: m2.destino || &quot;Yape&quot;,
               op8: m2.op8 || &quot;00000000&quot;,
@@ -17208,7 +17288,7 @@ function maskPhoneVoucher(p){
         const dateStr = `${dd} ${mon} ${yyyy}`;
 
         const monto = Math.abs(Number(m2.monto||0));
-        document.getElementById(&#x27;rcvMonto&#x27;) &amp;&amp; (document.getElementById(&#x27;rcvMonto&#x27;).textContent = String(monto));
+        document.getElementById(&#x27;rcvMonto&#x27;) &amp;&amp; (document.getElementById(&#x27;rcvMonto&#x27;).textContent = __yFmtAmountPlain(m2.montoText || m2.monto || monto));
         document.getElementById(&#x27;rcvWhen&#x27;) &amp;&amp; (document.getElementById(&#x27;rcvWhen&#x27;).textContent = `${dateStr}   ${timeStr}`);
         document.getElementById(&#x27;rcvTel&#x27;) &amp;&amp; (document.getElementById(&#x27;rcvTel&#x27;).textContent = fmtPhone(m2.phone||&#x27;&#x27;));
         document.getElementById(&#x27;rcvOp&#x27;) &amp;&amp; (document.getElementById(&#x27;rcvOp&#x27;).textContent = String(m2.opName||m2.operadora||m2.op||m2.destino||&#x27;&#x27;).replace(/^recarga\s*/i,&#x27;&#x27;) || &#x27;—&#x27;);
@@ -17227,12 +17307,16 @@ function maskPhoneVoucher(p){
     }
     function addMovimiento(nombre, monto, extra){
       const arr = __yLoadMovs();
-      const num = Number(monto || 0);
+      const rawMonto = String(monto ?? &quot;0&quot;).trim();
+      const num = Number(rawMonto.replace(/[^0-9.\-]/g, &quot;&quot;) || 0);
       const ex = extra &amp;&amp; typeof extra === &quot;object&quot; ? extra : {};
+      const montoPlano = __yFmtAmountPlain(rawMonto);
       const newItem = {
         nombre: String(nombre || &quot;Sin nombre&quot;),
+        nombreCompleto: String(ex.nombreCompleto || nombre || &quot;Sin nombre&quot;),
         transferId: String(ex.transferId || &quot;&quot;),
         monto: (String(ex.kind||&quot;out&quot;)===&quot;in&quot; ? Math.abs(num) : -Math.abs(num)),
+        montoText: montoPlano,
         kind: String(ex.kind || &quot;out&quot;),
         ts: Number(ex.ts || Date.now()),
         phone: String(ex.phone || &quot;&quot;),
@@ -23159,9 +23243,12 @@ window.__YAPE_CONFETTI_DATA = {"v":"5.9.0","fr":40,"ip":0,"op":79,"w":375,"h":81
     }
     function fmtMoney(n){ return window.__yFmtMoney ? window.__yFmtMoney(n) : ((Number(n)<0?'-S/ ':'S/ ') + Math.abs(Number(n||0)).toFixed(2)); }
     function getDisplayName(m){
-      const dest = String((m && m.destino) || 'Yape');
-      const name = String((m && m.nombre) || 'Sin nombre');
-      if((dest === 'BCP' || dest === 'Plin')) return name;
+      const dest = String((m && m.destino) || 'Yape').trim() || 'Yape';
+      const name = String((m && (m.nombreCompleto || m.nombre)) || 'Sin nombre').trim() || 'Sin nombre';
+      const destLower = dest.toLowerCase();
+      const isYapeDest = destLower === 'yape';
+      const isRecargaDest = destLower.includes('recarga');
+      if(!isYapeDest && !isRecargaDest) return dest + ' - ' + name;
       return (window.maskDisplayName ? window.maskDisplayName(name) : name);
     }
     function buildRow(m, idx){
@@ -23217,7 +23304,7 @@ window.__YAPE_CONFETTI_DATA = {"v":"5.9.0","fr":40,"ip":0,"op":79,"w":375,"h":81
           ? ('Hola,%0D%0A%0D%0ATe comparto tus movimientos:%0D%0A%0D%0A' + filtered.map((m)=>{
               const monto = Number(m.monto || 0);
               const tipo = monto < 0 ? 'Salida' : 'Ingreso';
-              const nombre = ((String(m.destino||'Yape')==='BCP' || String(m.destino||'Yape')==='Plin') ? (m.nombre || 'Sin nombre') : maskDisplayName(m.nombre || 'Sin nombre'));
+              const nombre = getDisplayName(m);
               return '- ' + nombre + ' | ' + __yFmtDate(m.ts) + ' | ' + tipo + ' | ' + __yFmtMoney(monto);
             }).join('%0D%0A'))
           : 'Hola,%0D%0A%0D%0ANo hay movimientos para compartir.';
@@ -23312,7 +23399,7 @@ window.__YAPE_CONFETTI_DATA = {"v":"5.9.0","fr":40,"ip":0,"op":79,"w":375,"h":81
             openVoucherNativeFromMov('voucherView', function(){
               goVoucher({
                 nombre: m.nombre,
-                monto: Math.abs(Number(m.monto || 0)),
+                monto: __yFmtAmountPlain(m.montoText || m.monto || 0),
                 phone: m.phone || '',
                 destino: m.destino || 'Yape',
                 op8: m.op8 || '00000000',
@@ -24040,7 +24127,7 @@ html.ios-final-fix iframe{
       ].join(';');
       box.innerHTML = '' +
         '<span class="baucher-sync-msg-icon" aria-hidden="true" style="width:7.2vw;height:7.2vw;min-width:28px;min-height:28px;max-width:34px;max-height:34px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;">' +
-          '<img src="msg-icon.png" alt="mensaje" style="width:100%;height:100%;display:block;object-fit:contain;">' +
+          '<svg viewBox="0 0 24 24" style="width:100%;height:100%;display:block" fill="none" stroke="#111111" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 18.5c-2.8 0-5-2.1-5-4.8v-3.4C3 7.6 5.2 5.5 8 5.5h8c2.8 0 5 2.1 5 4.8v3.4c0 2.6-2.2 4.8-5 4.8h-5.3l-3.7 2.8c-.5.4-1.2 0-.9-.6l1.1-2.2H8z"></path><path d="M9 10.5h6"></path><path d="M9 14h4.5"></path></svg>' +
         '</span>' +
         '<span class="baucher-sync-msg-text" style="font-size:4.05vw;line-height:1.18;font-weight:500;word-break:break-word;">' +
         '</span>';
@@ -24171,7 +24258,7 @@ html.ios-final-fix iframe{
           try{
             if(doc.defaultView && typeof doc.defaultView.goMonto === 'function'){
               var last = doc.defaultView.__lastRecipient || {};
-              doc.defaultView.goMonto(String(last.nombre || 'Sin nombre'), String(last.phone || '').replace(/\D/g,'').slice(0,9));
+              doc.defaultView.goMonto(String(last.nombre || ''), String(last.phone || '').replace(/\D/g,'').slice(0,9));
             }
           }catch(e){}
         });
@@ -24226,7 +24313,9 @@ html.ios-final-fix iframe{
         '.monto .currency-s{font-size:8vw!important;font-weight:900!important;line-height:1!important;margin-top:.08vw!important;margin-right:1vw!important;}',
         '.nombre{font-weight:700!important;}',
         '.yapeton-hide-promos .paraServicios{display:none!important;visibility:hidden!important;height:0!important;overflow:hidden!important;margin:0!important;padding:0!important;}',
-        '.yapeton-hide-promos #promoFrame{display:none!important;visibility:hidden!important;}'
+        '.yapeton-hide-promos #promoFrame{display:none!important;visibility:hidden!important;}',
+        '.yapeton-bank-voucher .codSecurity{display:none!important;visibility:hidden!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important;border:0!important;overflow:hidden!important;}',
+        '.yapeton-bank-voucher .paraFecha{margin-bottom:0!important;} .yapeton-bank-voucher .transacc{margin-top:1.8vw!important;border-top:.22vw solid #e5e5eb!important;padding-top:4.1vw!important;} .yapeton-bank-voucher .datosts{margin-top:0!important;}'
       ].join('');
       (idoc.head || idoc.documentElement).appendChild(innerStyle);
     }
@@ -24267,6 +24356,38 @@ html.ios-final-fix iframe{
       var spans = dataRows[1].querySelectorAll('span');
       if(spans[1]) destino = spans[1].textContent || 'Yape';
     }
+
+    var destinoClean = String(destino || 'Yape').trim();
+    var destinoLower = destinoClean.toLowerCase();
+    var isBankVoucher = !!destinoClean && destinoLower !== 'yape' && destinoLower.indexOf('recarga') === -1;
+    try{
+      if(idoc.documentElement) idoc.documentElement.classList.toggle('yapeton-bank-voucher', isBankVoucher);
+      if(idoc.body) idoc.body.classList.toggle('yapeton-bank-voucher', isBankVoucher);
+      var secRow = idoc.querySelector('.codSecurity');
+      if(secRow){
+        if(isBankVoucher){
+          secRow.style.setProperty('display','none','important');
+          secRow.style.setProperty('visibility','hidden','important');
+          secRow.style.setProperty('height','0','important');
+          secRow.style.setProperty('min-height','0','important');
+          secRow.style.setProperty('max-height','0','important');
+          secRow.style.setProperty('margin','0','important');
+          secRow.style.setProperty('padding','0','important');
+          secRow.style.setProperty('border','0','important');
+          secRow.style.setProperty('overflow','hidden','important');
+        }else{
+          secRow.style.removeProperty('display');
+          secRow.style.removeProperty('visibility');
+          secRow.style.removeProperty('height');
+          secRow.style.removeProperty('min-height');
+          secRow.style.removeProperty('max-height');
+          secRow.style.removeProperty('margin');
+          secRow.style.removeProperty('padding');
+          secRow.style.removeProperty('border');
+          secRow.style.removeProperty('overflow');
+        }
+      }
+    }catch(e){}
 
     var titleNode = idoc.querySelector('.yape-title');
     if(titleNode && vTitle) titleNode.textContent = vTitle.textContent || '¡Yapeaste!';
@@ -24357,7 +24478,7 @@ html.ios-final-fix iframe{
     if(!voucherView.__baucherObserverAttached){
       voucherView.__baucherObserverAttached = true;
       var targets = [
-        'vTitle','vAmount','vName','vDate','vTime','vCode1','vCode2','vCode3','vPhone','vOp','vMsgText','vMsgWrap','promoImg'
+        'vTitle','vAmount','vName','vDate','vTime','vCode1','vCode2','vCode3','vPhone','vOp','vDestino','vMsgText','vMsgWrap','promoImg'
       ].map(function(id){ return doc.getElementById(id); }).filter(Boolean);
       if(window.MutationObserver && targets.length){
         var obs = new MutationObserver(function(){ syncVoucher(doc, iframe); });
@@ -28254,6 +28375,88 @@ try{
 })();
 </script>
 
+
+
+<style id="unknown-name-placeholder-small-final">
+#montoView #mNameBox[contenteditable="true"]:empty::before,
+#montoView #mNameBox.yNameEmpty::before{
+  font-size:18px !important;
+  font-weight:400 !important;
+  color:rgba(123,123,123,.32) !important;
+  letter-spacing:0 !important;
+}
+</style>
+
+<script id="unknown-name-placeholder-outer-final">
+(function(){
+  function isUnknown(v){
+    var clean = String(v || '').replace(/\s+/g,' ').trim().toLowerCase();
+    return !clean || clean === 'sin nombre' || clean === 'sin nom' || clean === 'sin nom*' || clean === 'editar nombre';
+  }
+  function cleanDoc(doc){
+    if(!doc) return;
+    var box = doc.getElementById('mNameBox');
+    if(!box) return;
+    var t = String(box.textContent || '').replace(/\s+/g,' ').trim();
+    box.setAttribute('data-placeholder','Editar nombre');
+    if(isUnknown(t)){
+      box.textContent = '';
+      box.classList.add('yNameEmpty');
+      try{ doc.defaultView.__nombreDestinoActualCompleto = ''; }catch(e){}
+    }
+  }
+  function patchWin(win){
+    if(!win || win.__unknownNameFinalPatch) return;
+    win.__unknownNameFinalPatch = true;
+    try{
+      var oldMask = win.maskDisplayName;
+      if(typeof oldMask === 'function'){
+        win.maskDisplayName = function(name){
+          if(isUnknown(name)) return '';
+          return oldMask.apply(this, arguments);
+        };
+      }
+    }catch(e){}
+    try{
+      var oldGo = win.goMonto;
+      if(typeof oldGo === 'function'){
+        win.goMonto = function(nombre, phone9, meta){
+          if(isUnknown(nombre)) nombre = '';
+          var res = oldGo.apply(this, arguments);
+          setTimeout(function(){ cleanDoc(win.document); }, 0);
+          setTimeout(function(){ cleanDoc(win.document); }, 100);
+          setTimeout(function(){ cleanDoc(win.document); }, 350);
+          return res;
+        };
+      }
+    }catch(e){}
+    try{
+      win.document.addEventListener('focusin', function(ev){
+        if(ev.target && ev.target.id === 'mNameBox' && isUnknown(ev.target.textContent)){
+          ev.target.textContent = '';
+          ev.target.classList.add('yNameEmpty');
+          ev.target.setAttribute('data-placeholder','Editar nombre');
+        }
+      }, true);
+      win.document.addEventListener('input', function(ev){
+        if(ev.target && ev.target.id === 'mNameBox') ev.target.classList.remove('yNameEmpty');
+      }, true);
+    }catch(e){}
+  }
+  function run(){
+    patchWin(window);
+    cleanDoc(document);
+    var frames = document.querySelectorAll('iframe');
+    for(var i=0;i<frames.length;i++){
+      try{ patchWin(frames[i].contentWindow); cleanDoc(frames[i].contentDocument); }catch(e){}
+    }
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, {once:true});
+  run();
+  var n = 0;
+  var timer = setInterval(function(){ run(); if(++n > 40) clearInterval(timer); }, 250);
+})();
+</script>
 </body>
 </html>
 
@@ -34124,3 +34327,53 @@ try{
 })();
 </script>
 
+
+</script>
+
+<script id="voucher-bank-fullname-final-patch">
+(function(){
+  function cleanDest(v){ return String(v || 'Yape').trim() || 'Yape'; }
+  function isYapeLike(dest){
+    var d = cleanDest(dest).toLowerCase();
+    return d === 'yape' || d.indexOf('recarga') >= 0;
+  }
+  function unmaskForBank(doc, payload){
+    try{
+      if(!doc || !payload || isYapeLike(payload.destino)) return;
+      var full = String(payload.nombreCompleto || payload.nombre || '').replace(/\s+/g,' ').trim();
+      if(!full) return;
+      var node = doc.getElementById('vName');
+      if(node) node.textContent = full;
+      var idoc = (doc.defaultView && doc.defaultView.document) || doc;
+      var nameNode = idoc.querySelector && idoc.querySelector('.nombre');
+      if(nameNode) nameNode.textContent = full;
+    }catch(e){}
+  }
+  function patch(win){
+    if(!win || win.__voucherBankFullnameFinalPatch) return;
+    win.__voucherBankFullnameFinalPatch = true;
+    var old = win.goVoucher;
+    if(typeof old === 'function'){
+      win.goVoucher = function(payload){
+        var p = payload || {};
+        if(!isYapeLike(p.destino)){
+          p.nombreCompleto = String(p.nombreCompleto || p.nombre || '').replace(/\s+/g,' ').trim();
+          p.nombre = p.nombreCompleto || p.nombre;
+        }
+        var res = old.apply(this, arguments);
+        var d = win.document;
+        setTimeout(function(){ unmaskForBank(d, p); }, 0);
+        setTimeout(function(){ unmaskForBank(d, p); }, 120);
+        setTimeout(function(){ unmaskForBank(d, p); }, 450);
+        return res;
+      };
+    }
+  }
+  function run(){
+    patch(window);
+    try{ document.querySelectorAll('iframe').forEach(function(f){ try{ if(f.contentWindow) patch(f.contentWindow); }catch(e){} }); }catch(e){}
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, {once:true}); else run();
+  setTimeout(run, 300);
+  setTimeout(run, 1200);
+})();
