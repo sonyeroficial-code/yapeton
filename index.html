@@ -1276,6 +1276,2467 @@ h1,h2,h3,.title,.contact-name{
 })();
 </script>
 
+
+<style id="login-fullscreen-pro-fixed">
+/* ===== LOGIN FULLSCREEN PRO CORREGIDO =====
+   Este estilo está en el HEAD real, no dentro del iframe. */
+body.mode-login{
+  margin:0 !important;
+  padding:0 !important;
+  min-height:100dvh !important;
+  overflow:hidden !important;
+  display:block !important;
+  color:#fff !important;
+  background:
+    radial-gradient(250px 210px at 12% 9%, rgba(255,255,255,.16), rgba(255,255,255,0) 70%),
+    radial-gradient(240px 220px at 90% 18%, rgba(0,208,180,.14), rgba(0,208,180,0) 72%),
+    radial-gradient(460px 320px at 50% 110%, rgba(255,255,255,.10), rgba(255,255,255,0) 72%),
+    linear-gradient(180deg,#5c1478 0%,#742284 49%,#862995 100%) !important;
+}
+
+body.mode-login #loginWrap{
+  position:relative !important;
+  z-index:1 !important;
+  width:100% !important;
+  min-height:100dvh !important;
+  display:block !important;
+  overflow:hidden !important;
+}
+
+body.mode-login #loginWrap::before,
+body.mode-login #loginWrap::after{
+  content:"" !important;
+  position:absolute !important;
+  pointer-events:none !important;
+  border-radius:999px !important;
+  z-index:0 !important;
+}
+body.mode-login #loginWrap::before{
+  width:210px !important;
+  height:210px !important;
+  left:-92px !important;
+  top:94px !important;
+  background:radial-gradient(circle, rgba(255,255,255,.15), rgba(255,255,255,0) 70%) !important;
+}
+body.mode-login #loginWrap::after{
+  width:260px !important;
+  height:260px !important;
+  right:-125px !important;
+  bottom:35px !important;
+  background:radial-gradient(circle, rgba(0,208,180,.13), rgba(0,208,180,0) 72%) !important;
+}
+
+body.mode-login #loginWrap .wrap{
+  width:min(430px,100%) !important;
+  min-height:100dvh !important;
+  margin:0 auto !important;
+  padding:
+    calc(env(safe-area-inset-top,0px) + clamp(8px,1.5vh,14px))
+    clamp(14px,4vw,20px)
+    calc(env(safe-area-inset-bottom,0px) + clamp(12px,2vh,18px)) !important;
+  position:relative !important;
+  z-index:1 !important;
+  display:flex !important;
+  flex-direction:column !important;
+}
+
+/* Barra superior */
+body.mode-login #loginWrap .topbar{
+  flex:0 0 auto !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:10px !important;
+  margin:0 0 clamp(14px,3vh,26px) !important;
+}
+body.mode-login #loginWrap .back{
+  width:42px !important;
+  height:42px !important;
+  border-radius:16px !important;
+  display:grid !important;
+  place-items:center !important;
+  background:rgba(42,4,62,.30) !important;
+  border:1px solid rgba(255,255,255,.18) !important;
+  box-shadow:0 12px 24px rgba(18,3,28,.18), inset 0 1px 0 rgba(255,255,255,.12) !important;
+  backdrop-filter:blur(14px) !important;
+  -webkit-backdrop-filter:blur(14px) !important;
+}
+body.mode-login #loginWrap .back svg{
+  width:18px !important;
+  height:18px !important;
+}
+body.mode-login #loginWrap .infoPill{
+  flex:1 1 auto !important;
+  height:46px !important;
+  min-height:46px !important;
+  border-radius:22px !important;
+  padding:0 15px !important;
+  gap:11px !important;
+  color:#fff !important;
+  background:linear-gradient(180deg, rgba(255,255,255,.20), rgba(255,255,255,.10)) !important;
+  border:1px solid rgba(255,255,255,.20) !important;
+  box-shadow:0 12px 25px rgba(18,3,28,.16), inset 0 1px 0 rgba(255,255,255,.16) !important;
+  backdrop-filter:blur(14px) !important;
+  -webkit-backdrop-filter:blur(14px) !important;
+}
+body.mode-login #loginWrap .dot{
+  width:18px !important;
+  height:18px !important;
+  background:radial-gradient(circle at 32% 32%,#25e4ff 0%,#10a9ff 46%,#386bff 100%) !important;
+  box-shadow:0 0 0 8px rgba(20,180,255,.13),0 0 22px rgba(20,180,255,.45) !important;
+}
+body.mode-login #loginWrap .pillText{
+  color:#fff !important;
+  font-size:12.5px !important;
+  letter-spacing:.18em !important;
+  font-weight:700 !important;
+  text-shadow:0 1px 0 rgba(0,0,0,.08) !important;
+}
+
+/* Quita el panel blanco sin tocar la lógica */
+body.mode-login #loginWrap .panel{
+  flex:1 1 auto !important;
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:flex-start !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  border-radius:0 !important;
+  overflow:visible !important;
+  color:#fff !important;
+}
+body.mode-login #loginWrap .panel::before,
+body.mode-login #loginWrap .panel::after{
+  display:none !important;
+}
+body.mode-login #loginWrap .panelInner{
+  width:100% !important;
+  max-height:none !important;
+  overflow:visible !important;
+  padding:0 !important;
+  display:block !important;
+}
+
+/* Pantallas del login en flujo normal para no crear espacios gigantes */
+body.mode-login #loginWrap .screens{
+  position:relative !important;
+  width:100% !important;
+  height:auto !important;
+  min-height:0 !important;
+}
+body.mode-login #loginWrap .screen{
+  position:relative !important;
+  inset:auto !important;
+  display:none !important;
+  opacity:1 !important;
+  transform:none !important;
+  pointer-events:none !important;
+  transition:none !important;
+  min-height:0 !important;
+}
+body.mode-login #loginWrap .screen.active{
+  display:block !important;
+  pointer-events:auto !important;
+  padding:clamp(8px,1.8vh,18px) 2px 0 !important;
+}
+
+/* Titulares */
+body.mode-login #loginWrap .title{
+  margin:0 0 7px !important;
+  text-align:left !important;
+  color:#fff !important;
+  font-size:clamp(24px,6.4vw,31px) !important;
+  line-height:1.04 !important;
+  font-weight:800 !important;
+  letter-spacing:.08em !important;
+  text-shadow:0 10px 24px rgba(22,0,34,.22) !important;
+}
+body.mode-login #loginWrap .subtitle{
+  margin:0 0 clamp(18px,3vh,28px) !important;
+  text-align:left !important;
+  color:rgba(255,255,255,.78) !important;
+  font-size:clamp(13px,3.5vw,15px) !important;
+  line-height:1.3 !important;
+  font-weight:500 !important;
+}
+
+/* Campos */
+body.mode-login #loginWrap label{
+  display:block !important;
+  margin:0 0 7px !important;
+  color:rgba(255,255,255,.86) !important;
+  font-size:clamp(12.5px,3.4vw,14px) !important;
+  font-weight:700 !important;
+  letter-spacing:.01em !important;
+}
+body.mode-login #loginWrap .fieldRow{
+  position:relative !important;
+  margin:0 0 clamp(13px,2.4vh,18px) !important;
+}
+body.mode-login #loginWrap input{
+  width:100% !important;
+  height:clamp(44px,6.3vh,52px) !important;
+  min-height:44px !important;
+  border:1px solid rgba(255,255,255,.34) !important;
+  outline:0 !important;
+  border-radius:17px !important;
+  padding:0 16px !important;
+  background:rgba(255,255,255,.92) !important;
+  color:#21142c !important;
+  font-size:clamp(14px,3.7vw,16px) !important;
+  font-weight:600 !important;
+  box-shadow:0 12px 25px rgba(27,5,43,.13), inset 0 1px 0 rgba(255,255,255,.95) !important;
+  transition:transform .16s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease !important;
+}
+body.mode-login #loginWrap input::placeholder{
+  color:rgba(35,22,46,.38) !important;
+  font-weight:500 !important;
+}
+body.mode-login #loginWrap input:focus{
+  transform:translateY(-1px) !important;
+  background:#fff !important;
+  border-color:rgba(0,208,180,.64) !important;
+  box-shadow:0 0 0 4px rgba(0,208,180,.13),0 15px 28px rgba(27,5,43,.16),inset 0 1px 0 rgba(255,255,255,.96) !important;
+}
+body.mode-login #loginWrap .showBtn{
+  position:absolute !important;
+  right:8px !important;
+  top:50% !important;
+  transform:translateY(-50%) !important;
+  height:34px !important;
+  min-height:34px !important;
+  padding:0 13px !important;
+  border-radius:14px !important;
+  border:0 !important;
+  background:linear-gradient(180deg,#fff,#f7f0fb) !important;
+  color:#742284 !important;
+  font-size:12.5px !important;
+  font-weight:800 !important;
+  box-shadow:0 8px 15px rgba(28,5,43,.10) !important;
+}
+
+/* Botones */
+body.mode-login #loginWrap .actions{
+  position:static !important;
+  margin:clamp(8px,1.8vh,14px) 0 0 !important;
+  padding:0 !important;
+  background:transparent !important;
+  backdrop-filter:none !important;
+}
+body.mode-login #loginWrap .primary{
+  width:100% !important;
+  height:clamp(46px,6.4vh,54px) !important;
+  min-height:46px !important;
+  padding:0 14px !important;
+  border:0 !important;
+  border-radius:18px !important;
+  color:#fff !important;
+  font-size:clamp(14px,3.7vw,16px) !important;
+  font-weight:800 !important;
+  letter-spacing:.16em !important;
+  background:linear-gradient(180deg,#9e32cf 0%,#7b1fa2 58%,#641287 100%) !important;
+  box-shadow:0 16px 30px rgba(36,0,54,.25),0 4px 0 rgba(51,8,74,.22) !important;
+  overflow:hidden !important;
+  position:relative !important;
+}
+body.mode-login #loginWrap .primary::after{
+  content:"" !important;
+  position:absolute !important;
+  inset:0 !important;
+  background:linear-gradient(120deg,rgba(255,255,255,.22),rgba(255,255,255,0) 38%,rgba(255,255,255,.10)) !important;
+  pointer-events:none !important;
+}
+body.mode-login #loginWrap .primary:active{
+  transform:translateY(2px) !important;
+  box-shadow:0 10px 22px rgba(36,0,54,.22),0 2px 0 rgba(51,8,74,.22) !important;
+}
+body.mode-login #loginWrap #screenRegister .primary{
+  background:linear-gradient(180deg,#ff4a5f 0%,#f31936 55%,#c8001f 100%) !important;
+  box-shadow:0 16px 30px rgba(135,0,31,.25),0 4px 0 rgba(97,0,18,.20) !important;
+}
+body.mode-login #loginWrap .link{
+  display:block !important;
+  margin:11px 0 0 !important;
+  text-align:center !important;
+  color:#bdf8ff !important;
+  font-size:13.5px !important;
+  font-weight:800 !important;
+  text-decoration:none !important;
+  text-shadow:0 8px 18px rgba(0,0,0,.18) !important;
+}
+
+/* Compatibilidad glass */
+body.mode-login #loginWrap .footer{
+  margin:clamp(16px,3vh,26px) 0 0 !important;
+  padding:14px 12px 13px !important;
+  text-align:center !important;
+  color:#fff !important;
+  background:linear-gradient(180deg,rgba(255,255,255,.15),rgba(255,255,255,.08)) !important;
+  border:1px solid rgba(255,255,255,.17) !important;
+  border-radius:22px !important;
+  box-shadow:0 14px 28px rgba(24,0,39,.16), inset 0 1px 0 rgba(255,255,255,.13) !important;
+  backdrop-filter:blur(14px) !important;
+  -webkit-backdrop-filter:blur(14px) !important;
+}
+body.mode-login #loginWrap .footerTitle{
+  color:rgba(255,255,255,.92) !important;
+  font-size:11.2px !important;
+  line-height:1.2 !important;
+  font-weight:800 !important;
+  letter-spacing:.12em !important;
+}
+body.mode-login #loginWrap .osRow{
+  margin-top:11px !important;
+  display:flex !important;
+  justify-content:center !important;
+  align-items:center !important;
+  gap:10px !important;
+  flex-wrap:wrap !important;
+}
+body.mode-login #loginWrap .osChip{
+  height:35px !important;
+  min-height:35px !important;
+  padding:0 14px !important;
+  border-radius:999px !important;
+  gap:8px !important;
+  background:rgba(255,255,255,.90) !important;
+  border:1px solid rgba(255,255,255,.22) !important;
+  box-shadow:0 8px 18px rgba(24,0,39,.10) !important;
+}
+body.mode-login #loginWrap .osIcon{
+  width:17px !important;
+  height:17px !important;
+}
+body.mode-login #loginWrap .osName{
+  color:#22142d !important;
+  font-size:12.5px !important;
+  font-weight:800 !important;
+}
+body.mode-login #loginWrap .footerSub{
+  margin-top:9px !important;
+  color:rgba(255,255,255,.72) !important;
+  font-size:10.5px !important;
+  font-weight:800 !important;
+  letter-spacing:.10em !important;
+}
+
+/* Modal de cuenta */
+body.mode-login #loginWrap .accountChoiceModal{
+  position:fixed !important;
+  inset:0 !important;
+  z-index:2147483000 !important;
+  display:none !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:24px 18px !important;
+  background:rgba(16,5,28,.46) !important;
+  backdrop-filter:blur(10px) !important;
+  -webkit-backdrop-filter:blur(10px) !important;
+}
+body.mode-login #loginWrap .accountChoiceModal.show{
+  display:flex !important;
+}
+body.mode-login #loginWrap .accountChoiceCard{
+  width:min(330px,100%) !important;
+  border-radius:28px !important;
+  padding:20px 18px 17px !important;
+  background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(250,246,255,.97)) !important;
+  color:#21142c !important;
+  text-align:center !important;
+  box-shadow:0 28px 70px rgba(16,5,28,.35),inset 0 1px 0 rgba(255,255,255,.9) !important;
+}
+body.mode-login #loginWrap .accountChoiceIcon{
+  width:56px !important;
+  height:56px !important;
+  border-radius:20px !important;
+  margin:0 auto 12px !important;
+  display:grid !important;
+  place-items:center !important;
+  background:linear-gradient(180deg,#9e32cf,#6f19c7) !important;
+  color:#fff !important;
+  box-shadow:0 15px 28px rgba(111,25,199,.28),0 0 0 9px rgba(111,25,199,.08) !important;
+}
+body.mode-login #loginWrap .accountChoiceIcon svg{
+  width:30px !important;
+  height:30px !important;
+}
+body.mode-login #loginWrap .accountChoiceTitle{
+  margin:0 !important;
+  color:#21142c !important;
+  font-size:20px !important;
+  line-height:1.12 !important;
+  font-weight:900 !important;
+}
+body.mode-login #loginWrap .accountChoiceText{
+  margin:8px auto 15px !important;
+  max-width:255px !important;
+  color:#74667e !important;
+  font-size:13px !important;
+  line-height:1.35 !important;
+  font-weight:600 !important;
+}
+body.mode-login #loginWrap .accountChoiceActions{
+  display:grid !important;
+  gap:10px !important;
+}
+body.mode-login #loginWrap .accountChoiceBtn{
+  width:100% !important;
+  height:46px !important;
+  border:0 !important;
+  border-radius:16px !important;
+  font-size:14.5px !important;
+  font-weight:900 !important;
+}
+body.mode-login #loginWrap .accountChoiceBtn.login{
+  color:#fff !important;
+  background:linear-gradient(180deg,#1ecdc2,#12afa7) !important;
+  box-shadow:0 15px 28px rgba(18,175,167,.24) !important;
+}
+body.mode-login #loginWrap .accountChoiceBtn.create{
+  color:#742284 !important;
+  background:#f2edf7 !important;
+  box-shadow:inset 0 0 0 1px rgba(116,34,132,.08) !important;
+}
+
+/* Responsive */
+@media (max-height:720px){
+  body.mode-login #loginWrap .wrap{
+    padding-top:calc(env(safe-area-inset-top,0px) + 7px) !important;
+    padding-bottom:calc(env(safe-area-inset-bottom,0px) + 10px) !important;
+  }
+  body.mode-login #loginWrap .topbar{ margin-bottom:10px !important; }
+  body.mode-login #loginWrap .back{ width:38px !important; height:38px !important; border-radius:14px !important; }
+  body.mode-login #loginWrap .infoPill{ height:40px !important; min-height:40px !important; }
+  body.mode-login #loginWrap .screen.active{ padding-top:4px !important; }
+  body.mode-login #loginWrap .title{ font-size:22px !important; margin-bottom:5px !important; }
+  body.mode-login #loginWrap .subtitle{ font-size:12.5px !important; margin-bottom:12px !important; }
+  body.mode-login #loginWrap label{ font-size:12.5px !important; margin-bottom:5px !important; }
+  body.mode-login #loginWrap .fieldRow{ margin-bottom:10px !important; }
+  body.mode-login #loginWrap input{ height:41px !important; min-height:41px !important; border-radius:14px !important; font-size:13.5px !important; }
+  body.mode-login #loginWrap .showBtn{ height:30px !important; min-height:30px !important; font-size:12px !important; }
+  body.mode-login #loginWrap .primary{ height:43px !important; min-height:43px !important; font-size:13.5px !important; border-radius:16px !important; }
+  body.mode-login #loginWrap .link{ margin-top:9px !important; font-size:13px !important; }
+  body.mode-login #loginWrap .footer{ margin-top:12px !important; padding:11px 10px 10px !important; border-radius:19px !important; }
+  body.mode-login #loginWrap .footerTitle{ font-size:10.5px !important; }
+  body.mode-login #loginWrap .osRow{ margin-top:8px !important; }
+  body.mode-login #loginWrap .osChip{ height:31px !important; min-height:31px !important; padding:0 12px !important; }
+  body.mode-login #loginWrap .footerSub{ margin-top:7px !important; font-size:10px !important; }
+}
+
+@media (max-height:620px){
+  body.mode-login #loginWrap .topbar{ margin-bottom:7px !important; }
+  body.mode-login #loginWrap .screen.active{ padding-top:0 !important; }
+  body.mode-login #loginWrap .title{ font-size:20px !important; letter-spacing:.10em !important; }
+  body.mode-login #loginWrap .subtitle{ display:none !important; }
+  body.mode-login #loginWrap label{ font-size:12px !important; margin-bottom:4px !important; }
+  body.mode-login #loginWrap .fieldRow{ margin-bottom:8px !important; }
+  body.mode-login #loginWrap input{ height:38px !important; min-height:38px !important; }
+  body.mode-login #loginWrap .primary{ height:40px !important; min-height:40px !important; }
+  body.mode-login #loginWrap .footer{ margin-top:10px !important; padding:9px 9px 8px !important; }
+}
+
+@media (min-height:820px){
+  body.mode-login #loginWrap .screen.active{
+    padding-top:clamp(20px,5vh,42px) !important;
+  }
+}
+
+@media (max-width:360px){
+  body.mode-login #loginWrap .wrap{
+    padding-left:12px !important;
+    padding-right:12px !important;
+  }
+  body.mode-login #loginWrap .pillText{
+    font-size:11px !important;
+    letter-spacing:.14em !important;
+  }
+  body.mode-login #loginWrap .title{
+    font-size:21px !important;
+  }
+}
+</style>
+
+
+<style id="account-choice-smaller-final">
+/* Aviso inicial un poco más pequeño */
+body.mode-login #loginWrap .accountChoiceCard{
+  width:min(300px,92vw) !important;
+  border-radius:24px !important;
+  padding:16px 15px 14px !important;
+}
+
+body.mode-login #loginWrap .accountChoiceIcon{
+  width:48px !important;
+  height:48px !important;
+  border-radius:17px !important;
+  margin:0 auto 10px !important;
+  box-shadow:0 12px 22px rgba(111,25,199,.24),0 0 0 8px rgba(111,25,199,.07) !important;
+}
+
+body.mode-login #loginWrap .accountChoiceIcon svg{
+  width:25px !important;
+  height:25px !important;
+}
+
+body.mode-login #loginWrap .accountChoiceTitle{
+  font-size:18px !important;
+  line-height:1.12 !important;
+}
+
+body.mode-login #loginWrap .accountChoiceText{
+  margin:7px auto 13px !important;
+  max-width:235px !important;
+  font-size:12.5px !important;
+  line-height:1.32 !important;
+}
+
+body.mode-login #loginWrap .accountChoiceActions{
+  gap:8px !important;
+}
+
+body.mode-login #loginWrap .accountChoiceBtn{
+  height:42px !important;
+  border-radius:15px !important;
+  font-size:13.5px !important;
+}
+
+/* Más compacto en pantallas bajas */
+@media (max-height:720px){
+  body.mode-login #loginWrap .accountChoiceCard{
+    width:min(288px,91vw) !important;
+    padding:14px 14px 13px !important;
+    border-radius:22px !important;
+  }
+  body.mode-login #loginWrap .accountChoiceIcon{
+    width:44px !important;
+    height:44px !important;
+    border-radius:16px !important;
+    margin-bottom:8px !important;
+  }
+  body.mode-login #loginWrap .accountChoiceTitle{
+    font-size:17px !important;
+  }
+  body.mode-login #loginWrap .accountChoiceText{
+    font-size:12px !important;
+    margin-bottom:11px !important;
+  }
+  body.mode-login #loginWrap .accountChoiceBtn{
+    height:39px !important;
+    font-size:13px !important;
+  }
+}
+</style>
+
+
+<style id="login-warning-toast-beauty">
+/* Avisos del login con estilo de advertencia bonito */
+body.mode-login .toast{
+  left:50% !important;
+  bottom:calc(env(safe-area-inset-bottom,0px) + 18px) !important;
+  transform:translateX(-50%) translateY(12px) !important;
+  width:min(360px, calc(100vw - 36px)) !important;
+  min-height:58px !important;
+  padding:11px 14px 11px 62px !important;
+  border-radius:20px !important;
+  background:linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,248,232,.96)) !important;
+  color:#2b1b10 !important;
+  border:1px solid rgba(255,193,7,.42) !important;
+  box-shadow:0 22px 45px rgba(25,6,36,.30), inset 0 1px 0 rgba(255,255,255,.86) !important;
+  font-size:13.5px !important;
+  line-height:1.25 !important;
+  font-weight:800 !important;
+  letter-spacing:.01em !important;
+  align-items:center !important;
+  opacity:0 !important;
+  overflow:hidden !important;
+}
+
+body.mode-login .toast::before{
+  content:"!" !important;
+  position:absolute !important;
+  left:14px !important;
+  top:50% !important;
+  transform:translateY(-50%) !important;
+  width:36px !important;
+  height:36px !important;
+  border-radius:14px !important;
+  display:grid !important;
+  place-items:center !important;
+  background:linear-gradient(180deg,#ffcf3e,#ff9f1c) !important;
+  color:#4b2a00 !important;
+  font-size:22px !important;
+  font-weight:950 !important;
+  box-shadow:0 10px 18px rgba(255,159,28,.28), 0 0 0 7px rgba(255,193,7,.13) !important;
+}
+
+body.mode-login .toast::after{
+  content:"Aviso" !important;
+  position:absolute !important;
+  left:62px !important;
+  top:9px !important;
+  color:#8a5400 !important;
+  font-size:10.5px !important;
+  line-height:1 !important;
+  font-weight:950 !important;
+  letter-spacing:.12em !important;
+  text-transform:uppercase !important;
+}
+
+body.mode-login .toast.show{
+  display:flex !important;
+  opacity:1 !important;
+  transform:translateX(-50%) translateY(0) !important;
+  animation:loginWarningToastIn .24s ease-out both !important;
+}
+
+@keyframes loginWarningToastIn{
+  0%{ opacity:0; transform:translateX(-50%) translateY(14px) scale(.98); }
+  100%{ opacity:1; transform:translateX(-50%) translateY(0) scale(1); }
+}
+
+/* Baja un poquito el texto para que quepa debajo de "Aviso" */
+body.mode-login .toast{
+  padding-top:22px !important;
+}
+
+@media (max-height:650px){
+  body.mode-login .toast{
+    bottom:calc(env(safe-area-inset-bottom,0px) + 12px) !important;
+    width:min(340px, calc(100vw - 28px)) !important;
+    min-height:52px !important;
+    border-radius:18px !important;
+    font-size:12.8px !important;
+  }
+  body.mode-login .toast::before{
+    width:32px !important;
+    height:32px !important;
+    border-radius:12px !important;
+    font-size:20px !important;
+  }
+}
+</style>
+
+
+<style id="login-warning-toast-top-notification">
+/* Aviso tipo notificación superior */
+body.mode-login .toast{
+  position:fixed !important;
+  left:50% !important;
+  top:calc(env(safe-area-inset-top,0px) + 14px) !important;
+  bottom:auto !important;
+  transform:translateX(-50%) translateY(-18px) scale(.98) !important;
+  width:min(354px, calc(100vw - 28px)) !important;
+  min-height:54px !important;
+  padding:20px 14px 10px 58px !important;
+  border-radius:20px !important;
+  background:rgba(255,255,255,.94) !important;
+  color:#23142c !important;
+  border:1px solid rgba(255,255,255,.62) !important;
+  box-shadow:0 18px 42px rgba(24,0,39,.30), inset 0 1px 0 rgba(255,255,255,.95) !important;
+  backdrop-filter:blur(16px) !important;
+  -webkit-backdrop-filter:blur(16px) !important;
+  font-size:13px !important;
+  line-height:1.22 !important;
+  font-weight:800 !important;
+  letter-spacing:.01em !important;
+  align-items:center !important;
+  opacity:0 !important;
+  overflow:hidden !important;
+  z-index:2147483600 !important;
+}
+
+body.mode-login .toast::before{
+  content:"!" !important;
+  position:absolute !important;
+  left:12px !important;
+  top:50% !important;
+  transform:translateY(-50%) !important;
+  width:34px !important;
+  height:34px !important;
+  border-radius:14px !important;
+  display:grid !important;
+  place-items:center !important;
+  background:linear-gradient(180deg,#ffcf3e,#ff9f1c) !important;
+  color:#4b2a00 !important;
+  font-size:21px !important;
+  font-weight:950 !important;
+  box-shadow:0 10px 18px rgba(255,159,28,.25), 0 0 0 7px rgba(255,193,7,.12) !important;
+}
+
+body.mode-login .toast::after{
+  content:"Aviso" !important;
+  position:absolute !important;
+  left:58px !important;
+  top:10px !important;
+  color:#742284 !important;
+  font-size:10px !important;
+  line-height:1 !important;
+  font-weight:950 !important;
+  letter-spacing:.13em !important;
+  text-transform:uppercase !important;
+}
+
+body.mode-login .toast.show{
+  display:flex !important;
+  opacity:1 !important;
+  transform:translateX(-50%) translateY(0) scale(1) !important;
+  animation:loginTopNotificationIn .26s cubic-bezier(.2,.9,.2,1) both !important;
+}
+
+@keyframes loginTopNotificationIn{
+  0%{
+    opacity:0;
+    transform:translateX(-50%) translateY(-22px) scale(.98);
+  }
+  100%{
+    opacity:1;
+    transform:translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+/* En pantallas bajitas, que no tape tanto */
+@media (max-height:650px){
+  body.mode-login .toast{
+    top:calc(env(safe-area-inset-top,0px) + 10px) !important;
+    width:min(336px, calc(100vw - 22px)) !important;
+    min-height:50px !important;
+    padding:18px 12px 9px 54px !important;
+    border-radius:18px !important;
+    font-size:12.5px !important;
+  }
+  body.mode-login .toast::before{
+    left:11px !important;
+    width:31px !important;
+    height:31px !important;
+    border-radius:12px !important;
+    font-size:19px !important;
+  }
+  body.mode-login .toast::after{
+    left:54px !important;
+    top:9px !important;
+    font-size:9.5px !important;
+  }
+}
+</style>
+
+
+<style id="login-top-notification-purple-sound">
+/* Notificación superior con color morado/turquesa, no amarillo */
+body.mode-login .toast{
+  position:fixed !important;
+  left:50% !important;
+  top:calc(env(safe-area-inset-top,0px) + 14px) !important;
+  bottom:auto !important;
+  transform:translateX(-50%) translateY(-18px) scale(.98) !important;
+  width:min(354px, calc(100vw - 28px)) !important;
+  min-height:54px !important;
+  padding:20px 14px 10px 58px !important;
+  border-radius:20px !important;
+  background:linear-gradient(180deg, rgba(255,255,255,.96), rgba(247,239,255,.94)) !important;
+  color:#24112f !important;
+  border:1px solid rgba(189,156,255,.45) !important;
+  box-shadow:0 18px 42px rgba(24,0,39,.30), inset 0 1px 0 rgba(255,255,255,.95) !important;
+  backdrop-filter:blur(16px) !important;
+  -webkit-backdrop-filter:blur(16px) !important;
+  font-size:13px !important;
+  line-height:1.22 !important;
+  font-weight:850 !important;
+  letter-spacing:.01em !important;
+  align-items:center !important;
+  opacity:0 !important;
+  overflow:hidden !important;
+  z-index:2147483600 !important;
+}
+
+body.mode-login .toast::before{
+  content:"!" !important;
+  position:absolute !important;
+  left:12px !important;
+  top:50% !important;
+  transform:translateY(-50%) !important;
+  width:34px !important;
+  height:34px !important;
+  border-radius:14px !important;
+  display:grid !important;
+  place-items:center !important;
+  background:linear-gradient(180deg,#9e32cf 0%,#742284 55%,#21c6bc 100%) !important;
+  color:#fff !important;
+  font-size:21px !important;
+  font-weight:950 !important;
+  box-shadow:0 10px 18px rgba(116,34,132,.26), 0 0 0 7px rgba(33,198,188,.12) !important;
+}
+
+body.mode-login .toast::after{
+  content:"Notificación" !important;
+  position:absolute !important;
+  left:58px !important;
+  top:10px !important;
+  color:#742284 !important;
+  font-size:10px !important;
+  line-height:1 !important;
+  font-weight:950 !important;
+  letter-spacing:.13em !important;
+  text-transform:uppercase !important;
+}
+
+body.mode-login .toast.show{
+  display:flex !important;
+  opacity:1 !important;
+  transform:translateX(-50%) translateY(0) scale(1) !important;
+  animation:loginTopNotificationInPurple .26s cubic-bezier(.2,.9,.2,1) both !important;
+}
+
+@keyframes loginTopNotificationInPurple{
+  0%{
+    opacity:0;
+    transform:translateX(-50%) translateY(-22px) scale(.98);
+  }
+  100%{
+    opacity:1;
+    transform:translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+@media (max-height:650px){
+  body.mode-login .toast{
+    top:calc(env(safe-area-inset-top,0px) + 10px) !important;
+    width:min(336px, calc(100vw - 22px)) !important;
+    min-height:50px !important;
+    padding:18px 12px 9px 54px !important;
+    border-radius:18px !important;
+    font-size:12.5px !important;
+  }
+  body.mode-login .toast::before{
+    left:11px !important;
+    width:31px !important;
+    height:31px !important;
+    border-radius:12px !important;
+    font-size:19px !important;
+  }
+  body.mode-login .toast::after{
+    left:54px !important;
+    top:9px !important;
+    font-size:9.5px !important;
+  }
+}
+</style>
+
+
+<style id="approval-waiting-modal-style">
+/* Modal de espera/aprobación del registro */
+body.mode-login #approvalStatusModal{
+  position:fixed !important;
+  inset:0 !important;
+  z-index:2147483400 !important;
+  display:none !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:24px 18px !important;
+  background:rgba(18,4,32,.42) !important;
+  backdrop-filter:blur(12px) !important;
+  -webkit-backdrop-filter:blur(12px) !important;
+}
+
+body.mode-login #approvalStatusModal.show{
+  display:flex !important;
+}
+
+body.mode-login .approvalStatusCard{
+  width:min(330px,92vw) !important;
+  border-radius:28px !important;
+  padding:18px 16px 15px !important;
+  text-align:center !important;
+  background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(249,245,255,.97)) !important;
+  color:#21142c !important;
+  box-shadow:0 30px 75px rgba(16,5,28,.38), inset 0 1px 0 rgba(255,255,255,.92) !important;
+  transform:translateY(8px) scale(.985) !important;
+  animation:approvalPop .24s cubic-bezier(.2,.9,.2,1) forwards !important;
+}
+
+@keyframes approvalPop{
+  to{ transform:translateY(0) scale(1); }
+}
+
+body.mode-login .approvalStatusIcon{
+  width:58px !important;
+  height:58px !important;
+  border-radius:22px !important;
+  margin:0 auto 10px !important;
+  display:grid !important;
+  place-items:center !important;
+  background:linear-gradient(180deg,#9e32cf,#742284) !important;
+  box-shadow:0 15px 28px rgba(116,34,132,.25),0 0 0 9px rgba(116,34,132,.08) !important;
+  color:#fff !important;
+  position:relative !important;
+}
+
+body.mode-login .approvalStatusCard.pending .approvalStatusIcon::before{
+  content:"" !important;
+  width:24px !important;
+  height:24px !important;
+  border:4px solid rgba(255,255,255,.42) !important;
+  border-top-color:#fff !important;
+  border-radius:999px !important;
+  animation:approvalSpin .86s linear infinite !important;
+}
+
+@keyframes approvalSpin{
+  to{ transform:rotate(360deg); }
+}
+
+body.mode-login .approvalStatusCard.approved .approvalStatusIcon{
+  background:linear-gradient(180deg,#1ecdc2,#12afa7) !important;
+  box-shadow:0 15px 28px rgba(18,175,167,.25),0 0 0 9px rgba(18,175,167,.10) !important;
+}
+
+body.mode-login .approvalStatusCard.approved .approvalStatusIcon::before{
+  content:"✓" !important;
+  font-size:34px !important;
+  line-height:1 !important;
+  font-weight:950 !important;
+  color:#fff !important;
+}
+
+body.mode-login .approvalStatusPill{
+  width:max-content !important;
+  max-width:100% !important;
+  margin:0 auto 9px !important;
+  padding:6px 12px !important;
+  border-radius:999px !important;
+  font-size:10.5px !important;
+  font-weight:950 !important;
+  letter-spacing:.12em !important;
+  text-transform:uppercase !important;
+  color:#742284 !important;
+  background:rgba(116,34,132,.10) !important;
+  border:1px solid rgba(116,34,132,.10) !important;
+}
+
+body.mode-login .approvalStatusCard.approved .approvalStatusPill{
+  color:#087f79 !important;
+  background:rgba(18,175,167,.12) !important;
+  border-color:rgba(18,175,167,.16) !important;
+}
+
+body.mode-login .approvalStatusTitle{
+  margin:0 !important;
+  font-size:20px !important;
+  line-height:1.12 !important;
+  font-weight:950 !important;
+  letter-spacing:-.02em !important;
+  color:#21142c !important;
+}
+
+body.mode-login .approvalStatusText{
+  margin:8px auto 13px !important;
+  max-width:270px !important;
+  color:#74667e !important;
+  font-size:13px !important;
+  line-height:1.34 !important;
+  font-weight:650 !important;
+}
+
+body.mode-login .approvalDataBox{
+  display:grid !important;
+  gap:8px !important;
+  text-align:left !important;
+  margin:0 0 13px !important;
+}
+
+body.mode-login .approvalDataItem{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:12px !important;
+  padding:10px 12px !important;
+  border-radius:16px !important;
+  background:#f4edf8 !important;
+  border:1px solid rgba(116,34,132,.08) !important;
+}
+
+body.mode-login .approvalDataItem span{
+  color:#7b6c86 !important;
+  font-size:11.5px !important;
+  font-weight:850 !important;
+}
+
+body.mode-login .approvalDataItem strong{
+  color:#2b1739 !important;
+  font-size:13px !important;
+  font-weight:950 !important;
+  text-align:right !important;
+  max-width:160px !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  white-space:nowrap !important;
+}
+
+body.mode-login .approvalStatusProgress{
+  height:8px !important;
+  border-radius:999px !important;
+  background:#eee5f4 !important;
+  overflow:hidden !important;
+  margin:2px 0 13px !important;
+}
+
+body.mode-login .approvalStatusProgress i{
+  display:block !important;
+  width:42% !important;
+  height:100% !important;
+  border-radius:inherit !important;
+  background:linear-gradient(90deg,#742284,#21c6bc,#742284) !important;
+  background-size:220% 100% !important;
+  animation:approvalMove 1.2s linear infinite !important;
+}
+
+@keyframes approvalMove{
+  0%{ transform:translateX(-110%); background-position:0 0; }
+  100%{ transform:translateX(260%); background-position:220% 0; }
+}
+
+body.mode-login .approvalStatusCard.approved .approvalStatusProgress{
+  display:none !important;
+}
+
+body.mode-login .approvalActions{
+  display:grid !important;
+  gap:9px !important;
+}
+
+body.mode-login .approvalBtn{
+  height:44px !important;
+  border:0 !important;
+  border-radius:16px !important;
+  font-size:14px !important;
+  font-weight:950 !important;
+  cursor:pointer !important;
+}
+
+body.mode-login .approvalBtn.primary{
+  color:#fff !important;
+  background:linear-gradient(180deg,#1ecdc2,#12afa7) !important;
+  box-shadow:0 14px 24px rgba(18,175,167,.22) !important;
+}
+
+body.mode-login .approvalBtn.secondary{
+  color:#742284 !important;
+  background:#f2edf7 !important;
+  box-shadow:inset 0 0 0 1px rgba(116,34,132,.08) !important;
+}
+
+body.mode-login .approvalStatusCard.pending .approvalLoginBtn{
+  display:none !important;
+}
+
+body.mode-login .approvalStatusCard.approved .approvalWaitBtn{
+  display:none !important;
+}
+
+@media (max-height:650px){
+  body.mode-login .approvalStatusCard{
+    width:min(305px,91vw) !important;
+    border-radius:24px !important;
+    padding:15px 14px 13px !important;
+  }
+  body.mode-login .approvalStatusIcon{
+    width:50px !important;
+    height:50px !important;
+    border-radius:19px !important;
+    margin-bottom:8px !important;
+  }
+  body.mode-login .approvalStatusTitle{
+    font-size:18px !important;
+  }
+  body.mode-login .approvalStatusText{
+    font-size:12.4px !important;
+    margin-bottom:11px !important;
+  }
+  body.mode-login .approvalDataItem{
+    padding:8px 10px !important;
+    border-radius:14px !important;
+  }
+  body.mode-login .approvalBtn{
+    height:40px !important;
+    font-size:13px !important;
+  }
+}
+</style>
+
+
+<style id="approval-modal-smaller-share-style">
+/* Modal de aprobación más pequeño + botón compartir */
+body.mode-login .approvalStatusCard{
+  width:min(300px,90vw) !important;
+  border-radius:24px !important;
+  padding:14px 13px 13px !important;
+}
+
+body.mode-login .approvalStatusIcon{
+  width:48px !important;
+  height:48px !important;
+  border-radius:18px !important;
+  margin:0 auto 8px !important;
+}
+
+body.mode-login .approvalStatusCard.pending .approvalStatusIcon::before{
+  width:20px !important;
+  height:20px !important;
+  border-width:3.5px !important;
+}
+
+body.mode-login .approvalStatusCard.approved .approvalStatusIcon::before{
+  font-size:29px !important;
+}
+
+body.mode-login .approvalStatusPill{
+  padding:5px 10px !important;
+  margin-bottom:7px !important;
+  font-size:9.5px !important;
+}
+
+body.mode-login .approvalStatusTitle{
+  font-size:18px !important;
+  line-height:1.12 !important;
+}
+
+body.mode-login .approvalStatusText{
+  margin:7px auto 10px !important;
+  max-width:250px !important;
+  font-size:12.3px !important;
+  line-height:1.30 !important;
+}
+
+body.mode-login .approvalDataBox{
+  gap:6px !important;
+  margin-bottom:10px !important;
+}
+
+body.mode-login .approvalDataItem{
+  padding:8px 10px !important;
+  border-radius:14px !important;
+}
+
+body.mode-login .approvalDataItem span{
+  font-size:10.8px !important;
+}
+
+body.mode-login .approvalDataItem strong{
+  font-size:12.5px !important;
+  max-width:145px !important;
+}
+
+body.mode-login .approvalStatusProgress{
+  height:6px !important;
+  margin:0 0 10px !important;
+}
+
+body.mode-login .approvalActions{
+  gap:7px !important;
+}
+
+body.mode-login .approvalBtn{
+  height:38px !important;
+  border-radius:14px !important;
+  font-size:12.8px !important;
+}
+
+body.mode-login .approvalShareBtn{
+  color:#fff !important;
+  background:linear-gradient(180deg,#9e32cf,#742284) !important;
+  box-shadow:0 12px 22px rgba(116,34,132,.20) !important;
+}
+
+body.mode-login .approvalShareBtn::before{
+  content:"↗ " !important;
+  font-weight:950 !important;
+}
+
+/* En espera: compartir arriba y seguir esperando abajo */
+body.mode-login .approvalStatusCard.pending .approvalShareBtn{
+  order:1 !important;
+}
+body.mode-login .approvalStatusCard.pending .approvalWaitBtn{
+  order:2 !important;
+}
+
+/* Aprobado: iniciar sesión arriba y compartir abajo */
+body.mode-login .approvalStatusCard.approved .approvalLoginBtn{
+  order:1 !important;
+}
+body.mode-login .approvalStatusCard.approved .approvalShareBtn{
+  order:2 !important;
+}
+
+/* Compacto para pantallas bajas */
+@media (max-height:650px){
+  body.mode-login .approvalStatusCard{
+    width:min(286px,90vw) !important;
+    padding:12px 12px 11px !important;
+    border-radius:22px !important;
+  }
+  body.mode-login .approvalStatusIcon{
+    width:43px !important;
+    height:43px !important;
+    border-radius:16px !important;
+    margin-bottom:7px !important;
+  }
+  body.mode-login .approvalStatusTitle{
+    font-size:16.5px !important;
+  }
+  body.mode-login .approvalStatusText{
+    font-size:11.8px !important;
+    margin-bottom:8px !important;
+  }
+  body.mode-login .approvalDataItem{
+    padding:7px 9px !important;
+  }
+  body.mode-login .approvalBtn{
+    height:36px !important;
+    font-size:12.3px !important;
+  }
+}
+</style>
+
+
+<style id="approval-cancel-small-button-style">
+/* Botón cancelar pequeño en el aviso de aprobación */
+body.mode-login .approvalCancelBtn{
+  height:30px !important;
+  min-height:30px !important;
+  width:max-content !important;
+  min-width:92px !important;
+  justify-self:center !important;
+  padding:0 14px !important;
+  border-radius:999px !important;
+  font-size:11.5px !important;
+  font-weight:850 !important;
+  color:rgba(116,34,132,.82) !important;
+  background:transparent !important;
+  border:1px solid rgba(116,34,132,.18) !important;
+  box-shadow:none !important;
+}
+
+body.mode-login .approvalCancelBtn:active{
+  transform:scale(.97) !important;
+  background:rgba(116,34,132,.06) !important;
+}
+
+@media (max-height:650px){
+  body.mode-login .approvalCancelBtn{
+    height:28px !important;
+    min-height:28px !important;
+    min-width:86px !important;
+    font-size:11px !important;
+  }
+}
+</style>
+
+
+<style id="approval-cancel-corner-style">
+/* Cancelar ahora va arriba a la derecha, pequeño tipo cerrar */
+body.mode-login .approvalStatusCard{
+  position:relative !important;
+}
+
+body.mode-login .approvalCancelBtn{
+  position:absolute !important;
+  top:10px !important;
+  right:10px !important;
+  width:30px !important;
+  min-width:30px !important;
+  height:30px !important;
+  min-height:30px !important;
+  padding:0 !important;
+  border-radius:999px !important;
+  display:grid !important;
+  place-items:center !important;
+  font-size:21px !important;
+  line-height:1 !important;
+  font-weight:800 !important;
+  color:#742284 !important;
+  background:rgba(116,34,132,.08) !important;
+  border:1px solid rgba(116,34,132,.14) !important;
+  box-shadow:none !important;
+  z-index:3 !important;
+}
+
+body.mode-login .approvalCancelBtn::before{
+  content:"" !important;
+}
+
+body.mode-login .approvalCancelBtn:active{
+  transform:scale(.94) !important;
+  background:rgba(116,34,132,.14) !important;
+}
+
+@media (max-height:650px){
+  body.mode-login .approvalCancelBtn{
+    top:8px !important;
+    right:8px !important;
+    width:28px !important;
+    min-width:28px !important;
+    height:28px !important;
+    min-height:28px !important;
+    font-size:20px !important;
+  }
+}
+</style>
+
+
+<style id="yapeton-ticker-topbar-style">
+/* Texto recorriendo en la barra YAPETON · SONYER */
+body.mode-login #loginWrap .infoPill{
+  overflow:hidden !important;
+  position:relative !important;
+}
+
+body.mode-login #loginWrap .infoPill::after{
+  content:"" !important;
+  position:absolute !important;
+  top:0 !important;
+  right:0 !important;
+  width:42px !important;
+  height:100% !important;
+  background:linear-gradient(90deg, rgba(125,38,150,0), rgba(125,38,150,.45)) !important;
+  pointer-events:none !important;
+  z-index:2 !important;
+}
+
+body.mode-login #loginWrap .pillText{
+  display:flex !important;
+  align-items:center !important;
+  gap:0 !important;
+  white-space:nowrap !important;
+  min-width:max-content !important;
+  font-size:12px !important;
+  letter-spacing:.13em !important;
+  font-weight:800 !important;
+  will-change:transform !important;
+  animation:yapetonTickerMove 15s linear infinite !important;
+  padding-left:4px !important;
+}
+
+body.mode-login #loginWrap .pillText .tickerItem{
+  display:inline-flex !important;
+  align-items:center !important;
+  padding-right:34px !important;
+  color:#fff !important;
+  text-shadow:0 1px 0 rgba(0,0,0,.10) !important;
+}
+
+body.mode-login #loginWrap .pillText .tickerDot{
+  display:inline-block !important;
+  margin:0 12px !important;
+  opacity:.75 !important;
+  color:#fff !important;
+}
+
+@keyframes yapetonTickerMove{
+  0%{ transform:translateX(0); }
+  100%{ transform:translateX(-50%); }
+}
+
+/* Se pausa apenas al tocar para que el usuario pueda leer */
+body.mode-login #loginWrap .infoPill:active .pillText{
+  animation-play-state:paused !important;
+}
+
+@media (max-width:360px){
+  body.mode-login #loginWrap .pillText{
+    font-size:11px !important;
+    letter-spacing:.11em !important;
+    animation-duration:14s !important;
+  }
+}
+</style>
+
+
+<style id="yapeton-ticker-pro-ad-style">
+/* Barra superior tipo anuncio profesional */
+body.mode-login #loginWrap .topbar{
+  gap:10px !important;
+}
+
+body.mode-login #loginWrap .back{
+  flex:0 0 42px !important;
+  width:42px !important;
+  min-width:42px !important;
+  height:42px !important;
+}
+
+body.mode-login #loginWrap .infoPill{
+  position:relative !important;
+  overflow:hidden !important;
+  height:46px !important;
+  min-height:46px !important;
+  padding:0 14px 0 58px !important;
+  border-radius:22px !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,.10)) !important;
+  border:1px solid rgba(255,255,255,.24) !important;
+  box-shadow:0 14px 28px rgba(20,0,35,.18), inset 0 1px 0 rgba(255,255,255,.18) !important;
+}
+
+body.mode-login #loginWrap .infoPill::before{
+  content:"" !important;
+  position:absolute !important;
+  left:46px !important;
+  top:9px !important;
+  bottom:9px !important;
+  width:1px !important;
+  background:rgba(255,255,255,.22) !important;
+  z-index:4 !important;
+}
+
+body.mode-login #loginWrap .infoPill::after{
+  content:"" !important;
+  position:absolute !important;
+  top:0 !important;
+  right:0 !important;
+  width:64px !important;
+  height:100% !important;
+  background:linear-gradient(90deg, rgba(116,34,132,0), rgba(116,34,132,.68)) !important;
+  pointer-events:none !important;
+  z-index:5 !important;
+}
+
+body.mode-login #loginWrap .dot{
+  position:absolute !important;
+  left:14px !important;
+  top:50% !important;
+  transform:translateY(-50%) !important;
+  width:20px !important;
+  height:20px !important;
+  z-index:6 !important;
+  flex:0 0 20px !important;
+  box-shadow:0 0 0 8px rgba(17,198,255,.12), 0 0 22px rgba(17,198,255,.42) !important;
+}
+
+body.mode-login #loginWrap .pillText{
+  position:relative !important;
+  z-index:3 !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:0 !important;
+  white-space:nowrap !important;
+  min-width:max-content !important;
+  padding-left:0 !important;
+  font-size:13px !important;
+  line-height:1 !important;
+  letter-spacing:.015em !important;
+  font-weight:800 !important;
+  color:#fff !important;
+  text-shadow:0 1px 2px rgba(0,0,0,.16) !important;
+  will-change:transform !important;
+  animation:yapetonTickerProMove 23s linear infinite !important;
+}
+
+body.mode-login #loginWrap .pillText .tickerItem{
+  display:inline-flex !important;
+  align-items:center !important;
+  padding-right:42px !important;
+  color:#fff !important;
+}
+
+body.mode-login #loginWrap .pillText .tickerBadge{
+  display:inline-flex !important;
+  align-items:center !important;
+  height:24px !important;
+  padding:0 10px !important;
+  margin-right:12px !important;
+  border-radius:999px !important;
+  color:#1d1130 !important;
+  background:rgba(255,255,255,.92) !important;
+  font-size:10.5px !important;
+  font-weight:950 !important;
+  letter-spacing:.06em !important;
+  text-transform:uppercase !important;
+  box-shadow:0 7px 14px rgba(0,0,0,.10) !important;
+}
+
+body.mode-login #loginWrap .pillText .tickerStrong{
+  color:#ffffff !important;
+  font-weight:950 !important;
+  letter-spacing:.04em !important;
+}
+
+body.mode-login #loginWrap .pillText .tickerDot{
+  display:inline-block !important;
+  width:5px !important;
+  height:5px !important;
+  margin:0 14px !important;
+  border-radius:999px !important;
+  background:#21c6bc !important;
+  box-shadow:0 0 10px rgba(33,198,188,.75) !important;
+  opacity:1 !important;
+}
+
+@keyframes yapetonTickerProMove{
+  0%{ transform:translateX(0); }
+  100%{ transform:translateX(-50%); }
+}
+
+body.mode-login #loginWrap .infoPill:active .pillText{
+  animation-play-state:paused !important;
+}
+
+@media (max-width:360px){
+  body.mode-login #loginWrap .back{
+    flex-basis:38px !important;
+    width:38px !important;
+    min-width:38px !important;
+    height:38px !important;
+  }
+  body.mode-login #loginWrap .infoPill{
+    height:42px !important;
+    min-height:42px !important;
+    padding-left:52px !important;
+  }
+  body.mode-login #loginWrap .dot{
+    left:13px !important;
+    width:18px !important;
+    height:18px !important;
+  }
+  body.mode-login #loginWrap .infoPill::before{
+    left:42px !important;
+  }
+  body.mode-login #loginWrap .pillText{
+    font-size:12px !important;
+    animation-duration:21s !important;
+  }
+  body.mode-login #loginWrap .pillText .tickerBadge{
+    height:22px !important;
+    padding:0 9px !important;
+    font-size:9.8px !important;
+  }
+}
+</style>
+
+
+<style id="sonyer-pro-ad-final-style">
+/* Anuncio superior profesional, sin flecha y sin círculo azul */
+body.mode-login #loginWrap .topbar{
+  margin-top:2px !important;
+  gap:0 !important;
+}
+
+/* Oculta la flecha */
+body.mode-login #loginWrap .back{
+  display:none !important;
+}
+
+/* Barra ocupa todo el ancho */
+body.mode-login #loginWrap .infoPill{
+  width:100% !important;
+  flex:1 1 100% !important;
+  height:48px !important;
+  min-height:48px !important;
+  padding:0 0 0 0 !important;
+  border-radius:24px !important;
+  overflow:hidden !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.24), rgba(255,255,255,.10)),
+    linear-gradient(90deg, rgba(33,198,188,.16), rgba(116,34,132,.10), rgba(255,255,255,.08)) !important;
+  border:1px solid rgba(255,255,255,.25) !important;
+  box-shadow:
+    0 16px 30px rgba(20,0,35,.18),
+    inset 0 1px 0 rgba(255,255,255,.22) !important;
+  backdrop-filter:blur(16px) !important;
+  -webkit-backdrop-filter:blur(16px) !important;
+}
+
+/* Quita el círculo azul */
+body.mode-login #loginWrap .dot{
+  display:none !important;
+}
+
+/* Quita líneas separadoras antiguas */
+body.mode-login #loginWrap .infoPill::before{
+  display:none !important;
+}
+
+body.mode-login #loginWrap .infoPill::after{
+  content:"" !important;
+  position:absolute !important;
+  top:0 !important;
+  right:0 !important;
+  width:70px !important;
+  height:100% !important;
+  background:linear-gradient(90deg, rgba(116,34,132,0), rgba(116,34,132,.72)) !important;
+  pointer-events:none !important;
+  z-index:5 !important;
+}
+
+/* Texto del anuncio */
+body.mode-login #loginWrap .pillText{
+  position:relative !important;
+  z-index:3 !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:0 !important;
+  white-space:nowrap !important;
+  min-width:max-content !important;
+  padding-left:0 !important;
+  font-size:13.5px !important;
+  line-height:1 !important;
+  letter-spacing:.01em !important;
+  font-weight:850 !important;
+  color:#fff !important;
+  text-shadow:0 1px 2px rgba(0,0,0,.16) !important;
+  will-change:transform !important;
+  animation:sonyerAdTickerMove 26s linear infinite !important;
+}
+
+body.mode-login #loginWrap .pillText .tickerItem{
+  display:inline-flex !important;
+  align-items:center !important;
+  padding-right:44px !important;
+  color:#fff !important;
+}
+
+body.mode-login #loginWrap .pillText .sonyerBadge{
+  display:inline-flex !important;
+  align-items:center !important;
+  height:28px !important;
+  padding:0 13px !important;
+  margin:0 12px 0 12px !important;
+  border-radius:999px !important;
+  color:#fff !important;
+  background:linear-gradient(180deg,#21c6bc,#119f98) !important;
+  font-size:11px !important;
+  font-weight:950 !important;
+  letter-spacing:.07em !important;
+  text-transform:uppercase !important;
+  box-shadow:
+    0 9px 18px rgba(33,198,188,.24),
+    inset 0 1px 0 rgba(255,255,255,.22) !important;
+}
+
+body.mode-login #loginWrap .pillText .ownerText{
+  color:#ffffff !important;
+  font-weight:950 !important;
+  letter-spacing:.06em !important;
+  text-transform:uppercase !important;
+}
+
+body.mode-login #loginWrap .pillText .adText{
+  color:rgba(255,255,255,.96) !important;
+  font-weight:800 !important;
+}
+
+body.mode-login #loginWrap .pillText .monthBadge{
+  display:inline-flex !important;
+  align-items:center !important;
+  height:26px !important;
+  padding:0 11px !important;
+  margin:0 12px !important;
+  border-radius:999px !important;
+  color:#2b1838 !important;
+  background:rgba(255,255,255,.92) !important;
+  font-size:10.5px !important;
+  font-weight:950 !important;
+  letter-spacing:.06em !important;
+  text-transform:uppercase !important;
+  box-shadow:0 8px 14px rgba(0,0,0,.10) !important;
+}
+
+body.mode-login #loginWrap .pillText .tickerDot{
+  display:inline-block !important;
+  width:5px !important;
+  height:5px !important;
+  margin:0 13px !important;
+  border-radius:999px !important;
+  background:#21c6bc !important;
+  box-shadow:0 0 10px rgba(33,198,188,.75) !important;
+  opacity:1 !important;
+}
+
+@keyframes sonyerAdTickerMove{
+  0%{ transform:translateX(0); }
+  100%{ transform:translateX(-50%); }
+}
+
+body.mode-login #loginWrap .infoPill:active .pillText{
+  animation-play-state:paused !important;
+}
+
+@media (max-width:360px){
+  body.mode-login #loginWrap .infoPill{
+    height:44px !important;
+    min-height:44px !important;
+    border-radius:22px !important;
+  }
+  body.mode-login #loginWrap .pillText{
+    font-size:12.5px !important;
+    animation-duration:24s !important;
+  }
+  body.mode-login #loginWrap .pillText .sonyerBadge{
+    height:25px !important;
+    padding:0 11px !important;
+    font-size:10px !important;
+  }
+  body.mode-login #loginWrap .pillText .monthBadge{
+    height:24px !important;
+    padding:0 10px !important;
+    font-size:9.8px !important;
+  }
+}
+</style>
+
+
+<style id="sonyer-carousel-banner-style">
+/* ===== Banner carrusel superior profesional ===== */
+body.mode-login #loginWrap .topbar{
+  gap:0 !important;
+  margin-bottom:14px !important;
+}
+
+body.mode-login #loginWrap .back{
+  display:none !important;
+}
+
+body.mode-login #loginWrap .infoPill{
+  position:relative !important;
+  width:100% !important;
+  min-height:62px !important;
+  height:62px !important;
+  padding:0 !important;
+  border-radius:22px !important;
+  overflow:hidden !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.20), rgba(255,255,255,.10)),
+    linear-gradient(135deg, rgba(33,198,188,.18), rgba(116,34,132,.18), rgba(255,255,255,.08)) !important;
+  border:1px solid rgba(255,255,255,.24) !important;
+  box-shadow:0 16px 32px rgba(15,0,26,.20), inset 0 1px 0 rgba(255,255,255,.22) !important;
+  backdrop-filter:blur(16px) !important;
+  -webkit-backdrop-filter:blur(16px) !important;
+}
+
+/* ocultar elementos viejos */
+body.mode-login #loginWrap .infoPill .dot,
+body.mode-login #loginWrap .infoPill .pillText{
+  display:none !important;
+}
+
+body.mode-login #loginWrap .promoCarousel{
+  position:relative !important;
+  width:100% !important;
+  height:100% !important;
+}
+
+body.mode-login #loginWrap .promoTrack{
+  position:relative !important;
+  width:100% !important;
+  height:100% !important;
+}
+
+body.mode-login #loginWrap .promoSlide{
+  position:absolute !important;
+  inset:0 !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:12px !important;
+  padding:10px 14px !important;
+  opacity:0 !important;
+  transform:translateX(16px) scale(.985) !important;
+  transition:opacity .45s ease, transform .45s ease !important;
+  pointer-events:none !important;
+}
+
+body.mode-login #loginWrap .promoSlide.active{
+  opacity:1 !important;
+  transform:translateX(0) scale(1) !important;
+  pointer-events:auto !important;
+}
+
+body.mode-login #loginWrap .promoIcon{
+  width:38px !important;
+  height:38px !important;
+  border-radius:14px !important;
+  display:grid !important;
+  place-items:center !important;
+  flex:0 0 38px !important;
+  background:linear-gradient(180deg,#25d0c5,#169f99) !important;
+  color:#fff !important;
+  font-size:18px !important;
+  font-weight:900 !important;
+  box-shadow:0 10px 22px rgba(33,198,188,.30), inset 0 1px 0 rgba(255,255,255,.30) !important;
+}
+
+body.mode-login #loginWrap .promoContent{
+  min-width:0 !important;
+  flex:1 1 auto !important;
+  display:flex !important;
+  flex-direction:column !important;
+  gap:2px !important;
+}
+
+body.mode-login #loginWrap .promoHeadline{
+  margin:0 !important;
+  font-size:13.2px !important;
+  line-height:1.1 !important;
+  font-weight:950 !important;
+  letter-spacing:.01em !important;
+  color:#fff !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+
+body.mode-login #loginWrap .promoHeadline .brandOwner{
+  color:#33dfd2 !important;
+  text-shadow:0 0 10px rgba(51,223,210,.22) !important;
+}
+
+body.mode-login #loginWrap .promoSub{
+  margin:0 !important;
+  font-size:10.9px !important;
+  line-height:1.15 !important;
+  font-weight:700 !important;
+  color:rgba(255,255,255,.88) !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+
+body.mode-login #loginWrap .promoMeta{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:8px !important;
+  flex:0 0 auto !important;
+}
+
+body.mode-login #loginWrap .promoBadge{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-width:72px !important;
+  height:26px !important;
+  padding:0 10px !important;
+  border-radius:999px !important;
+  background:rgba(255,255,255,.92) !important;
+  color:#2d1f3a !important;
+  font-size:10px !important;
+  font-weight:950 !important;
+  letter-spacing:.06em !important;
+  text-transform:uppercase !important;
+  box-shadow:0 8px 14px rgba(0,0,0,.10) !important;
+}
+
+body.mode-login #loginWrap .promoDots{
+  position:absolute !important;
+  left:50% !important;
+  bottom:6px !important;
+  transform:translateX(-50%) !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:6px !important;
+  z-index:3 !important;
+}
+
+body.mode-login #loginWrap .promoDot{
+  width:6px !important;
+  height:6px !important;
+  border-radius:999px !important;
+  background:rgba(255,255,255,.38) !important;
+  transition:all .25s ease !important;
+}
+
+body.mode-login #loginWrap .promoDot.active{
+  width:18px !important;
+  background:#21c6bc !important;
+  box-shadow:0 0 12px rgba(33,198,188,.55) !important;
+}
+
+@media (max-width:360px){
+  body.mode-login #loginWrap .infoPill{
+    min-height:58px !important;
+    height:58px !important;
+    border-radius:20px !important;
+  }
+  body.mode-login #loginWrap .promoSlide{
+    padding:9px 12px !important;
+    gap:10px !important;
+  }
+  body.mode-login #loginWrap .promoIcon{
+    width:34px !important;
+    height:34px !important;
+    flex-basis:34px !important;
+    border-radius:12px !important;
+    font-size:17px !important;
+  }
+  body.mode-login #loginWrap .promoHeadline{
+    font-size:12.2px !important;
+  }
+  body.mode-login #loginWrap .promoSub{
+    font-size:10.2px !important;
+  }
+  body.mode-login #loginWrap .promoBadge{
+    min-width:64px !important;
+    height:24px !important;
+    font-size:9.4px !important;
+    padding:0 8px !important;
+  }
+}
+</style>
+
+
+<style id="sonyer-photo-carousel-final-style">
+/* ===== Banner carrusel con fotos reales y texto más legible ===== */
+body.mode-login #loginWrap .topbar{
+  gap:0 !important;
+  margin-bottom:16px !important;
+}
+
+body.mode-login #loginWrap .back{
+  display:none !important;
+}
+
+body.mode-login #loginWrap .infoPill{
+  position:relative !important;
+  width:100% !important;
+  min-height:84px !important;
+  height:84px !important;
+  padding:0 !important;
+  border-radius:24px !important;
+  overflow:hidden !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.08)),
+    linear-gradient(135deg, rgba(255,255,255,.10), rgba(71,14,106,.18)) !important;
+  border:1px solid rgba(255,255,255,.23) !important;
+  box-shadow:0 18px 38px rgba(22,0,33,.20), inset 0 1px 0 rgba(255,255,255,.24) !important;
+  backdrop-filter:blur(16px) !important;
+  -webkit-backdrop-filter:blur(16px) !important;
+}
+
+/* Oculta elementos antiguos */
+body.mode-login #loginWrap .infoPill .dot,
+body.mode-login #loginWrap .infoPill .pillText{
+  display:none !important;
+}
+
+body.mode-login #loginWrap .promoCarousel{
+  position:relative !important;
+  width:100% !important;
+  height:100% !important;
+}
+
+body.mode-login #loginWrap .promoTrack{
+  position:relative !important;
+  width:100% !important;
+  height:100% !important;
+}
+
+body.mode-login #loginWrap .promoSlide{
+  position:absolute !important;
+  inset:0 !important;
+  display:grid !important;
+  grid-template-columns:56px 1fr auto !important;
+  align-items:center !important;
+  gap:12px !important;
+  padding:12px 14px !important;
+  opacity:0 !important;
+  transform:translateX(14px) scale(.985) !important;
+  transition:opacity .42s ease, transform .42s ease !important;
+  pointer-events:none !important;
+}
+
+body.mode-login #loginWrap .promoSlide.active{
+  opacity:1 !important;
+  transform:translateX(0) scale(1) !important;
+  pointer-events:auto !important;
+}
+
+body.mode-login #loginWrap .promoPhoto{
+  width:56px !important;
+  height:56px !important;
+  border-radius:18px !important;
+  overflow:hidden !important;
+  box-shadow:0 10px 18px rgba(0,0,0,.16), inset 0 1px 0 rgba(255,255,255,.32) !important;
+  background:rgba(255,255,255,.16) !important;
+}
+
+body.mode-login #loginWrap .promoPhoto img{
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+  display:block !important;
+}
+
+body.mode-login #loginWrap .promoContent{
+  min-width:0 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:center !important;
+  gap:4px !important;
+}
+
+body.mode-login #loginWrap .promoHeadline{
+  margin:0 !important;
+  font-size:15px !important;
+  line-height:1.15 !important;
+  font-weight:950 !important;
+  letter-spacing:-.01em !important;
+  color:#ffffff !important;
+  text-shadow:0 1px 2px rgba(0,0,0,.14) !important;
+  white-space:normal !important;
+  display:-webkit-box !important;
+  -webkit-line-clamp:2 !important;
+  -webkit-box-orient:vertical !important;
+  overflow:hidden !important;
+}
+
+body.mode-login #loginWrap .promoHeadline .brandOwner{
+  color:#41e1d6 !important;
+  text-shadow:0 0 10px rgba(65,225,214,.24) !important;
+}
+
+body.mode-login #loginWrap .promoSub{
+  margin:0 !important;
+  font-size:11.4px !important;
+  line-height:1.2 !important;
+  font-weight:700 !important;
+  color:rgba(255,255,255,.90) !important;
+  white-space:normal !important;
+  display:-webkit-box !important;
+  -webkit-line-clamp:2 !important;
+  -webkit-box-orient:vertical !important;
+  overflow:hidden !important;
+}
+
+body.mode-login #loginWrap .promoMeta{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:flex-end !important;
+  justify-content:center !important;
+  gap:8px !important;
+  flex:0 0 auto !important;
+}
+
+body.mode-login #loginWrap .promoBadge{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-width:76px !important;
+  height:28px !important;
+  padding:0 10px !important;
+  border-radius:999px !important;
+  background:rgba(255,255,255,.93) !important;
+  color:#2e1d39 !important;
+  font-size:10px !important;
+  font-weight:950 !important;
+  letter-spacing:.07em !important;
+  text-transform:uppercase !important;
+  box-shadow:0 8px 16px rgba(0,0,0,.10) !important;
+}
+
+body.mode-login #loginWrap .promoMini{
+  font-size:10px !important;
+  line-height:1 !important;
+  font-weight:900 !important;
+  color:#dffdf9 !important;
+  letter-spacing:.08em !important;
+  text-transform:uppercase !important;
+  opacity:.95 !important;
+}
+
+body.mode-login #loginWrap .promoDots{
+  position:absolute !important;
+  left:50% !important;
+  bottom:7px !important;
+  transform:translateX(-50%) !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:6px !important;
+  z-index:3 !important;
+}
+
+body.mode-login #loginWrap .promoDot{
+  width:6px !important;
+  height:6px !important;
+  border-radius:999px !important;
+  background:rgba(255,255,255,.42) !important;
+  transition:all .25s ease !important;
+}
+
+body.mode-login #loginWrap .promoDot.active{
+  width:18px !important;
+  background:#21c6bc !important;
+  box-shadow:0 0 12px rgba(33,198,188,.55) !important;
+}
+
+@media (max-width:390px){
+  body.mode-login #loginWrap .infoPill{
+    min-height:80px !important;
+    height:80px !important;
+    border-radius:22px !important;
+  }
+  body.mode-login #loginWrap .promoSlide{
+    grid-template-columns:52px 1fr auto !important;
+    gap:10px !important;
+    padding:11px 12px !important;
+  }
+  body.mode-login #loginWrap .promoPhoto{
+    width:52px !important;
+    height:52px !important;
+    border-radius:16px !important;
+  }
+  body.mode-login #loginWrap .promoHeadline{
+    font-size:14px !important;
+  }
+  body.mode-login #loginWrap .promoSub{
+    font-size:10.8px !important;
+  }
+  body.mode-login #loginWrap .promoBadge{
+    min-width:68px !important;
+    height:26px !important;
+    font-size:9.4px !important;
+    padding:0 8px !important;
+  }
+  body.mode-login #loginWrap .promoMini{
+    font-size:9.2px !important;
+  }
+}
+</style>
+
+
+<style id="banner-final-fixed-no-photos-style">
+/* ===== Banner final corregido sin personas ===== */
+body.mode-login #loginWrap .back{
+  display:none !important;
+}
+
+body.mode-login #loginWrap .topbar{
+  gap:0 !important;
+  margin-bottom:16px !important;
+}
+
+body.mode-login #loginWrap .infoPill{
+  position:relative !important;
+  width:100% !important;
+  min-height:88px !important;
+  height:88px !important;
+  padding:0 !important;
+  border-radius:24px !important;
+  overflow:hidden !important;
+  border:1px solid rgba(255,255,255,.24) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.20), rgba(255,255,255,.09)),
+    linear-gradient(135deg, rgba(33,198,188,.16), rgba(116,34,132,.18), rgba(255,255,255,.08)) !important;
+  box-shadow:0 18px 38px rgba(22,0,33,.20), inset 0 1px 0 rgba(255,255,255,.24) !important;
+  backdrop-filter:blur(16px) !important;
+  -webkit-backdrop-filter:blur(16px) !important;
+}
+
+/* ocultar todo lo anterior dentro del banner */
+body.mode-login #loginWrap .infoPill > :not(.sonyerFinalBanner){
+  display:none !important;
+}
+
+body.mode-login #loginWrap .sonyerFinalBanner{
+  position:relative !important;
+  width:100% !important;
+  height:100% !important;
+  display:block !important;
+}
+
+body.mode-login #loginWrap .sonyerFinalSlide{
+  position:absolute !important;
+  inset:0 !important;
+  display:grid !important;
+  grid-template-columns:48px minmax(0, 1fr) 74px !important;
+  align-items:center !important;
+  gap:12px !important;
+  padding:12px 13px 18px 13px !important;
+  opacity:0 !important;
+  transform:translateX(12px) scale(.985) !important;
+  transition:opacity .38s ease, transform .38s ease !important;
+  pointer-events:none !important;
+}
+
+body.mode-login #loginWrap .sonyerFinalSlide.active{
+  opacity:1 !important;
+  transform:translateX(0) scale(1) !important;
+  pointer-events:auto !important;
+}
+
+body.mode-login #loginWrap .sonyerFinalIcon{
+  width:48px !important;
+  height:48px !important;
+  border-radius:16px !important;
+  display:grid !important;
+  place-items:center !important;
+  background:linear-gradient(180deg,#24d6c9,#742284) !important;
+  color:#fff !important;
+  font-size:22px !important;
+  font-weight:950 !important;
+  box-shadow:0 10px 20px rgba(0,0,0,.16), inset 0 1px 0 rgba(255,255,255,.28) !important;
+}
+
+body.mode-login #loginWrap .sonyerFinalText{
+  min-width:0 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  gap:4px !important;
+}
+
+body.mode-login #loginWrap .sonyerFinalTitle{
+  margin:0 !important;
+  color:#fff !important;
+  font-size:14.6px !important;
+  line-height:1.15 !important;
+  font-weight:950 !important;
+  letter-spacing:-.01em !important;
+  text-shadow:0 1px 2px rgba(0,0,0,.16) !important;
+  white-space:normal !important;
+  overflow:hidden !important;
+  display:-webkit-box !important;
+  -webkit-line-clamp:2 !important;
+  -webkit-box-orient:vertical !important;
+}
+
+body.mode-login #loginWrap .sonyerFinalTitle .brandOwner{
+  color:#41e1d6 !important;
+  text-shadow:0 0 10px rgba(65,225,214,.26) !important;
+}
+
+body.mode-login #loginWrap .sonyerFinalSub{
+  margin:0 !important;
+  color:rgba(255,255,255,.90) !important;
+  font-size:10.8px !important;
+  line-height:1.18 !important;
+  font-weight:750 !important;
+  white-space:normal !important;
+  overflow:hidden !important;
+  display:-webkit-box !important;
+  -webkit-line-clamp:2 !important;
+  -webkit-box-orient:vertical !important;
+}
+
+body.mode-login #loginWrap .sonyerFinalMeta{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:flex-end !important;
+  justify-content:center !important;
+  gap:8px !important;
+  min-width:0 !important;
+}
+
+body.mode-login #loginWrap .sonyerFinalBadge{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:72px !important;
+  height:26px !important;
+  border-radius:999px !important;
+  background:rgba(255,255,255,.94) !important;
+  color:#2f1e3a !important;
+  font-size:9.4px !important;
+  font-weight:950 !important;
+  letter-spacing:.06em !important;
+  text-transform:uppercase !important;
+  box-shadow:0 8px 16px rgba(0,0,0,.10) !important;
+  white-space:nowrap !important;
+}
+
+body.mode-login #loginWrap .sonyerFinalTag{
+  color:#d6fff9 !important;
+  font-size:9.2px !important;
+  line-height:1 !important;
+  font-weight:950 !important;
+  letter-spacing:.08em !important;
+  text-transform:uppercase !important;
+  white-space:nowrap !important;
+}
+
+body.mode-login #loginWrap .sonyerFinalDots{
+  position:absolute !important;
+  left:76px !important;
+  bottom:7px !important;
+  display:flex !important;
+  gap:6px !important;
+  z-index:3 !important;
+}
+
+body.mode-login #loginWrap .sonyerFinalDot{
+  width:6px !important;
+  height:6px !important;
+  border-radius:999px !important;
+  background:rgba(255,255,255,.42) !important;
+  transition:all .24s ease !important;
+}
+
+body.mode-login #loginWrap .sonyerFinalDot.active{
+  width:18px !important;
+  background:#21c6bc !important;
+  box-shadow:0 0 12px rgba(33,198,188,.55) !important;
+}
+
+@media (max-width:390px){
+  body.mode-login #loginWrap .infoPill{
+    min-height:86px !important;
+    height:86px !important;
+    border-radius:22px !important;
+  }
+
+  body.mode-login #loginWrap .sonyerFinalSlide{
+    grid-template-columns:44px minmax(0, 1fr) 66px !important;
+    gap:10px !important;
+    padding:11px 12px 18px 12px !important;
+  }
+
+  body.mode-login #loginWrap .sonyerFinalIcon{
+    width:44px !important;
+    height:44px !important;
+    border-radius:15px !important;
+    font-size:20px !important;
+  }
+
+  body.mode-login #loginWrap .sonyerFinalTitle{
+    font-size:13.6px !important;
+  }
+
+  body.mode-login #loginWrap .sonyerFinalSub{
+    font-size:10.2px !important;
+  }
+
+  body.mode-login #loginWrap .sonyerFinalBadge{
+    width:64px !important;
+    height:24px !important;
+    font-size:8.8px !important;
+  }
+
+  body.mode-login #loginWrap .sonyerFinalTag{
+    font-size:8.6px !important;
+  }
+
+  body.mode-login #loginWrap .sonyerFinalDots{
+    left:68px !important;
+  }
+}
+</style>
+
+
+<style id="patch-yapeton-espaciado">
+/* ===== Mejorar espaciado y usar marca YAPETON ===== */
+body.mode-login #loginWrap .topbar{
+  margin-bottom: 22px !important;
+}
+
+body.mode-login #loginWrap .infoPill{
+  min-height: 104px !important;
+  height: 104px !important;
+  border-radius: 26px !important;
+  margin-bottom: 10px !important;
+}
+
+body.mode-login #loginWrap .sonyerFinalSlide{
+  grid-template-columns: 54px minmax(0, 1fr) 84px !important;
+  gap: 14px !important;
+  padding: 14px 16px 22px 16px !important;
+}
+
+body.mode-login #loginWrap .sonyerFinalIcon{
+  width: 54px !important;
+  height: 54px !important;
+  border-radius: 18px !important;
+  font-size: 24px !important;
+}
+
+body.mode-login #loginWrap .sonyerFinalText{
+  gap: 6px !important;
+}
+
+body.mode-login #loginWrap .sonyerFinalTitle{
+  font-size: 15.6px !important;
+  line-height: 1.18 !important;
+  letter-spacing: 0 !important;
+}
+
+body.mode-login #loginWrap .sonyerFinalSub{
+  font-size: 11.2px !important;
+  line-height: 1.25 !important;
+}
+
+body.mode-login #loginWrap .sonyerFinalMeta{
+  gap: 10px !important;
+}
+
+body.mode-login #loginWrap .sonyerFinalBadge{
+  width: 82px !important;
+  height: 30px !important;
+  font-size: 10px !important;
+}
+
+body.mode-login #loginWrap .sonyerFinalTag{
+  font-size: 9.8px !important;
+  letter-spacing: .11em !important;
+}
+
+body.mode-login #loginWrap .sonyerFinalDots{
+  left: 86px !important;
+  bottom: 9px !important;
+}
+
+body.mode-login #loginWrap .sonyerFinalDot{
+  width: 7px !important;
+  height: 7px !important;
+}
+
+body.mode-login #loginWrap .sonyerFinalDot.active{
+  width: 20px !important;
+}
+
+body.mode-login #loginWrap .sonyerFinalTitle .brandOwner{
+  color:#4be5d9 !important;
+}
+
+@media (max-width:390px){
+  body.mode-login #loginWrap .infoPill{
+    min-height: 96px !important;
+    height: 96px !important;
+    border-radius: 24px !important;
+  }
+
+  body.mode-login #loginWrap .sonyerFinalSlide{
+    grid-template-columns: 48px minmax(0, 1fr) 74px !important;
+    gap: 12px !important;
+    padding: 13px 14px 20px 14px !important;
+  }
+
+  body.mode-login #loginWrap .sonyerFinalIcon{
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 16px !important;
+    font-size: 21px !important;
+  }
+
+  body.mode-login #loginWrap .sonyerFinalTitle{
+    font-size: 14.3px !important;
+  }
+
+  body.mode-login #loginWrap .sonyerFinalSub{
+    font-size: 10.6px !important;
+  }
+
+  body.mode-login #loginWrap .sonyerFinalBadge{
+    width: 72px !important;
+    height: 27px !important;
+    font-size: 9px !important;
+  }
+
+  body.mode-login #loginWrap .sonyerFinalTag{
+    font-size: 8.8px !important;
+  }
+
+  body.mode-login #loginWrap .sonyerFinalDots{
+    left: 74px !important;
+    bottom: 8px !important;
+  }
+}
+</style>
+
 </head>
 <body class="mode-login">
 
@@ -18997,6 +21458,24 @@ el(&#x27;searchInput&#x27;).addEventListener(&#x27;input&#x27;,function(){q=this
 
 <div id="loginWrap">
 
+  <div class="accountChoiceModal" id="accountChoiceModal" aria-hidden="true">
+    <div class="accountChoiceCard" role="dialog" aria-modal="true" aria-label="Elige una opción">
+      <div class="accountChoiceIcon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 12c2.76 0 5-2.24 5-5S14.76 2 12 2 7 4.24 7 7s2.24 5 5 5Z" fill="currentColor" opacity=".95"/>
+          <path d="M4 21c.7-4.05 3.75-6.3 8-6.3s7.3 2.25 8 6.3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h3 class="accountChoiceTitle">¿Ya tienes una cuenta?</h3>
+      <p class="accountChoiceText">Elige cómo quieres continuar para ingresar o registrar una nueva cuenta.</p>
+      <div class="accountChoiceActions">
+        <button type="button" class="accountChoiceBtn login" id="accountChoiceLogin">Ya tengo cuenta</button>
+        <button type="button" class="accountChoiceBtn create" id="accountChoiceCreate">Crear cuenta</button>
+      </div>
+    </div>
+  </div>
+
+
   <div class="wrap">
     <div class="topbar">
       <button class="back" aria-label="Volver" id="btnBack">
@@ -19242,6 +21721,208 @@ el(&#x27;searchInput&#x27;).addEventListener(&#x27;input&#x27;,function(){q=this
     return res.docs[0];
   }
 
+
+  const REG_PENDING_KEY = "yapeton_pending_registration";
+  let approvalPollTimer = null;
+
+  function ensureApprovalModal(){
+    let modal = document.getElementById("approvalStatusModal");
+    if(modal) return modal;
+
+    modal = document.createElement("div");
+    modal.id = "approvalStatusModal";
+    modal.innerHTML = `
+      <div class="approvalStatusCard pending" id="approvalStatusCard" role="dialog" aria-modal="true" aria-label="Estado de aprobación">
+        <div class="approvalStatusIcon" aria-hidden="true"></div>
+        <div class="approvalStatusPill" id="approvalStatusPill">En espera</div>
+        <h3 class="approvalStatusTitle" id="approvalStatusTitle">Espera aprobación del vendedor</h3>
+        <p class="approvalStatusText" id="approvalStatusText">Tu cuenta fue creada correctamente. El vendedor debe aprobar tu acceso para ingresar.</p>
+        <div class="approvalDataBox">
+          <div class="approvalDataItem"><span>ID vendedor</span><strong id="approvalSeller">—</strong></div>
+          <div class="approvalDataItem"><span>Usuario</span><strong id="approvalUser">—</strong></div>
+          <div class="approvalDataItem"><span>Estado</span><strong id="approvalState">Pendiente</strong></div>
+        </div>
+        <div class="approvalStatusProgress" id="approvalStatusProgress"><i></i></div>
+        <div class="approvalActions">
+          <button type="button" class="approvalBtn primary approvalLoginBtn" id="approvalLoginBtn">Iniciar sesión</button>
+          <button type="button" class="approvalBtn approvalShareBtn" id="approvalShareBtn">Compartir datos</button>
+          <button type="button" class="approvalBtn secondary approvalWaitBtn" id="approvalWaitBtn">Seguir esperando</button>
+          <button type="button" class="approvalBtn approvalCancelBtn" id="approvalCancelBtn" aria-label="Cancelar">×</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    const waitBtn = document.getElementById("approvalWaitBtn");
+    const loginBtn = document.getElementById("approvalLoginBtn");
+    const shareBtn = document.getElementById("approvalShareBtn");
+    const cancelBtn = document.getElementById("approvalCancelBtn");
+
+    function buildApprovalShareText(){
+      const seller = document.getElementById("approvalSeller")?.textContent || "";
+      const user = document.getElementById("approvalUser")?.textContent || "";
+      const state = document.getElementById("approvalState")?.textContent || "Pendiente";
+      const approved = String(state).toLowerCase().includes("aprob");
+      if(approved){
+        return "Hola 👋 Mi acceso ya fue aprobado en YAPETON.\n\nID vendedor: " + seller + "\nUsuario: " + user + "\nEstado: " + state + "\n\nGracias por la aprobación.";
+      }
+      return "Hola 👋 Ya registré mi solicitud de acceso en YAPETON.\n\nPor favor, apruébame el acceso cuando puedas.\n\nID vendedor: " + seller + "\nUsuario: " + user + "\nEstado: " + state + "\n\nGracias.";
+    }
+
+    async function shareApprovalData(){
+      const text = buildApprovalShareText();
+      try{
+        if(navigator.share){
+          await navigator.share({
+            title: "Solicitud de acceso YAPETON",
+            text
+          });
+          showToast("Datos compartidos.");
+          return;
+        }
+      }catch(e){}
+      try{
+        await navigator.clipboard.writeText(text);
+        showToast("Datos copiados para compartir.");
+      }catch(e){
+        showToast("No se pudo compartir.");
+      }
+    }
+
+    waitBtn?.addEventListener("click", ()=>{
+      modal.classList.remove("show");
+      showToast("Solicitud en espera de aprobación.");
+    });
+
+    loginBtn?.addEventListener("click", ()=>{
+      modal.classList.remove("show");
+      const seller = document.getElementById("approvalSeller")?.textContent || "";
+      const user = document.getElementById("approvalUser")?.textContent || "";
+      if($("loginSeller")) $("loginSeller").value = cleanId(seller);
+      if($("loginUser")) $("loginUser").value = cleanUser(user);
+      go("login");
+      setTimeout(()=> $("loginPass")?.focus(), 180);
+    });
+
+    shareBtn?.addEventListener("click", shareApprovalData);
+
+    cancelBtn?.addEventListener("click", ()=>{
+      modal.classList.remove("show");
+      try{
+        if(approvalPollTimer) clearInterval(approvalPollTimer);
+        approvalPollTimer = null;
+        clearPendingRegistration();
+      }catch(e){}
+      showToast("Solicitud cerrada.");
+      go("login");
+    });
+
+    return modal;
+  }
+
+  function setApprovalModalState(kind, info){
+    const modal = ensureApprovalModal();
+    const card = document.getElementById("approvalStatusCard");
+    const pill = document.getElementById("approvalStatusPill");
+    const title = document.getElementById("approvalStatusTitle");
+    const text = document.getElementById("approvalStatusText");
+    const seller = document.getElementById("approvalSeller");
+    const user = document.getElementById("approvalUser");
+    const state = document.getElementById("approvalState");
+
+    const sellerId = cleanId(info?.sellerId || "");
+    const username = cleanUser(info?.username || "");
+
+    seller.textContent = sellerId || "—";
+    user.textContent = username || "—";
+
+    if(kind === "approved"){
+      card.classList.remove("pending");
+      card.classList.add("approved");
+      pill.textContent = "Aprobado";
+      title.textContent = "Fue aprobado su acceso";
+      text.textContent = "Ya puedes iniciar sesión con los datos que registraste.";
+      state.textContent = "Aprobado";
+      if($("loginSeller")) $("loginSeller").value = sellerId;
+      if($("loginUser")) $("loginUser").value = username;
+    } else {
+      card.classList.remove("approved");
+      card.classList.add("pending");
+      pill.textContent = "En espera";
+      title.textContent = "Espera aprobación del vendedor";
+      text.textContent = "Tu cuenta fue creada correctamente. El vendedor debe aprobar tu acceso para ingresar.";
+      state.textContent = "Pendiente";
+    }
+
+    modal.classList.add("show");
+  }
+
+  function storePendingRegistration(uid, sellerId, username){
+    try{
+      localStorage.setItem(REG_PENDING_KEY, JSON.stringify({
+        uid,
+        sellerId: cleanId(sellerId),
+        username: cleanUser(username),
+        ts: Date.now()
+      }));
+    }catch(e){}
+  }
+
+  function clearPendingRegistration(){
+    try{ localStorage.removeItem(REG_PENDING_KEY); }catch(e){}
+  }
+
+  async function checkApprovalOnce(userRef, info, silent){
+    try{
+      const snap = await getDoc(userRef);
+      if(!snap.exists()){
+        if(!silent) showToast("Solicitud no encontrada.");
+        clearPendingRegistration();
+        return "missing";
+      }
+      const data = snap.data() || {};
+      const sellerId = data.sellerId || info?.sellerId || "";
+      const username = data.username || info?.username || "";
+
+      if(data.approved === true){
+        if(approvalPollTimer) clearInterval(approvalPollTimer);
+        approvalPollTimer = null;
+        clearPendingRegistration();
+        setApprovalModalState("approved", { sellerId, username });
+        showToast("Fue aprobado su acceso.");
+        return "approved";
+      }
+
+      setApprovalModalState("pending", { sellerId, username });
+      return "pending";
+    }catch(e){
+      console.error(e);
+      if(!silent) showToast("No se pudo verificar la aprobación.");
+      return "error";
+    }
+  }
+
+  function watchApproval(userRef, info){
+    if(approvalPollTimer) clearInterval(approvalPollTimer);
+    storePendingRegistration(userRef.id, info?.sellerId, info?.username);
+    setApprovalModalState("pending", info);
+
+    setTimeout(()=> checkApprovalOnce(userRef, info, true), 1200);
+    approvalPollTimer = setInterval(()=> checkApprovalOnce(userRef, info, true), 3500);
+  }
+
+  function resumePendingRegistration(){
+    try{
+      const raw = localStorage.getItem(REG_PENDING_KEY);
+      if(!raw) return;
+      const info = JSON.parse(raw);
+      if(!info?.uid) return;
+      const userRef = doc(db, "users", info.uid);
+      watchApproval(userRef, info);
+    }catch(e){}
+  }
+
+
   $("btnCreate").addEventListener("click", async ()=>{
     const id = cleanId($("regSeller").value);
     const u  = cleanUser($("regUser").value);
@@ -19256,9 +21937,19 @@ el(&#x27;searchInput&#x27;).addEventListener(&#x27;input&#x27;,function(){q=this
 
     try {
       const existing = await findUserDoc(id, u);
-      if(existing) return showToast("Usuario ya existe.");
+      if(existing){
+        const data = existing.data() || {};
+        if(data.approved === true){
+          setApprovalModalState("approved", { sellerId:id, username:u });
+          showToast("Fue aprobado su acceso.");
+        } else {
+          watchApproval(existing.ref, { sellerId:id, username:u });
+          showToast("Cuenta en espera de aprobación.");
+        }
+        return;
+      }
 
-      await addDoc(collection(db, "users"), {
+      const createdRef = await addDoc(collection(db, "users"), {
         sellerId: id,
         username: u,
         password: pw,
@@ -19267,13 +21958,15 @@ el(&#x27;searchInput&#x27;).addEventListener(&#x27;input&#x27;,function(){q=this
         createdAt: serverTimestamp()
       });
 
-      showToast("✅ Cuenta creada. Espera aprobación.");
-      setTimeout(()=>go("login"), 900);
+      watchApproval(createdRef, { sellerId:id, username:u });
+      showToast("Cuenta creada. Espera aprobación.");
     } catch(e){
       console.error(e);
       showToast("Error al crear cuenta.");
     }
   });
+
+  setTimeout(resumePendingRegistration, 1400);
 
   $("btnLogin").addEventListener("click", async ()=>{
     const id = cleanId($("loginSeller").value);
@@ -30464,3 +33157,970 @@ try{
   setTimeout(run, 3500);
 })();
 </script>
+
+<!-- ===== CONFIRMACION BONITA PARA CERRAR SESION ===== -->
+<script id="logout-confirm-injector">
+(function(){
+  var SESSION_KEY = "yapeton_session";
+  var MODAL_ID = "yapeLogoutConfirmModal";
+  var STYLE_ID = "yapeLogoutConfirmStyle";
+
+  function safeText(v){ return String(v || "").replace(/\s+/g, " ").trim(); }
+
+  function getDocFromFrame(frame){
+    try { return frame.contentDocument || (frame.contentWindow && frame.contentWindow.document) || null; }
+    catch(e){ return null; }
+  }
+
+  function collectDocs(){
+    var out = [];
+    function add(doc){
+      if(!doc || out.indexOf(doc) >= 0) return;
+      out.push(doc);
+      try {
+        var frames = doc.querySelectorAll("iframe");
+        for(var i = 0; i < frames.length; i++){
+          add(getDocFromFrame(frames[i]));
+        }
+      } catch(e){}
+    }
+    add(document);
+    return out;
+  }
+
+  function injectModal(doc){
+    if(!doc || !doc.head || !doc.body) return null;
+
+    if(!doc.getElementById(STYLE_ID)){
+      var st = doc.createElement("style");
+      st.id = STYLE_ID;
+      st.textContent = [
+        "#" + MODAL_ID + "{position:fixed;inset:0;z-index:2147483647;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(19,8,30,.46);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}",
+        "#" + MODAL_ID + ".show{display:flex;animation:yapeLogoutFade .18s ease both;}",
+        "#" + MODAL_ID + " .yl-card{width:min(292px,88vw);background:#fff;border-radius:22px;padding:20px 17px 15px;box-shadow:0 18px 42px rgba(31,9,44,.24);text-align:center;color:#292033;transform:translateY(8px) scale(.98);animation:yapeLogoutPop .22s cubic-bezier(.2,.9,.2,1.15) forwards;}",
+        "#" + MODAL_ID + " .yl-icon{width:52px;height:52px;border-radius:18px;margin:0 auto 12px;display:grid;place-items:center;background:linear-gradient(135deg,#7b1fa2,#5e17eb);box-shadow:0 12px 26px rgba(123,31,162,.22);color:#fff;}",
+        "#" + MODAL_ID + " .yl-icon span{font-size:28px;line-height:1;color:#fff;}",
+        "#" + MODAL_ID + " .yl-title{margin:0 0 7px;font-size:19px;line-height:1.15;font-weight:800;color:#2b1838;}",
+        "#" + MODAL_ID + " .yl-msg{margin:0 auto 15px;font-size:13px;line-height:1.34;font-weight:500;color:#6f6578;max-width:230px;}",
+        "#" + MODAL_ID + " .yl-actions{display:flex;gap:9px;align-items:center;justify-content:center;}",
+        "#" + MODAL_ID + " button{border:0;outline:0;min-height:40px;border-radius:13px;padding:0 12px;font-size:14px;font-weight:800;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .12s ease,filter .12s ease,opacity .12s ease;}",
+        "#" + MODAL_ID + " button:active{transform:scale(.97);filter:brightness(.98);}",
+        "#" + MODAL_ID + " .yl-cancel{flex:1;background:#f3f0f5;color:#6f6578;}",
+        "#" + MODAL_ID + " .yl-confirm{flex:1.18;background:#18bfae;color:#fff;box-shadow:0 8px 18px rgba(24,191,174,.22);}",
+        "@keyframes yapeLogoutFade{from{opacity:0}to{opacity:1}}",
+        "@keyframes yapeLogoutPop{to{transform:translateY(0) scale(1)}}",
+        "@media(max-width:340px){#" + MODAL_ID + " .yl-actions{flex-direction:column}#" + MODAL_ID + " button{width:100%;}}"
+      ].join("\n");
+      doc.head.appendChild(st);
+    }
+
+    var modal = doc.getElementById(MODAL_ID);
+    if(!modal){
+      modal = doc.createElement("div");
+      modal.id = MODAL_ID;
+      modal.setAttribute("aria-hidden", "true");
+      modal.innerHTML = '' +
+        '<div class="yl-card" role="dialog" aria-modal="true" aria-labelledby="ylLogoutTitle">' +
+          '<div class="yl-icon" aria-hidden="true"><span class="material-symbols-outlined">logout</span></div>' +
+          '<h3 class="yl-title" id="ylLogoutTitle">¿Cerrar sesión?</h3>' +
+          '<p class="yl-msg">Se cerrará tu sesión actual y tendrás que volver a ingresar con tus datos.</p>' +
+          '<div class="yl-actions">' +
+            '<button type="button" class="yl-cancel">Cancelar</button>' +
+            '<button type="button" class="yl-confirm">Sí, cerrar sesión</button>' +
+          '</div>' +
+        '</div>';
+      doc.body.appendChild(modal);
+
+      modal.addEventListener("click", function(ev){
+        if(ev.target === modal || (ev.target && ev.target.classList && ev.target.classList.contains("yl-cancel"))){
+          closeModal(doc);
+        }
+      });
+
+      var confirm = modal.querySelector(".yl-confirm");
+      if(confirm){
+        confirm.addEventListener("click", function(ev){
+          ev.preventDefault();
+          doLogout(doc);
+        });
+      }
+    }
+    return modal;
+  }
+
+  function openModal(doc){
+    var modal = injectModal(doc);
+    if(!modal) return;
+    modal.classList.add("show");
+    modal.setAttribute("aria-hidden", "false");
+  }
+
+  function closeModal(doc){
+    var modal = doc && doc.getElementById ? doc.getElementById(MODAL_ID) : null;
+    if(!modal) return;
+    modal.classList.remove("show");
+    modal.setAttribute("aria-hidden", "true");
+  }
+
+  function removeSessionEverywhere(){
+    try { window.localStorage.removeItem(SESSION_KEY); } catch(e){}
+    try { window.sessionStorage.removeItem(SESSION_KEY); } catch(e){}
+    var docs = collectDocs();
+    for(var i = 0; i < docs.length; i++){
+      try { docs[i].defaultView.localStorage.removeItem(SESSION_KEY); } catch(e){}
+      try { docs[i].defaultView.sessionStorage.removeItem(SESSION_KEY); } catch(e){}
+    }
+  }
+
+  function doLogout(doc){
+    removeSessionEverywhere();
+    closeModal(doc);
+    try {
+      if(window.__showLoginFromAuth){
+        window.__showLoginFromAuth();
+        return;
+      }
+    } catch(e){}
+    try { location.reload(); } catch(e){}
+  }
+
+  function findLogoutItem(doc){
+    if(!doc || !doc.querySelectorAll) return null;
+    var nodes;
+    try { nodes = doc.querySelectorAll(".menu-text, .menu-item, button, a, div, span"); }
+    catch(e){ return null; }
+
+    for(var i = 0; i < nodes.length; i++){
+      if(safeText(nodes[i].textContent) === "Cerrar sesión"){
+        return nodes[i].closest(".menu-item, button, a, li") || nodes[i];
+      }
+    }
+    return null;
+  }
+
+  function bindDoc(doc){
+    var item = findLogoutItem(doc);
+    if(!item || item.getAttribute("data-logout-confirm-bound") === "1") return;
+    item.setAttribute("data-logout-confirm-bound", "1");
+    item.setAttribute("role", "button");
+    item.setAttribute("tabindex", "0");
+    item.style.cursor = "pointer";
+
+    item.addEventListener("click", function(ev){
+      ev.preventDefault();
+      ev.stopPropagation();
+      openModal(doc);
+    }, true);
+
+    item.addEventListener("keydown", function(ev){
+      if(ev.key === "Enter" || ev.key === " "){
+        ev.preventDefault();
+        openModal(doc);
+      }
+    });
+  }
+
+  function run(){
+    var docs = collectDocs();
+    for(var i = 0; i < docs.length; i++) bindDoc(docs[i]);
+  }
+
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", run, { once:true });
+  else run();
+
+  window.addEventListener("load", run, { once:true });
+  document.addEventListener("visibilitychange", run, false);
+  setTimeout(run, 300);
+  setTimeout(run, 900);
+  setTimeout(run, 1800);
+  setTimeout(run, 3500);
+  setTimeout(run, 7000);
+  var checks = 0;
+  var timer = setInterval(function(){
+    run();
+    checks++;
+    if(checks > 50) clearInterval(timer);
+  }, 700);
+})();
+</script>
+
+
+<script id="login-fullscreen-pro-fixed-js">
+(function(){
+  var shown = false;
+  var SESSION_KEY = "yapeton_session";
+
+  function hasStoredSession(){
+    try{
+      var raw = localStorage.getItem(SESSION_KEY);
+      if(!raw) return false;
+      var data = JSON.parse(raw);
+      return !!(data && data.ok === true && data.uid);
+    }catch(e){ return false; }
+  }
+
+  function fixScroll(){
+    try{
+      var scrollArea = document.getElementById("scrollArea");
+      if(scrollArea) scrollArea.scrollTop = 0;
+      window.scrollTo(0,0);
+    }catch(e){}
+  }
+
+  function activate(screen){
+    var login = document.getElementById("screenLogin");
+    var reg = document.getElementById("screenRegister");
+    if(login) login.classList.toggle("active", screen === "login");
+    if(reg) reg.classList.toggle("active", screen === "register");
+    fixScroll();
+  }
+
+  function closeChoice(){
+    var modal = document.getElementById("accountChoiceModal");
+    if(!modal) return;
+    modal.classList.remove("show");
+    modal.setAttribute("aria-hidden","true");
+  }
+
+  function showChoice(){
+    if(shown) return;
+    if(!document.body.classList.contains("mode-login")) return;
+    if(hasStoredSession()) return;
+    var modal = document.getElementById("accountChoiceModal");
+    if(!modal) return;
+    shown = true;
+    modal.classList.add("show");
+    modal.setAttribute("aria-hidden","false");
+  }
+
+  function bind(){
+    var loginBtn = document.getElementById("accountChoiceLogin");
+    var createBtn = document.getElementById("accountChoiceCreate");
+    var modal = document.getElementById("accountChoiceModal");
+
+    if(loginBtn && !loginBtn.__bound){
+      loginBtn.__bound = true;
+      loginBtn.addEventListener("click", function(){
+        activate("login");
+        closeChoice();
+      });
+    }
+
+    if(createBtn && !createBtn.__bound){
+      createBtn.__bound = true;
+      createBtn.addEventListener("click", function(){
+        activate("register");
+        closeChoice();
+      });
+    }
+
+    if(modal && !modal.__bound){
+      modal.__bound = true;
+      modal.addEventListener("click", function(ev){
+        if(ev.target === modal) closeChoice();
+      });
+    }
+
+    var screens = document.querySelector("#loginWrap .screens");
+    if(screens && !screens.__fullProObserved){
+      screens.__fullProObserved = true;
+      try{
+        new MutationObserver(fixScroll).observe(screens,{
+          subtree:true,
+          attributes:true,
+          attributeFilter:["class","style"]
+        });
+      }catch(e){}
+    }
+
+    fixScroll();
+  }
+
+  function boot(){
+    bind();
+    setTimeout(fixScroll, 80);
+    setTimeout(showChoice, 1300);
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", boot, {once:true});
+  }else{
+    boot();
+  }
+
+  window.addEventListener("pageshow", function(){
+    setTimeout(fixScroll, 80);
+    setTimeout(showChoice, 1300);
+  });
+})();
+</script>
+
+
+
+<script id="login-toast-sound-js">
+(function(){
+  if(window.__loginToastSoundInstalled) return;
+  window.__loginToastSoundInstalled = true;
+
+  var SOUND_SRC = 'data:audio/mpeg;base64,SUQzBAAAAAACIFRYWFgAAAASAAADbWFqb3JfYnJhbmQAaXNvbQBUWFhYAAAAEwAAA21pbm9yX3ZlcnNpb24ANTEyAFRYWFgAAAAkAAADY29tcGF0aWJsZV9icmFuZHMAaXNvbWlzbzJhdmMxbXA0MQBUWFhYAAAAIQAAA2FpZ2NfaW5mbwB7ImFpZ2NfbGFiZWxfdHlwZSI6MH0AVFhYWAAAAC4AAANjb21tZW50AHZpZDp2MDkwNDRnNDAwMDBjc3EyYjFub2c2NXZ0MGJsMW5qMABUWFhYAAAAKgAAA3ZpZF9tZDUANjNiYWM2MzViMTY4MjRmY2IzMjQwZjEyNjAzYzhkYjQAVFNTRQAAAA4AAANMYXZmNTkuNS4xMDAAAAAAAAAAAAAAAP/7kAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEluZm8AAAAPAAAARAAAcKYABwsODhIWFhkdHSElJSgsLDAzMzc7Oz9CRkZKTU1RVVVZXFxgZGRna2tvc3N2enp+gYWFiYyMkJSUmJubn6OjpqqqrrKytbm5vcDExMjMzM/T09fa2t7i4ubp6e3x8fT4+Pz/AAAAAExhdmM1OS43LgAAAAAAAAAAAAAAACQGawAAAAAAAHCm6ovy7AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/7kGQAD/AAAGkAAAAIAAANIAAAAQAAAaQAAAAgAAA0gAAABExBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/7kmRAj/AAAGkAAAAIAAANIAAAAQAAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy4xMDBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/+5JkQI/wAABpAAAACAAADSAAAAEAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//uSZECP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/7kmRAj/AAAGkAAAAIAAANIAAAAQAAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy4xMDBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/+5JkQI/wAABpAAAACAAADSAAAAEAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//uSZECP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/7kmRAj/AAAGkAAAAIAAANIAAAAQAAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy4xMDBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/+5JkQI/wAABpAAAACAAADSAAAAEAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//uSZECP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/7kmRAj/AAAGkAAAAIAAANIAAAAQAAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy4xMDBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/+5JkQI/wAABpAAAACAAADSAAAAEAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV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XFDKzkHlC0ERioe55FLtE9/3//9UF//////XIbnpzKH6kff+Xw3KmuTrKQ5qcMQiMX3bLhu7f////////////bQMDRBBAxKhfSOk+cNCbJ4GpBogMsOnGyQAAAFAIwK1p0IUuGHiYajbdnaT6B5ui1ATQqQvjrsGw4jRCu/myGN392SwJQRW5UpSYTW9Vfg8o+bVFA42a3FOx9sVjmNploqI8TWJ5dDlE1a3RtGACaZndNHN1KFwRVNOb9+4UrVZv6o7wjmw5y5xbdk5JrDmehfp/6vUcV////+vpdXyKcl8FRtSlTcTcYISq0QYjx8PQVop/////////////qKY7C6S6mTMCaPAejKEsNFFxAeYWQlLl9XdFABRUwCAOifeaKOuX4bunk8yMMCjhTVSMr8pZpSVrCNwExK9hntYC/remZOZVp/plvJpgGsAyLz6hjHLuqmss8JrLr1kO871DpKQb/I9LFa83X8tqP/7kGTuAvQwZNXzTC6AQczIQAMT4g/VlVntvFaA+7LkAAe3iDCFfRtvrXR3Rkb/cXQ6kKjIOgciP2DvuqnrR0dX0pdP7kdRYAAF////+Hwuu8VokJyA2UPLPDDUAfkhGkP////////////+RQihXJGSY5oyZgVCdoE8NhA6RMQQCeRUSmNN7kCABAgAAARAOGYlH25IEX2cROuLBYEOAIVeLSk1CBQz2VvLr8WmIMyaYmsI+EQhywqowPI/cbME6LRoyKR9lbJIbVGOydEWUSsfqE7GLOsroIpjAhqfkdEBypWlpd/u5CHdXN1/+E1p/ojzFQsyRgmRCbpuLLv/8Qi3/iegwnB6A7Al1j3DyJMJcJkQyUDII0Pw7R4Doai+l///////////////+GZq8/ZmNU2bnzhO2Vq9Z8pBFC1DaRKuqQIAECAAABCA14uMy1DJD0aGQCj8msF2h4SaYT60zdFh9XaSJKpWM8qFMnHtuAREXN1qeqkFGHbHniGaJRKunp2pZOby3KXcDzCGxVUrEZWFikCOpjwRe6fVlSYEbf/7kmTpgOPLZVj7DBWgPuzJsgEw4o9NOVntvE3BCbLlQAa/oFi3/9LIb/71dnJMwJ+jLVRBZkHlBI6EU5kJmTZdHtXo3/9ArqG////+D42skwVxgk+HmXse6uSRbSNlCVLghTorj3GxBv////////////0SWIQ4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QAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/7kmRAj/AAAGkAAAAIAAANIAAAAQAAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy4xMDBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/+5JkQI/wAABpAAAACAAADSAAAAEAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//uSZECP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/7kmRAj/AAAGkAAAAIAAANIAAAAQAAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy4xMDBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/+5JkQI/wAABpAAAACAAADSAAAAEAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//uSZECP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/7kmRAj/AAAGkAAAAIAAANIAAAAQAAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy4xMDBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/+5JkQI/wAABpAAAACAAADSAAAAEAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//uSZECP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/7kmRAj/AAAGkAAAAIAAANIAAAAQAAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy4xMDBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/+5JkQI/wAABpAAAACAAADSAAAAEAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy4xMDBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//uQZEEP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//uSZECP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/7kmRAj/AAAGkAAAAIAAANIAAAAQAAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy4xMDBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/+5JkQI/wAABpAAAACAAADSAAAAEAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//uSZECP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/7kmRAj/AAAGkAAAAIAAANIAAAAQAAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy4xMDBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/+5JkQI/wAABpAAAACAAADSAAAAEAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//uSZECP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/7kmRAj/AAAGkAAAAIAAANIAAAAQAAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy4xMDBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/+5JkQI/wAABpAAAACAAADSAAAAEAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//uSZECP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/7kmRAj/AAAGkAAAAIAAANIAAAAQAAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy4xMDBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/+5JkQI/wAABpAAAACAAADSAAAAEAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//uSZECP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/7kmRAj/AAAGkAAAAIAAANIAAAAQAAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy4xMDBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/+5JkQI/wAABpAAAACAAADSAAAAEAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//uSZECP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/7kmRAj/AAAGkAAAAIAAANIAAAAQAAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy4xMDBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/+5JkQI/wAABpAAAACAAADSAAAAEAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV';
+  var lastPlay = 0;
+  var audio = null;
+
+  function getAudio(){
+    try{
+      if(!SOUND_SRC) return null;
+      if(!audio){
+        audio = new Audio(SOUND_SRC);
+        audio.preload = "auto";
+        audio.volume = 0.85;
+      }
+      return audio;
+    }catch(e){ return null; }
+  }
+
+  function playSound(){
+    try{
+      var now = Date.now();
+      if(now - lastPlay < 700) return;
+      lastPlay = now;
+      var a = getAudio();
+      if(!a) return;
+      a.currentTime = 0;
+      var p = a.play();
+      if(p && p.catch) p.catch(function(){});
+    }catch(e){}
+  }
+
+  function bindToast(){
+    var toast = document.getElementById("toast");
+    if(!toast || toast.__soundBound) return;
+    toast.__soundBound = true;
+
+    var wasShown = toast.classList.contains("show");
+    try{
+      new MutationObserver(function(){
+        var isShown = toast.classList.contains("show");
+        if(isShown && !wasShown) playSound();
+        wasShown = isShown;
+      }).observe(toast, { attributes:true, attributeFilter:["class"] });
+    }catch(e){}
+
+    /* Precarga tras el primer toque para que el navegador permita el sonido */
+    ["click","touchstart"].forEach(function(evt){
+      document.addEventListener(evt, function(){
+        try{ getAudio(); }catch(e){}
+      }, { once:true, passive:true });
+    });
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", bindToast, { once:true });
+  } else {
+    bindToast();
+  }
+  setTimeout(bindToast, 400);
+  setTimeout(bindToast, 1200);
+})();
+</script>
+
+
+
+<script id="yapeton-ticker-topbar-js">
+(function(){
+  function getMesAnio(){
+    try{
+      var fecha = new Date();
+      var mes = fecha.toLocaleDateString("es-PE", { month:"long" });
+      mes = mes.charAt(0).toUpperCase() + mes.slice(1);
+      return mes + " " + fecha.getFullYear();
+    }catch(e){
+      return "Mayo 2026";
+    }
+  }
+
+  function instalarTicker(){
+    try{
+      var pill = document.querySelector("body.mode-login #loginWrap .pillText") || document.querySelector("#loginWrap .pillText");
+      if(!pill || pill.__tickerInstalled) return;
+      pill.__tickerInstalled = true;
+
+      var mesAnio = getMesAnio();
+      var frase = mesAnio + " · La app más usada solo con SONYER · Somos el toque número uno · YAPETON SONYER";
+      var html = '<span class="tickerItem">' + frase.replace(/ · /g, '<span class="tickerDot">•</span>') + '</span>' +
+                 '<span class="tickerItem" aria-hidden="true">' + frase.replace(/ · /g, '<span class="tickerDot">•</span>') + '</span>';
+
+      pill.innerHTML = html;
+      pill.setAttribute("aria-label", frase);
+    }catch(e){}
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", instalarTicker, { once:true });
+  }else{
+    instalarTicker();
+  }
+
+  setTimeout(instalarTicker, 300);
+  setTimeout(instalarTicker, 1000);
+})();
+</script>
+
+
+
+<script id="yapeton-ticker-pro-ad-js">
+(function(){
+  function getMesAnio(){
+    try{
+      var fecha = new Date();
+      var mes = fecha.toLocaleDateString("es-PE", { month:"long" });
+      mes = mes.charAt(0).toUpperCase() + mes.slice(1);
+      return mes + " " + fecha.getFullYear();
+    }catch(e){
+      return "Mayo 2026";
+    }
+  }
+
+  function tickerHTML(frase, mesAnio){
+    return (
+      '<span class="tickerItem">' +
+        '<span class="tickerBadge">' + mesAnio + '</span>' +
+        frase +
+      '</span>' +
+      '<span class="tickerItem" aria-hidden="true">' +
+        '<span class="tickerBadge">' + mesAnio + '</span>' +
+        frase +
+      '</span>'
+    );
+  }
+
+  function instalarTickerPro(){
+    try{
+      var pill = document.querySelector("body.mode-login #loginWrap .pillText") || document.querySelector("#loginWrap .pillText");
+      if(!pill) return;
+
+      var mesAnio = getMesAnio();
+      var frase =
+        '<span class="tickerStrong">YAPETON SONYER</span>' +
+        '<span class="tickerDot"></span>' +
+        'Acceso rápido, moderno y seguro' +
+        '<span class="tickerDot"></span>' +
+        'Gestiona tu cuenta al toque' +
+        '<span class="tickerDot"></span>' +
+        'Servicio confiable para tus clientes';
+
+      pill.innerHTML = tickerHTML(frase, mesAnio);
+      pill.setAttribute(
+        "aria-label",
+        mesAnio + " · YAPETON SONYER · Acceso rápido, moderno y seguro · Gestiona tu cuenta al toque · Servicio confiable para tus clientes"
+      );
+    }catch(e){}
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", instalarTickerPro, { once:true });
+  }else{
+    instalarTickerPro();
+  }
+
+  setTimeout(instalarTickerPro, 250);
+  setTimeout(instalarTickerPro, 900);
+  setTimeout(instalarTickerPro, 1800);
+})();
+</script>
+
+
+
+<script id="sonyer-pro-ad-final-js">
+(function(){
+  function getMesAnio(){
+    try{
+      var fecha = new Date();
+      var mes = fecha.toLocaleDateString("es-PE", { month:"long" });
+      mes = mes.charAt(0).toUpperCase() + mes.slice(1);
+      return mes + " " + fecha.getFullYear();
+    }catch(e){
+      return "Mayo 2026";
+    }
+  }
+
+  function renderAd(){
+    try{
+      var pill = document.querySelector("body.mode-login #loginWrap .pillText") || document.querySelector("#loginWrap .pillText");
+      if(!pill) return;
+
+      var mesAnio = getMesAnio();
+
+      var frase =
+        '<span class="sonyerBadge">SONYER OFICIAL</span>' +
+        '<span class="adText">Tu acceso rápido, moderno y confiable</span>' +
+        '<span class="tickerDot"></span>' +
+        '<span class="ownerText">SONYER</span>' +
+        '<span class="adText">&nbsp;impulsa una experiencia segura para tus clientes</span>' +
+        '<span class="tickerDot"></span>' +
+        '<span class="adText">Gestiona tu cuenta al toque</span>' +
+        '<span class="monthBadge">' + mesAnio + '</span>';
+
+      pill.innerHTML =
+        '<span class="tickerItem">' + frase + '</span>' +
+        '<span class="tickerItem" aria-hidden="true">' + frase + '</span>';
+
+      pill.setAttribute(
+        "aria-label",
+        "SONYER OFICIAL. Tu acceso rápido, moderno y confiable. SONYER impulsa una experiencia segura para tus clientes. Gestiona tu cuenta al toque. " + mesAnio
+      );
+    }catch(e){}
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", renderAd, { once:true });
+  }else{
+    renderAd();
+  }
+
+  /* Reaplicar después de scripts anteriores del ticker */
+  setTimeout(renderAd, 250);
+  setTimeout(renderAd, 900);
+  setTimeout(renderAd, 1800);
+  setTimeout(renderAd, 2800);
+  setTimeout(renderAd, 4200);
+})();
+</script>
+
+
+
+<script id="sonyer-carousel-banner-js">
+(function(){
+  function getMesAnio(){
+    try{
+      var fecha = new Date();
+      var mes = fecha.toLocaleDateString("es-PE", { month:"long" });
+      mes = mes.charAt(0).toUpperCase() + mes.slice(1);
+      return mes + " " + fecha.getFullYear();
+    }catch(e){
+      return "Mayo 2026";
+    }
+  }
+
+  function buildSlidesHTML(mesAnio){
+    var slides = [
+      {
+        icon: "★",
+        title: 'Adquiere tu app con confianza en <span class="brandOwner">SONYER</span>',
+        sub: 'Diseño profesional, acceso seguro y respaldo para tus clientes.',
+        badge: mesAnio
+      },
+      {
+        icon: "✓",
+        title: '<span class="brandOwner">SONYER</span> te ofrece una experiencia confiable',
+        sub: 'Registro rápido, imagen moderna y uso simple para vender mejor.',
+        badge: 'Confianza'
+      },
+      {
+        icon: "⚡",
+        title: 'Haz crecer tu negocio con <span class="brandOwner">SONYER</span>',
+        sub: 'Una app pensada para que tus clientes ingresen con seguridad.',
+        badge: 'Oficial'
+      }
+    ];
+
+    var slidesHTML = slides.map(function(slide, i){
+      return '<div class="promoSlide' + (i===0 ? ' active' : '') + '" data-index="' + i + '">' +
+               '<div class="promoIcon">' + slide.icon + '</div>' +
+               '<div class="promoContent">' +
+                 '<p class="promoHeadline">' + slide.title + '</p>' +
+                 '<p class="promoSub">' + slide.sub + '</p>' +
+               '</div>' +
+               '<div class="promoMeta">' +
+                 '<span class="promoBadge">' + slide.badge + '</span>' +
+               '</div>' +
+             '</div>';
+    }).join('');
+
+    var dotsHTML = slides.map(function(_, i){
+      return '<span class="promoDot' + (i===0 ? ' active' : '') + '" data-dot="' + i + '"></span>';
+    }).join('');
+
+    return {
+      slidesCount: slides.length,
+      html:
+        '<div class="promoCarousel" aria-label="Anuncios de SONYER">' +
+          '<div class="promoTrack">' + slidesHTML + '</div>' +
+          '<div class="promoDots">' + dotsHTML + '</div>' +
+        '</div>'
+    };
+  }
+
+  var carouselTimer = null;
+
+  function initCarousel(){
+    try{
+      var pill = document.querySelector("body.mode-login #loginWrap .infoPill") || document.querySelector("#loginWrap .infoPill");
+      if(!pill) return;
+
+      var mesAnio = getMesAnio();
+      var built = buildSlidesHTML(mesAnio);
+      pill.innerHTML = built.html;
+
+      var slides = Array.prototype.slice.call(pill.querySelectorAll(".promoSlide"));
+      var dots = Array.prototype.slice.call(pill.querySelectorAll(".promoDot"));
+      var current = 0;
+
+      function goTo(index){
+        current = index;
+        slides.forEach(function(el, i){
+          el.classList.toggle("active", i === index);
+        });
+        dots.forEach(function(el, i){
+          el.classList.toggle("active", i === index);
+        });
+      }
+
+      function next(){
+        goTo((current + 1) % slides.length);
+      }
+
+      dots.forEach(function(dot, i){
+        dot.addEventListener("click", function(){ goTo(i); restart(); });
+      });
+
+      function restart(){
+        if(carouselTimer) clearInterval(carouselTimer);
+        carouselTimer = setInterval(next, 3600);
+      }
+
+      restart();
+      pill.addEventListener("mouseenter", function(){ if(carouselTimer) clearInterval(carouselTimer); });
+      pill.addEventListener("mouseleave", restart);
+      pill.addEventListener("touchstart", function(){ if(carouselTimer) clearInterval(carouselTimer); }, {passive:true});
+      pill.addEventListener("touchend", restart, {passive:true});
+    }catch(e){}
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", initCarousel, { once:true });
+  }else{
+    initCarousel();
+  }
+
+  /* reaplicar por si otros scripts antiguos vuelven a pintar la barra */
+  setTimeout(initCarousel, 250);
+  setTimeout(initCarousel, 900);
+  setTimeout(initCarousel, 1800);
+  setTimeout(initCarousel, 3000);
+})();
+</script>
+
+
+
+<script id="sonyer-photo-carousel-final-js">
+(function(){
+  function getMesAnio(){
+    try{
+      var fecha = new Date();
+      var mes = fecha.toLocaleDateString("es-PE", { month:"long" });
+      mes = mes.charAt(0).toUpperCase() + mes.slice(1);
+      return mes + " " + fecha.getFullYear();
+    }catch(e){
+      return "Mayo 2026";
+    }
+  }
+
+  function buildSlidesHTML(mesAnio){
+    var slides = [
+      {
+        photo: "https://images.pexels.com/photos/3760263/pexels-photo-3760263.jpeg?auto=compress&cs=tinysrgb&w=300",
+        title: 'Adquiere tu app con confianza en <span class="brandOwner">SONYER</span>',
+        sub: 'Atención segura, imagen profesional y mayor confianza para tus clientes.',
+        badge: mesAnio,
+        mini: 'Confianza'
+      },
+      {
+        photo: "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=300",
+        title: '<span class="brandOwner">SONYER</span> te ayuda a crecer con más seguridad',
+        sub: 'Una experiencia moderna para ingresar, registrarse y usar la app sin complicaciones.',
+        badge: 'Seguro',
+        mini: 'Calidad'
+      },
+      {
+        photo: "https://images.pexels.com/photos/1181696/pexels-photo-1181696.jpeg?auto=compress&cs=tinysrgb&w=300",
+        title: 'Tus clientes pueden adquirir la app con total confianza',
+        sub: 'Diseño llamativo, acceso rápido y respaldo para una mejor experiencia.',
+        badge: 'Oficial',
+        mini: 'SONYER'
+      }
+    ];
+
+    var slidesHTML = slides.map(function(slide, i){
+      return '<div class="promoSlide' + (i===0 ? ' active' : '') + '" data-index="' + i + '">' +
+               '<div class="promoPhoto"><img src="' + slide.photo + '" alt="Cliente feliz"></div>' +
+               '<div class="promoContent">' +
+                 '<p class="promoHeadline">' + slide.title + '</p>' +
+                 '<p class="promoSub">' + slide.sub + '</p>' +
+               '</div>' +
+               '<div class="promoMeta">' +
+                 '<span class="promoBadge">' + slide.badge + '</span>' +
+                 '<span class="promoMini">' + slide.mini + '</span>' +
+               '</div>' +
+             '</div>';
+    }).join('');
+
+    var dotsHTML = slides.map(function(_, i){
+      return '<span class="promoDot' + (i===0 ? ' active' : '') + '" data-dot="' + i + '"></span>';
+    }).join('');
+
+    return '<div class="promoCarousel" aria-label="Anuncios de SONYER">' +
+             '<div class="promoTrack">' + slidesHTML + '</div>' +
+             '<div class="promoDots">' + dotsHTML + '</div>' +
+           '</div>';
+  }
+
+  var carouselTimer = null;
+
+  function initPhotoCarousel(){
+    try{
+      var pill = document.querySelector("body.mode-login #loginWrap .infoPill") || document.querySelector("#loginWrap .infoPill");
+      if(!pill) return;
+
+      pill.innerHTML = buildSlidesHTML(getMesAnio());
+
+      var slides = Array.prototype.slice.call(pill.querySelectorAll(".promoSlide"));
+      var dots = Array.prototype.slice.call(pill.querySelectorAll(".promoDot"));
+      var current = 0;
+
+      function goTo(index){
+        current = index;
+        slides.forEach(function(el, i){ el.classList.toggle("active", i === index); });
+        dots.forEach(function(el, i){ el.classList.toggle("active", i === index); });
+      }
+
+      function next(){
+        goTo((current + 1) % slides.length);
+      }
+
+      function restart(){
+        if(carouselTimer) clearInterval(carouselTimer);
+        carouselTimer = setInterval(next, 4200);
+      }
+
+      dots.forEach(function(dot, i){
+        dot.addEventListener("click", function(){
+          goTo(i);
+          restart();
+        });
+      });
+
+      restart();
+      pill.addEventListener("mouseenter", function(){ if(carouselTimer) clearInterval(carouselTimer); });
+      pill.addEventListener("mouseleave", restart);
+      pill.addEventListener("touchstart", function(){ if(carouselTimer) clearInterval(carouselTimer); }, {passive:true});
+      pill.addEventListener("touchend", restart, {passive:true});
+    }catch(e){}
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", initPhotoCarousel, { once:true });
+  }else{
+    initPhotoCarousel();
+  }
+
+  setTimeout(initPhotoCarousel, 300);
+  setTimeout(initPhotoCarousel, 1000);
+  setTimeout(initPhotoCarousel, 2200);
+  setTimeout(initPhotoCarousel, 3800);
+})();
+</script>
+
+
+
+<script id="banner-final-fixed-no-photos-js">
+(function(){
+  var timer = null;
+
+  function getMesAnio(){
+    try{
+      var fecha = new Date();
+      var mes = fecha.toLocaleDateString("es-PE", { month:"long" });
+      mes = mes.charAt(0).toUpperCase() + mes.slice(1);
+      return mes + " " + fecha.getFullYear();
+    }catch(e){
+      return "Mayo 2026";
+    }
+  }
+
+  function htmlBanner(){
+    var mesAnio = getMesAnio();
+    var slides = [
+      {
+        icon:"★",
+        title:'Somos la mejor app para adquirir tu acceso con confianza en <span class="brandOwner">SONYER</span>',
+        sub:"Imagen profesional, acceso seguro y una experiencia confiable para tus clientes.",
+        badge:mesAnio,
+        tag:"Mejor app"
+      },
+      {
+        icon:"✓",
+        title:'<span class="brandOwner">SONYER</span> te brinda confianza, rapidez y respaldo',
+        sub:"Regístrate fácil y usa una plataforma moderna, clara y segura.",
+        badge:"Seguro",
+        tag:"Confianza"
+      },
+      {
+        icon:"⚡",
+        title:"Haz crecer tu negocio con una app moderna y llamativa",
+        sub:"Diseñada para transmitir seguridad desde el primer ingreso.",
+        badge:"Oficial",
+        tag:"SONYER"
+      }
+    ];
+
+    return '<div class="sonyerFinalBanner" aria-label="Anuncios de SONYER">' +
+      slides.map(function(slide, i){
+        return '<div class="sonyerFinalSlide' + (i === 0 ? ' active' : '') + '" data-index="' + i + '">' +
+          '<div class="sonyerFinalIcon">' + slide.icon + '</div>' +
+          '<div class="sonyerFinalText">' +
+            '<p class="sonyerFinalTitle">' + slide.title + '</p>' +
+            '<p class="sonyerFinalSub">' + slide.sub + '</p>' +
+          '</div>' +
+          '<div class="sonyerFinalMeta">' +
+            '<span class="sonyerFinalBadge">' + slide.badge + '</span>' +
+            '<span class="sonyerFinalTag">' + slide.tag + '</span>' +
+          '</div>' +
+        '</div>';
+      }).join('') +
+      '<div class="sonyerFinalDots">' +
+        slides.map(function(_, i){
+          return '<span class="sonyerFinalDot' + (i === 0 ? ' active' : '') + '" data-dot="' + i + '"></span>';
+        }).join('') +
+      '</div>' +
+    '</div>';
+  }
+
+  function activate(root, index){
+    var slides = Array.prototype.slice.call(root.querySelectorAll(".sonyerFinalSlide"));
+    var dots = Array.prototype.slice.call(root.querySelectorAll(".sonyerFinalDot"));
+    slides.forEach(function(el, i){ el.classList.toggle("active", i === index); });
+    dots.forEach(function(el, i){ el.classList.toggle("active", i === index); });
+    root.__currentSlide = index;
+  }
+
+  function installFinalBanner(){
+    try{
+      var pill = document.querySelector("#loginWrap .infoPill");
+      if(!pill) return;
+
+      // Repaint only if missing/overwritten by old carousel scripts
+      if(!pill.querySelector(".sonyerFinalBanner")){
+        pill.innerHTML = htmlBanner();
+        pill.__currentSlide = 0;
+
+        var dots = Array.prototype.slice.call(pill.querySelectorAll(".sonyerFinalDot"));
+        dots.forEach(function(dot, i){
+          dot.addEventListener("click", function(){
+            activate(pill, i);
+            restart(pill);
+          });
+        });
+      }
+
+      restart(pill);
+    }catch(e){}
+  }
+
+  function next(pill){
+    var slides = pill.querySelectorAll(".sonyerFinalSlide");
+    if(!slides.length) return;
+    var nextIndex = ((pill.__currentSlide || 0) + 1) % slides.length;
+    activate(pill, nextIndex);
+  }
+
+  function restart(pill){
+    if(timer) clearInterval(timer);
+    timer = setInterval(function(){
+      var p = document.querySelector("#loginWrap .infoPill");
+      if(!p || !p.querySelector(".sonyerFinalBanner")){
+        installFinalBanner();
+        return;
+      }
+      next(p);
+    }, 4300);
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", installFinalBanner, {once:true});
+  } else {
+    installFinalBanner();
+  }
+
+  // Run after older banner scripts so it never stays blank
+  setTimeout(installFinalBanner, 300);
+  setTimeout(installFinalBanner, 1200);
+  setTimeout(installFinalBanner, 2500);
+  setTimeout(installFinalBanner, 4200);
+  setInterval(function(){
+    var pill = document.querySelector("#loginWrap .infoPill");
+    if(pill && !pill.querySelector(".sonyerFinalBanner")) installFinalBanner();
+  }, 1500);
+})();
+</script>
+
+
+
+<script id="patch-yapeton-espaciado-js">
+(function(){
+  function patchBannerTexts(){
+    var pill = document.querySelector("#loginWrap .infoPill");
+    if(!pill) return;
+    var slides = pill.querySelectorAll(".sonyerFinalSlide");
+    if(!slides.length) return;
+
+    var content = [
+      {
+        icon: "★",
+        title: 'Somos la mejor app para adquirir tu acceso con confianza en <span class="brandOwner">YAPETON</span>',
+        sub: 'Diseño profesional, acceso seguro y una experiencia confiable para tus clientes.',
+        badge: 'OFICIAL',
+        tag: 'YAPETON'
+      },
+      {
+        icon: "✓",
+        title: '<span class="brandOwner">YAPETON</span> te brinda confianza, rapidez y respaldo',
+        sub: 'Regístrate fácil y usa una plataforma moderna, clara y segura.',
+        badge: 'SEGURO',
+        tag: 'CONFIANZA'
+      },
+      {
+        icon: "⚡",
+        title: 'Con <span class="brandOwner">YAPETON</span> tu negocio se ve más profesional',
+        sub: 'Una app moderna y llamativa para impulsar tu imagen y generar más confianza.',
+        badge: 'PREMIUM',
+        tag: 'MEJOR APP'
+      }
+    ];
+
+    slides.forEach(function(slide, i){
+      var item = content[i % content.length];
+      var icon = slide.querySelector(".sonyerFinalIcon");
+      var title = slide.querySelector(".sonyerFinalTitle");
+      var sub = slide.querySelector(".sonyerFinalSub");
+      var badge = slide.querySelector(".sonyerFinalBadge");
+      var tag = slide.querySelector(".sonyerFinalTag");
+      if(icon) icon.innerHTML = item.icon;
+      if(title) title.innerHTML = item.title;
+      if(sub) sub.textContent = item.sub;
+      if(badge) badge.textContent = item.badge;
+      if(tag) tag.textContent = item.tag;
+    });
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", patchBannerTexts, {once:true});
+  } else {
+    patchBannerTexts();
+  }
+
+  setTimeout(patchBannerTexts, 300);
+  setTimeout(patchBannerTexts, 1200);
+  setTimeout(patchBannerTexts, 2500);
+})();
+</script>
+
