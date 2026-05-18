@@ -24808,7 +24808,7 @@ html.ios-final-fix iframe{
 
 <script type="module" id="users-transfer-bridge">
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, query, where, getDocs, serverTimestamp, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const DATA_CONFIG = {
   apiKey: "AIzaSyC89Qpf_Ie85lVkm5V5wi_xBC5fajPngj8",
@@ -25079,6 +25079,824 @@ async function findUserByPhone(phone){
   return normalizeUserSnap(snap);
 }
 
+
+let transferCleanupRunning = false;
+let transferCleanupLastAt = 0;
+
+function bridgeShowProfileToast(pdoc, message, timeoutMs = 1900){
+  try {
+    const toast = pdoc && pdoc.getElementById("toast");
+    if(toast){
+      toast.textContent = message;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), timeoutMs);
+      return;
+    }
+  } catch (e) {}
+  try { console.log(message); } catch (e) {}
+}
+
+function bridgeEscapeHtml(value){
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function bridgeEnsureMiniUiStyles(pdoc){
+  if(!pdoc || pdoc.getElementById("bridgeMiniUiStyles")) return;
+  const style = pdoc.createElement("style");
+  style.id = "bridgeMiniUiStyles";
+  style.textContent = `
+    .bridgeMiniLoading{
+      position:fixed;
+      left:50%;
+      bottom:calc(env(safe-area-inset-bottom, 0px) + 78px);
+      z-index:2147483600;
+      transform:translateX(-50%) translateY(8px) scale(.98);
+      min-width:210px;
+      max-width:calc(100vw - 44px);
+      min-height:50px;
+      padding:10px 16px;
+      border-radius:19px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:12px;
+      color:#fff;
+      background:rgba(16,17,22,.92);
+      border:1px solid rgba(255,255,255,.08);
+      box-shadow:0 18px 40px rgba(0,0,0,.38);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .18s ease, transform .18s ease;
+      font-size:13.5px;
+      font-weight:850;
+      text-align:center;
+    }
+    .bridgeMiniLoading.show{
+      opacity:1;
+      transform:translateX(-50%) translateY(0) scale(1);
+    }
+    .bridgeMiniLoading.ok{
+      background:linear-gradient(135deg, rgba(25,190,165,.96), rgba(117,34,132,.94));
+    }
+    .bridgeMiniSpinner{
+      width:20px;
+      height:20px;
+      border-radius:999px;
+      border:3px solid rgba(255,255,255,.25);
+      border-top-color:#fff;
+      animation:bridgeMiniSpin .78s linear infinite;
+      flex:0 0 auto;
+    }
+    .bridgeMiniLoading.ok .bridgeMiniSpinner{
+      border:0;
+      display:grid;
+      place-items:center;
+      animation:none;
+      background:rgba(255,255,255,.16);
+    }
+    .bridgeMiniLoading.ok .bridgeMiniSpinner::before{
+      content:"✓";
+      color:#fff;
+      font-size:15px;
+      font-weight:950;
+      line-height:1;
+    }
+    @keyframes bridgeMiniSpin{to{transform:rotate(360deg)}}
+
+    .bridgeConfirmOverlay{
+      position:fixed;
+      inset:0;
+      z-index:2147483500;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      background:rgba(8,3,14,.48);
+      backdrop-filter:blur(8px);
+      -webkit-backdrop-filter:blur(8px);
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .18s ease;
+    }
+    .bridgeConfirmOverlay.show{
+      opacity:1;
+      pointer-events:auto;
+    }
+    .bridgeConfirmCard{
+      width:min(292px, calc(100vw - 42px));
+      border-radius:24px;
+      padding:15px 14px 13px;
+      background:linear-gradient(180deg, rgba(255,255,255,.98), rgba(247,241,255,.97));
+      color:#22132e;
+      box-shadow:0 26px 65px rgba(0,0,0,.36), inset 0 1px 0 rgba(255,255,255,.9);
+      transform:translateY(10px) scale(.985);
+      transition:transform .18s cubic-bezier(.2,.9,.2,1);
+      text-align:center;
+    }
+    .bridgeConfirmOverlay.show .bridgeConfirmCard{
+      transform:translateY(0) scale(1);
+    }
+    .bridgeConfirmIcon{
+      width:45px;
+      height:45px;
+      margin:0 auto 9px;
+      border-radius:17px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(180deg,#ff4778,#8d35ff);
+      color:#fff;
+      font-size:22px;
+      box-shadow:0 12px 24px rgba(141,53,255,.24), 0 0 0 8px rgba(141,53,255,.08);
+    }
+    .bridgeConfirmTitle{
+      margin:0 0 7px;
+      font-size:17px;
+      line-height:1.12;
+      font-weight:950;
+      color:#23142c;
+    }
+    .bridgeConfirmMsg{
+      margin:0 auto 9px;
+      max-width:240px;
+      font-size:12.4px;
+      line-height:1.32;
+      font-weight:650;
+      color:#6f617b;
+    }
+    .bridgeConfirmDetail{
+      margin:0 0 12px;
+      padding:8px 10px;
+      border-radius:14px;
+      background:#f1eaf8;
+      color:#5d426c;
+      font-size:11.6px;
+      line-height:1.28;
+      font-weight:800;
+    }
+    .bridgeConfirmActions{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+    }
+    .bridgeConfirmBtn{
+      height:38px;
+      border:0;
+      border-radius:14px;
+      font-size:12.6px;
+      font-weight:950;
+      cursor:pointer;
+    }
+    .bridgeConfirmCancel{
+      background:#eee7f4;
+      color:#742284;
+    }
+    .bridgeConfirmOk{
+      background:linear-gradient(180deg,#9c32cf,#742284);
+      color:#fff;
+      box-shadow:0 10px 19px rgba(116,34,132,.20);
+    }
+    .bridgeConfirmOk.danger{
+      background:linear-gradient(180deg,#ff4778,#c4164d);
+      box-shadow:0 10px 19px rgba(196,22,77,.22);
+    }
+  `;
+  (pdoc.head || pdoc.documentElement).appendChild(style);
+}
+
+function bridgeShowMiniLoading(pdoc, message = "Cargando..."){
+  try {
+    bridgeEnsureMiniUiStyles(pdoc);
+    const old = pdoc.querySelector(".bridgeMiniLoading");
+    if(old) old.remove();
+
+    const box = pdoc.createElement("div");
+    box.className = "bridgeMiniLoading";
+    box.innerHTML = `<span class="bridgeMiniSpinner"></span><span class="bridgeMiniText">${bridgeEscapeHtml(message)}</span>`;
+    pdoc.body.appendChild(box);
+
+    setTimeout(() => box.classList.add("show"), 20);
+
+    return function(doneMessage){
+      try {
+        if(doneMessage){
+          box.classList.add("ok");
+          const txt = box.querySelector(".bridgeMiniText");
+          if(txt) txt.textContent = doneMessage;
+          setTimeout(() => {
+            box.classList.remove("show");
+            setTimeout(() => box.remove(), 220);
+          }, 850);
+        } else {
+          box.classList.remove("show");
+          setTimeout(() => box.remove(), 220);
+        }
+      } catch (e) {}
+    };
+  } catch (e) {
+    bridgeShowProfileToast(pdoc, message);
+    return function(){};
+  }
+}
+
+function bridgeShowSmallConfirm(pdoc, options = {}){
+  return new Promise((resolve) => {
+    try {
+      bridgeEnsureMiniUiStyles(pdoc);
+      const overlay = pdoc.createElement("div");
+      overlay.className = "bridgeConfirmOverlay";
+      overlay.innerHTML = `
+        <div class="bridgeConfirmCard" role="dialog" aria-modal="true">
+          <div class="bridgeConfirmIcon">${bridgeEscapeHtml(options.icon || "⚠️")}</div>
+          <h3 class="bridgeConfirmTitle">${bridgeEscapeHtml(options.title || "Confirmar")}</h3>
+          <p class="bridgeConfirmMsg">${bridgeEscapeHtml(options.message || "¿Deseas continuar?")}</p>
+          <div class="bridgeConfirmDetail">${bridgeEscapeHtml(options.detail || "Esta acción requiere confirmación.")}</div>
+          <div class="bridgeConfirmActions">
+            <button type="button" class="bridgeConfirmBtn bridgeConfirmCancel">${bridgeEscapeHtml(options.cancelText || "Cancelar")}</button>
+            <button type="button" class="bridgeConfirmBtn bridgeConfirmOk ${options.danger ? "danger" : ""}">${bridgeEscapeHtml(options.okText || "Aceptar")}</button>
+          </div>
+        </div>
+      `;
+      pdoc.body.appendChild(overlay);
+
+      const close = (value) => {
+        overlay.classList.remove("show");
+        setTimeout(() => {
+          try { overlay.remove(); } catch (e) {}
+          resolve(value);
+        }, 180);
+      };
+
+      overlay.querySelector(".bridgeConfirmCancel").addEventListener("click", () => close(false));
+      overlay.querySelector(".bridgeConfirmOk").addEventListener("click", () => close(true));
+      overlay.addEventListener("click", (ev) => {
+        if(ev.target === overlay) close(false);
+      });
+
+      setTimeout(() => overlay.classList.add("show"), 20);
+    } catch (e) {
+      resolve(false);
+    }
+  });
+}
+
+function bridgeRestoreFirestoreValue(key, value){
+  try {
+    const dateKeys = ["createdAt", "updatedAt", "expiresAt", "pushUpdatedAt", "dateObj"];
+    if(value && typeof value === "object" && typeof value.seconds === "number"){
+      const ms = (value.seconds * 1000) + Math.floor((value.nanoseconds || 0) / 1000000);
+      return Timestamp.fromDate(new Date(ms));
+    }
+    if(dateKeys.includes(key) && typeof value === "string"){
+      const d = new Date(value);
+      if(!isNaN(d.getTime())) return Timestamp.fromDate(d);
+    }
+    return value;
+  } catch (e) {
+    return value;
+  }
+}
+
+function bridgeCleanImportedTransfer(item, phone){
+  const out = {};
+  if(!item || typeof item !== "object") return out;
+
+  Object.keys(item).forEach((key) => {
+    if(key === "id") return;
+    const value = item[key];
+    if(value === undefined || typeof value === "function") return;
+    out[key] = bridgeRestoreFirestoreValue(key, value);
+  });
+
+  const createdMs = bridgeTransferDateMs(out) || Date.now();
+  if(!out.createdAt) out.createdAt = Timestamp.fromDate(new Date(createdMs));
+  if(!out.expiresAt) out.expiresAt = Timestamp.fromDate(new Date(createdMs + (7 * 24 * 60 * 60 * 1000)));
+
+  out.importedAt = serverTimestamp();
+
+  if(!bridgeTransferBelongsToPhone(out, phone)){
+    out.ownerPhone = clean9(phone);
+  }
+
+  return out;
+}
+
+function bridgeTransferDateMs(data){
+  try {
+    const value = data && (data.createdAt || data.dateObj || data.fecha || data.time);
+    if(!value) return 0;
+    if(value instanceof Date) return value.getTime();
+    if(typeof value.toDate === "function") return value.toDate().getTime();
+    if(typeof value.seconds === "number") return value.seconds * 1000;
+    const n = Number(value);
+    if(Number.isFinite(n) && n > 0) return n;
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? 0 : d.getTime();
+  } catch (e) {
+    return 0;
+  }
+}
+
+function bridgeTransferBelongsToPhone(data, phone){
+  const p = clean9(phone);
+  if(!p) return false;
+  const candidates = [
+    data && data.fromPhone,
+    data && data.toPhone,
+    data && data.phone,
+    data && data.selfPhone,
+    data && data.ownerPhone,
+    data && data.currentPhone
+  ];
+  return candidates.some((item) => clean9(item) === p);
+}
+
+async function bridgeGetTransferDocsForPhone(phone){
+  const p = clean9(phone);
+  if(p.length !== 9) return [];
+  const base = collection(db, TRANSFERS_COLLECTION);
+  const [outSnap, inSnap] = await Promise.all([
+    getDocs(query(base, where("fromPhone", "==", p))),
+    getDocs(query(base, where("toPhone", "==", p)))
+  ]);
+
+  const merged = new Map();
+  outSnap.forEach((snap) => merged.set(snap.id, snap));
+  inSnap.forEach((snap) => merged.set(snap.id, snap));
+  return Array.from(merged.values());
+}
+
+function bridgeSerializeTransfer(snap){
+  const data = snap.data() || {};
+  const clean = {};
+  Object.keys(data).forEach((key) => {
+    const value = data[key];
+    try {
+      if(value instanceof Date) clean[key] = value.toISOString();
+      else if(value && typeof value.toDate === "function") clean[key] = value.toDate().toISOString();
+      else clean[key] = value;
+    } catch (e) {
+      clean[key] = String(value || "");
+    }
+  });
+  return { id: snap.id, ...clean };
+}
+
+async function bridgeDownloadTransfersToPhone(pdoc){
+  const user = bridgeUser || await findCurrentUser();
+  if(!(user && user.phone)){
+    bridgeShowProfileToast(pdoc, "Primero registra tu número.");
+    return;
+  }
+
+  const hideLoading = bridgeShowMiniLoading(pdoc, "Preparando descarga...");
+
+  try {
+    await new Promise((resolve) => setTimeout(resolve, 420));
+
+    const docs = await bridgeGetTransferDocsForPhone(user.phone);
+    const payload = {
+      phone: user.phone,
+      name: user.name || "",
+      exportedAt: new Date().toISOString(),
+      note: "Copia de transferencias del usuario. En la app, las transferencias vencen a los 7 días.",
+      total: docs.length,
+      transfers: docs
+        .map(bridgeSerializeTransfer)
+        .sort((a, b) => bridgeTransferDateMs(b) - bridgeTransferDateMs(a))
+    };
+
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const fileName = "transferencias_" + user.phone + "_" + new Date().toISOString().slice(0, 10) + ".json";
+    const a = pdoc.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    a.style.display = "none";
+    pdoc.body.appendChild(a);
+    a.click();
+
+    setTimeout(() => {
+      try { URL.revokeObjectURL(url); } catch (e) {}
+      try { a.remove(); } catch (e) {}
+    }, 1200);
+
+    hideLoading("Descarga lista 📱");
+    bridgeShowProfileToast(pdoc, "Descarga iniciada.", 1400);
+  } catch (err) {
+    console.error(err);
+    hideLoading();
+    bridgeShowProfileToast(pdoc, "No se pudo descargar.");
+  }
+}
+
+async function bridgeImportDownloadedTransfers(pdoc, homeDoc){
+  const user = bridgeUser || await findCurrentUser();
+  if(!(user && user.phone)){
+    bridgeShowProfileToast(pdoc, "Primero registra tu número.");
+    return;
+  }
+
+  try {
+    const input = pdoc.createElement("input");
+    input.type = "file";
+    input.accept = "application/json,.json";
+    input.style.display = "none";
+    pdoc.body.appendChild(input);
+
+    input.addEventListener("change", async () => {
+      const file = input.files && input.files[0];
+      setTimeout(() => {
+        try { input.remove(); } catch (e) {}
+      }, 500);
+
+      if(!file) return;
+
+      let stop = bridgeShowMiniLoading(pdoc, "Leyendo descarga...");
+
+      try {
+        const raw = await file.text();
+        const payload = JSON.parse(raw);
+        const transfers = Array.isArray(payload)
+          ? payload
+          : (Array.isArray(payload.transfers) ? payload.transfers : []);
+
+        if(!transfers.length){
+          stop();
+          bridgeShowProfileToast(pdoc, "El archivo no tiene transferencias.");
+          return;
+        }
+
+        stop();
+
+        const ok = await bridgeShowSmallConfirm(pdoc, {
+          icon: "📂",
+          title: "Usar descarga",
+          message: "Se cargarán " + transfers.length + " transferencia(s) en la base de datos.",
+          detail: "Usa solo archivos descargados desde esta app.",
+          okText: "Cargar",
+          cancelText: "Cancelar"
+        });
+
+        if(!ok) return;
+
+        stop = bridgeShowMiniLoading(pdoc, "Cargando transferencias...");
+
+        let saved = 0;
+        for(const item of transfers){
+          if(!item || typeof item !== "object") continue;
+          const data = bridgeCleanImportedTransfer(item, user.phone);
+          const oldId = String(item.id || "").trim();
+          const ref = oldId
+            ? doc(db, TRANSFERS_COLLECTION, oldId)
+            : doc(collection(db, TRANSFERS_COLLECTION));
+
+          await setDoc(ref, data, { merge: true });
+          saved++;
+        }
+
+        try { await syncHomeFrame(homeDoc); } catch (e) {}
+        try { window.dispatchEvent(new CustomEvent("bridgeNotificationsUpdated")); } catch (e) {}
+
+        stop("Carga lista ✓");
+        bridgeShowProfileToast(pdoc, "Transferencias cargadas: " + saved, 1500);
+      } catch (err) {
+        console.error(err);
+        try { stop(); } catch (e) {}
+        bridgeShowProfileToast(pdoc, "Archivo no válido.");
+      }
+    }, { once:true });
+
+    input.click();
+  } catch (err) {
+    console.error(err);
+    bridgeShowProfileToast(pdoc, "No se pudo abrir el archivo.");
+  }
+}
+
+function bridgeLoadJsonKey(key){
+  try {
+    const raw = localStorage.getItem(key);
+    if(!raw) return [];
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? arr : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function bridgeSaveJsonKey(key, arr){
+  try { localStorage.setItem(key, JSON.stringify(Array.isArray(arr) ? arr : [])); } catch (e) {}
+}
+
+function bridgeClearLocalTransfersForPhone(phone, onlyOlderThanMs = 0){
+  const p = clean9(phone);
+  if(!p) return { removed: 0 };
+
+  let removed = 0;
+  const listKeys = ["movimientos_v1", "movimientos", "yapeos", "yapeton_pending_transfers"];
+
+  listKeys.forEach((key) => {
+    const arr = bridgeLoadJsonKey(key);
+    if(!arr.length){
+      try {
+        if(key === "movimientos_v1" || key === "movimientos" || key === "yapeos") localStorage.removeItem(key);
+      } catch (e) {}
+      return;
+    }
+
+    const filtered = arr.filter((item) => {
+      const data = item && typeof item === "object" ? item : {};
+      const belongs = bridgeTransferBelongsToPhone(data, p);
+      const ms = bridgeTransferDateMs(data);
+      const oldEnough = !onlyOlderThanMs || (ms && ms <= onlyOlderThanMs);
+      const shouldRemove = belongs && oldEnough;
+      if(shouldRemove) removed += 1;
+      return !shouldRemove;
+    });
+
+    if(filtered.length) bridgeSaveJsonKey(key, filtered);
+    else {
+      try { localStorage.removeItem(key); } catch (e) {}
+    }
+  });
+
+  if(!onlyOlderThanMs){
+    try { localStorage.removeItem("movimientos_deleted_v1"); } catch (e) {}
+    try { localStorage.removeItem("yapeton_rt_seen_ids"); } catch (e) {}
+    try { localStorage.removeItem("yapeton_yapeos"); } catch (e) {}
+  }
+
+  return { removed };
+}
+
+async function bridgeDeleteCloudTransferDocs(docs){
+  const ids = [];
+  for(const snap of docs){
+    if(!snap || !snap.id || ids.includes(snap.id)) continue;
+    ids.push(snap.id);
+    await deleteDoc(doc(db, TRANSFERS_COLLECTION, snap.id));
+  }
+  return ids.length;
+}
+
+async function bridgeDeleteTransfersPhoneAndDatabase(pdoc, homeDoc){
+  const user = bridgeUser || await findCurrentUser();
+  if(!(user && user.phone)){
+    bridgeShowProfileToast(pdoc, "Primero registra tu número.");
+    return;
+  }
+
+  const docs = await bridgeGetTransferDocsForPhone(user.phone);
+  const total = docs.length;
+  const localCount = bridgeLoadJsonKey("movimientos_v1").filter((item) => bridgeTransferBelongsToPhone(item || {}, user.phone)).length;
+  const label = (total + localCount) === 1 ? "1 transferencia" : ((total + localCount) + " transferencias");
+
+  const ok = await bridgeShowSmallConfirm(pdoc, {
+    icon: "🗑️",
+    title: "Borrar historial",
+    message: "¿Deseas borrar " + label + " del celular y de la base de datos?",
+    detail: "Esta acción no se puede deshacer. También pondrá yapeos en 0.",
+    okText: "Borrar",
+    cancelText: "Cancelar",
+    danger: true
+  });
+
+  if(!ok) return;
+
+  const hideLoading = bridgeShowMiniLoading(pdoc, "Borrando historial...");
+
+  try {
+    await new Promise((resolve) => setTimeout(resolve, 420));
+
+    const cloudRemoved = await bridgeDeleteCloudTransferDocs(docs);
+    const localRemoved = bridgeClearLocalTransfersForPhone(user.phone).removed;
+
+    try {
+      await setDoc(doc(db, USERS_COLLECTION, user.phone), {
+        yapeos: 0,
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+    } catch (e) {
+      console.warn("No se pudo resetear yapeos en users", e);
+    }
+
+    bridgeUser = { ...user, yapeos: 0 };
+    persistLegacyUser(bridgeUser);
+    syncHomeFrame(homeDoc);
+    try { window.dispatchEvent(new CustomEvent("bridgeNotificationsUpdated")); } catch (e) {}
+
+    hideLoading("Borrado listo ✓");
+    bridgeShowProfileToast(pdoc, "Borrado: " + cloudRemoved + " base / " + localRemoved + " celular", 1600);
+  } catch (err) {
+    console.error(err);
+    hideLoading();
+    bridgeShowProfileToast(pdoc, "No se pudo borrar. Revisa permisos.");
+  }
+}
+
+async function bridgeCleanupExpiredTransfersForCurrentUser(force = false){
+  const nowMs = Date.now();
+  if(transferCleanupRunning) return 0;
+  if(!force && transferCleanupLastAt && (nowMs - transferCleanupLastAt) < (60 * 60 * 1000)) return 0;
+
+  const user = bridgeUser || await findCurrentUser();
+  if(!(user && user.phone)) return 0;
+
+  transferCleanupRunning = true;
+  transferCleanupLastAt = nowMs;
+
+  try {
+    const cutoffMs = nowMs - (7 * 24 * 60 * 60 * 1000);
+    const docs = await bridgeGetTransferDocsForPhone(user.phone);
+    const expired = docs.filter((snap) => {
+      const ms = bridgeTransferDateMs(snap.data() || {});
+      return ms && ms <= cutoffMs;
+    });
+
+    const removed = await bridgeDeleteCloudTransferDocs(expired);
+    bridgeClearLocalTransfersForPhone(user.phone, cutoffMs);
+    if(removed > 0){
+      try { window.dispatchEvent(new CustomEvent("bridgeNotificationsUpdated")); } catch (e) {}
+    }
+    return removed;
+  } catch (err) {
+    console.warn("No se pudo limpiar transferencias vencidas", err);
+    return 0;
+  } finally {
+    transferCleanupRunning = false;
+  }
+}
+
+function injectProfileTransferStyles(pdoc){
+  if(!pdoc || pdoc.getElementById("bridgeTransferToolsStyles")) return;
+  const style = pdoc.createElement("style");
+  style.id = "bridgeTransferToolsStyles";
+  style.textContent = `
+    #bridgeTransferTools{
+      position:relative;
+      overflow:hidden;
+      padding:13px 14px !important;
+      border-radius:22px !important;
+      margin-top:12px !important;
+    }
+    #bridgeTransferTools .svcRow{
+      padding:0 !important;
+      margin:0 0 8px !important;
+      min-height:0 !important;
+    }
+    #bridgeTransferTools .svcLeft{
+      gap:11px !important;
+      align-items:center !important;
+    }
+    #bridgeTransferTools .svcIco{
+      width:42px !important;
+      height:42px !important;
+      min-width:42px !important;
+      border-radius:15px !important;
+      font-size:20px !important;
+    }
+    #bridgeTransferTools .svcTitle{
+      font-size:17px !important;
+      line-height:1.1 !important;
+      font-weight:900 !important;
+    }
+    #bridgeTransferTools .svcSub{
+      font-size:12.2px !important;
+      line-height:1.22 !important;
+      font-weight:650 !important;
+    }
+    #bridgeTransferTools .bridgeTransferNotice{
+      margin:0 0 9px;
+      padding:9px 10px;
+      border-radius:15px;
+      background:rgba(0,0,0,.12);
+      border:1px solid rgba(255,255,255,.08);
+      color:rgba(255,255,255,.83);
+      font-size:11.4px;
+      line-height:1.28;
+      font-weight:650;
+    }
+    #bridgeTransferTools .bridgeTransferNotice strong{
+      color:#fff;
+      font-weight:900;
+    }
+    #bridgeTransferTools .bridgeTransferButtons{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:7px;
+      padding-top:0;
+    }
+    #bridgeTransferTools .bridgeTransferBtn{
+      width:100%;
+      min-height:38px;
+      border:0;
+      border-radius:14px;
+      padding:0 12px;
+      color:#fff;
+      font-size:12.5px;
+      font-weight:900;
+      letter-spacing:.01em;
+      box-shadow:0 9px 17px rgba(0,0,0,.14);
+      transition:transform .14s ease, opacity .14s ease, filter .14s ease;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+    }
+    #bridgeTransferTools .bridgeTransferBtn:active{
+      transform:scale(.985);
+      opacity:.94;
+      filter:brightness(1.05);
+    }
+    #bridgeDownloadTransfersBtn{
+      background:linear-gradient(135deg,#00c6ff,#0072ff);
+    }
+    #bridgeImportTransfersBtn{
+      background:linear-gradient(135deg,#18d2bd,#7b2cff);
+    }
+    #bridgeDeleteTransfersBtn{
+      background:linear-gradient(135deg,#ff4f79,#8d35ff);
+    }
+    #bridgeTransferTools .bridgeTransferSmall{
+      margin-top:8px;
+      color:rgba(255,255,255,.58);
+      font-size:10.4px;
+      line-height:1.22;
+      font-weight:650;
+    }
+  `;
+  (pdoc.head || pdoc.documentElement).appendChild(style);
+}
+
+function ensureProfileTransferTools(pdoc, homeDoc){
+  if(!pdoc || pdoc.getElementById("bridgeTransferTools")) return;
+  injectProfileTransferStyles(pdoc);
+
+  const services = pdoc.querySelector("#datosView .services") || pdoc.querySelector("#datosView .d-main");
+  if(!services) return;
+
+  const card = pdoc.createElement("div");
+  card.id = "bridgeTransferTools";
+  card.className = "svcCard glass";
+  card.innerHTML = `
+    <div class="svcRow">
+      <div class="svcLeft">
+        <div class="svcIco red" aria-hidden="true">🗂️</div>
+        <div class="svcText">
+          <div class="svcTitle">Transferencias</div>
+          <div class="svcSub">Se borran automáticamente en 7 días.</div>
+        </div>
+      </div>
+    </div>
+    <div class="bridgeTransferNotice">
+      <strong>Aviso:</strong> puedes descargar una copia, usar una descarga guardada o borrar el historial ahora.
+    </div>
+    <div class="bridgeTransferButtons">
+      <button type="button" id="bridgeDownloadTransfersBtn" class="bridgeTransferBtn">Descargar 📱</button>
+      <button type="button" id="bridgeImportTransfersBtn" class="bridgeTransferBtn">Usar descarga</button>
+      <button type="button" id="bridgeDeleteTransfersBtn" class="bridgeTransferBtn">Borrar celular y base</button>
+    </div>
+    <div class="bridgeTransferSmall">Antes de borrar saldrá una advertencia pequeña para confirmar.</div>
+  `;
+
+  const clearToggle = pdoc.getElementById("clearToggle");
+  const clearCard = clearToggle ? clearToggle.closest(".svcCard") : null;
+  if(clearCard && clearCard.parentNode){
+    clearCard.parentNode.insertBefore(card, clearCard.nextSibling);
+  } else {
+    services.appendChild(card);
+  }
+
+  const downloadBtn = pdoc.getElementById("bridgeDownloadTransfersBtn");
+  const importBtn = pdoc.getElementById("bridgeImportTransfersBtn");
+  const deleteBtn = pdoc.getElementById("bridgeDeleteTransfersBtn");
+
+  if(downloadBtn){
+    downloadBtn.addEventListener("click", async () => {
+      await bridgeDownloadTransfersToPhone(pdoc);
+    });
+  }
+
+  if(importBtn){
+    importBtn.addEventListener("click", async () => {
+      await bridgeImportDownloadedTransfers(pdoc, homeDoc);
+    });
+  }
+
+  if(deleteBtn){
+    deleteBtn.addEventListener("click", async () => {
+      await bridgeDeleteTransfersPhoneAndDatabase(pdoc, homeDoc);
+    });
+  }
+}
+
 function randomDigits(len){
   let out = "";
   for(let i = 0; i < len; i += 1){
@@ -25142,6 +25960,7 @@ function setupProfileFrame(homeDoc){
     if(!pdoc || !pdoc.body) return;
 
     injectProfileStyles(pdoc);
+    injectProfileTransferStyles(pdoc);
 
     const meta = pdoc.querySelector("#datosView .welcomeMeta");
     if(meta && !pdoc.getElementById("bridgePhoneWrap")){
@@ -25162,6 +25981,8 @@ function setupProfileFrame(homeDoc){
         phoneInput.dataset.editing = "0";
       });
     }
+
+    ensureProfileTransferTools(pdoc, homeDoc);
 
     if(bridgeUser){
       const nameInput = pdoc.getElementById("nameInput");
@@ -25361,6 +26182,7 @@ async function handleTransfer(homeWin, homeDoc){
       code3,
       msg,
       createdAt: now.getTime(),
+      expiresAt: now.getTime() + (7 * 24 * 60 * 60 * 1000),
       type: "transfer",
       toRegistered: false,
       offlineOnly: true
@@ -25422,6 +26244,7 @@ async function handleTransfer(homeWin, homeDoc){
       code3,
       msg,
       createdAt: now,
+      expiresAt: new Date(now.getTime() + (7 * 24 * 60 * 60 * 1000)),
       type: "transfer",
       toRegistered: !!receiverExists
     });
@@ -25593,6 +26416,8 @@ async function patchHomeFrame(){
     wrappedRefresh.__bridgeWrapped = true;
     homeWin.refreshHomeFromStorage = wrappedRefresh;
   }
+
+  bridgeCleanupExpiredTransfersForCurrentUser(false).catch((e) => console.warn("Limpieza de 7 días falló", e));
 
   patchContactLookup(homeWin);
   bindTransferBridge(homeWin, homeDoc);
