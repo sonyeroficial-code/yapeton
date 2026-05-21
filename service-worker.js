@@ -1,5 +1,5 @@
 /* PWA Service Worker - actualiza PNG e imagenes sin quedarse con cache vieja */
-const CACHE_VERSION = 'png-refresh-v3';
+const CACHE_VERSION = 'slow-network-yape-icons-final-v7';
 const PRECACHE_NAME = `app-precache-${CACHE_VERSION}`;
 const RUNTIME_NAME = `app-runtime-${CACHE_VERSION}`;
 
@@ -9,6 +9,16 @@ const CORE_ASSETS = [
   './index.html',
   './manifest.webmanifest'
 ];
+
+const NAVIGATION_NETWORK_TIMEOUT_MS = 3000;
+const ASSET_NETWORK_TIMEOUT_MS = 2500;
+
+function fetchWithTimeout(request, options = {}, timeoutMs = NAVIGATION_NETWORK_TIMEOUT_MS) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  return fetch(request, { ...options, signal: controller.signal })
+    .finally(() => clearTimeout(timer));
+}
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
@@ -103,20 +113,25 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  // HTML: red primero, cache despues.
+  // HTML: red primero, pero con tiempo maximo. Si la red esta lenta,
+  // abre la copia guardada para que la app no se quede esperando.
   if (request.mode === 'navigate' || (request.headers.get('accept') || '').includes('text/html')) {
     event.respondWith((async () => {
+      const cached = await fromCache('./index.html') || await fromCache('./');
+
       try {
-        const response = await fetch(request, { cache: 'no-store' });
+        const response = await fetchWithTimeout(
+          request,
+          { cache: 'no-store' },
+          NAVIGATION_NETWORK_TIMEOUT_MS
+        );
         await putRuntime('./index.html', response.clone());
         return response;
       } catch (_) {
-        return await fromCache('./index.html')
-          || await fromCache('./')
-          || new Response(
-            '<!doctype html><title>Offline</title><meta name="viewport" content="width=device-width,initial-scale=1"><body style="font-family:sans-serif;display:flex;min-height:100vh;align-items:center;justify-content:center">Sin conexion</body>',
-            { headers: { 'Content-Type': 'text/html; charset=utf-8' } }
-          );
+        return cached || new Response(
+          '<!doctype html><title></title><meta name="viewport" content="width=device-width,initial-scale=1"><body></body>',
+          { headers: { 'Content-Type': 'text/html; charset=utf-8' } }
+        );
       }
     })());
     return;
@@ -127,7 +142,7 @@ self.addEventListener('fetch', (event) => {
   if (isImageRequest(request)) {
     event.respondWith((async () => {
       try {
-        const response = await fetch(request, { cache: 'no-store' });
+        const response = await fetchWithTimeout(request, { cache: 'no-store' }, ASSET_NETWORK_TIMEOUT_MS);
         await putRuntime(request, response.clone());
         return response;
       } catch (_) {
