@@ -3743,6 +3743,13 @@ body.mode-login #loginWrap .sonyerFinalTitle .brandOwner{
 #voucherView .card.bank-voucher-mode .section-title{margin-top:10px;}
 #voucherView .card.bank-voucher-mode .vMsg{margin-top:10px;margin-bottom:12px;}
 </style>
+<style id="bbva-no-green-button-final">
+#voucherView.bbva-voucher-mode #vNewYapeoBtn,
+#voucherView .card.bbva-voucher-mode ~ .voucher-actions #vNewYapeoBtn,
+#baucher-new-yapeo-btn.bbva-hidden{
+  display:none !important;
+}
+</style>
 </head>
 <body class="mode-login">
 
@@ -7399,7 +7406,7 @@ html.yapeton-hide-promos #voucherView .promo-wrap{
               &lt;div class=&quot;section-title&quot;&gt;DATOS DE LA TRANSACCIÓN&lt;/div&gt;
 
               &lt;div class=&quot;data&quot;&gt;
-                &lt;div class=&quot;row&quot;&gt;&lt;span&gt;Nro. de celular&lt;/span&gt;&lt;span id=&quot;vPhone&quot;&gt;000&lt;/span&gt;&lt;/div&gt;
+                &lt;div class=&quot;row voucher-phone-row&quot; id=&quot;vPhoneRow&quot;&gt;&lt;span&gt;Nro. de celular&lt;/span&gt;&lt;span id=&quot;vPhone&quot;&gt;000&lt;/span&gt;&lt;/div&gt;
                 &lt;div class=&quot;row&quot;&gt;&lt;span&gt;Destino&lt;/span&gt;&lt;span&gt;Yape&lt;/span&gt;&lt;/div&gt;
                 &lt;div class=&quot;row&quot;&gt;&lt;span&gt;Nro. de operación&lt;/span&gt;&lt;span id=&quot;vOp&quot;&gt;00000000&lt;/span&gt;&lt;/div&gt;
                 &lt;!-- (1) ✅ QUITADO: fila de Saldo en el baucher --&gt;
@@ -16592,7 +16599,13 @@ const isFromMov = payload &amp;&amp; payload.fromMov;
       const __voucherEsYape = __destinoVoucherLower === &#x27;yape&#x27;;
       const __voucherEsRecarga = __destinoVoucherLower.includes(&#x27;recarga&#x27;);
       const __voucherUsaModoYape = (__voucherEsYape || __voucherEsRecarga);
+      const __voucherEsBBVA = __destinoVoucherLower.includes(&quot;bbva&quot;);
       setVoucherLayoutMode(__voucherUsaModoYape);
+      try{
+        window.__voucherIsBBVA = !!__voucherEsBBVA;
+        if(voucherView) voucherView.classList.toggle(&quot;bbva-voucher-mode&quot;, !!__voucherEsBBVA);
+        if(vCard) vCard.classList.toggle(&quot;bbva-voucher-mode&quot;, !!__voucherEsBBVA);
+      }catch(e){}
       vName.textContent = (window.__mostrarNombreCompletoTemporal || (!__voucherEsYape && !__voucherEsRecarga))
         ? __voucherNombreCompleto
         : maskDisplayName(__voucherNombreCompleto);
@@ -16647,6 +16660,23 @@ const isFromMov = payload &amp;&amp; payload.fromMov;
         }
       }catch(e){}
       vPhone.textContent  = formatPhoneMasked(payload.phone);
+
+      /* ✅ BBVA: ocultar solo la fila "Nro. de celular" del voucher */
+      try{
+        const __isBBVAVoucher = !!window.__voucherIsBBVA || String(payload && payload.destino || &quot;&quot;).trim().toLowerCase().includes(&quot;bbva&quot;);
+        const __phoneRow = document.getElementById(&quot;vPhoneRow&quot;) || (vPhone && vPhone.closest(&quot;.row&quot;));
+        const __newYapeoBtn = document.getElementById(&quot;vNewYapeoBtn&quot;);
+        const __innerNewYapeoBtn = document.getElementById(&quot;baucher-new-yapeo-btn&quot;);
+        if(__phoneRow){
+          __phoneRow.style.display = __isBBVAVoucher ? &quot;none&quot; : &quot;&quot;;
+        }
+        if(__newYapeoBtn){
+          __newYapeoBtn.style.setProperty(&quot;display&quot;, __isBBVAVoucher ? &quot;none&quot; : &quot;flex&quot;, &quot;important&quot;);
+        }
+        if(__innerNewYapeoBtn){
+          __innerNewYapeoBtn.style.setProperty(&quot;display&quot;, __isBBVAVoucher ? &quot;none&quot; : &quot;flex&quot;, &quot;important&quot;);
+        }
+      }catch(e){}
 
       vDate.textContent = formatDateEs(d);
       vTime.textContent = formatTimeEs(d);
@@ -24195,10 +24225,36 @@ html.ios-final-fix iframe{
     logo.dataset.movLogoApplied = '1';
   }
 
+  function isBBVAVoucherForActions(doc, idoc){
+    try{
+      var w = doc && doc.defaultView;
+      if(w){
+        if(w.__voucherIsBBVA === true) return true;
+        var last = w.__lastRecipient || {};
+        if(String(last.destino || '').toLowerCase().indexOf('bbva') !== -1) return true;
+      }
+    }catch(e){}
+    try{
+      var vDestino = doc && doc.getElementById ? doc.getElementById('vDestino') : null;
+      if(vDestino && String(vDestino.textContent || '').toLowerCase().indexOf('bbva') !== -1) return true;
+    }catch(e){}
+    try{
+      var rows = doc && doc.querySelectorAll ? doc.querySelectorAll('#voucherView .data .row') : [];
+      for(var i=0;i<rows.length;i++){
+        if(String(rows[i].textContent || '').toLowerCase().indexOf('bbva') !== -1) return true;
+      }
+    }catch(e){}
+    try{
+      if(idoc && idoc.body && String(idoc.body.textContent || '').toLowerCase().indexOf('bbva') !== -1) return true;
+    }catch(e){}
+    return false;
+  }
+
   function syncMovActions(doc, idoc){
     if(!doc || !idoc) return;
 
     var shouldShow = isMovVoucherView(doc);
+    var isBBVA = isBBVAVoucherForActions(doc, idoc);
 
     var host = idoc.getElementById('baucher-mov-actions');
     if(!shouldShow){
@@ -24275,7 +24331,13 @@ html.ios-final-fix iframe{
       }
     }
 
+    var bbvaNewBtn = host.querySelector('#baucher-new-yapeo-btn');
+    if(bbvaNewBtn){
+      bbvaNewBtn.style.setProperty('display', isBBVA ? 'none' : 'flex', 'important');
+      bbvaNewBtn.classList.toggle('bbva-hidden', !!isBBVA);
+    }
     host.style.display = 'flex';
+    host.style.gap = isBBVA ? '0' : '4vw';
   }
 
   function syncVoucher(doc, iframe){
@@ -24315,7 +24377,8 @@ html.ios-final-fix iframe{
         '.yapeton-hide-promos .paraServicios{display:none!important;visibility:hidden!important;height:0!important;overflow:hidden!important;margin:0!important;padding:0!important;}',
         '.yapeton-hide-promos #promoFrame{display:none!important;visibility:hidden!important;}',
         '.yapeton-bank-voucher .codSecurity{display:none!important;visibility:hidden!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important;border:0!important;overflow:hidden!important;}',
-        '.yapeton-bank-voucher .paraFecha{margin-bottom:0!important;} .yapeton-bank-voucher .transacc{margin-top:1.8vw!important;border-top:.22vw solid #e5e5eb!important;padding-top:4.1vw!important;} .yapeton-bank-voucher .datosts{margin-top:0!important;}'
+        '.yapeton-bank-voucher .paraFecha{margin-bottom:0!important;} .yapeton-bank-voucher .transacc{margin-top:1.8vw!important;border-top:.22vw solid #e5e5eb!important;padding-top:4.1vw!important;} .yapeton-bank-voucher .datosts{margin-top:0!important;}',
+        '.yapeton-bbva-voucher .datosts > div:first-child{display:none!important;visibility:hidden!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important;overflow:hidden!important;}'
       ].join('');
       (idoc.head || idoc.documentElement).appendChild(innerStyle);
     }
@@ -24360,9 +24423,27 @@ html.ios-final-fix iframe{
     var destinoClean = String(destino || 'Yape').trim();
     var destinoLower = destinoClean.toLowerCase();
     var isBankVoucher = !!destinoClean && destinoLower !== 'yape' && destinoLower.indexOf('recarga') === -1;
+    var isBbvaVoucher = destinoLower.indexOf('bbva') !== -1;
     try{
-      if(idoc.documentElement) idoc.documentElement.classList.toggle('yapeton-bank-voucher', isBankVoucher);
-      if(idoc.body) idoc.body.classList.toggle('yapeton-bank-voucher', isBankVoucher);
+      if(idoc.documentElement){
+        idoc.documentElement.classList.toggle('yapeton-bank-voucher', isBankVoucher);
+        idoc.documentElement.classList.toggle('yapeton-bbva-voucher', isBbvaVoucher);
+      }
+      if(idoc.body){
+        idoc.body.classList.toggle('yapeton-bank-voucher', isBankVoucher);
+        idoc.body.classList.toggle('yapeton-bbva-voucher', isBbvaVoucher);
+      }
+      var __bbvaPhoneRow = idoc.querySelector('.datosts > div:first-child');
+      if(__bbvaPhoneRow){
+        __bbvaPhoneRow.style.setProperty('display', isBbvaVoucher ? 'none' : '', isBbvaVoucher ? 'important' : '');
+        __bbvaPhoneRow.style.setProperty('visibility', isBbvaVoucher ? 'hidden' : '', isBbvaVoucher ? 'important' : '');
+        __bbvaPhoneRow.style.setProperty('height', isBbvaVoucher ? '0' : '', isBbvaVoucher ? 'important' : '');
+        __bbvaPhoneRow.style.setProperty('min-height', isBbvaVoucher ? '0' : '', isBbvaVoucher ? 'important' : '');
+        __bbvaPhoneRow.style.setProperty('max-height', isBbvaVoucher ? '0' : '', isBbvaVoucher ? 'important' : '');
+        __bbvaPhoneRow.style.setProperty('margin', isBbvaVoucher ? '0' : '', isBbvaVoucher ? 'important' : '');
+        __bbvaPhoneRow.style.setProperty('padding', isBbvaVoucher ? '0' : '', isBbvaVoucher ? 'important' : '');
+        __bbvaPhoneRow.style.setProperty('overflow', isBbvaVoucher ? 'hidden' : '', isBbvaVoucher ? 'important' : '');
+      }
       var secRow = idoc.querySelector('.codSecurity');
       if(secRow){
         if(isBankVoucher){
