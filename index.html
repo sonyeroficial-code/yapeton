@@ -1085,8 +1085,11 @@ h1,h2,h3,.title,.contact-name{
 <script>
 (function(){
   var SESSION_KEY = 'yapeton_session';
-  var BOOT_MAX_WAIT = 4500;
+  var BOOT_MAX_WAIT = 2200;
+  var BOOT_HARD_WAIT = 6500;
   var released = false;
+  var retryTimer = 0;
+  var tries = 0;
 
   function hasStoredSession(){
     try{
@@ -1094,10 +1097,10 @@ h1,h2,h3,.title,.contact-name{
       if(!raw) return false;
       var data = JSON.parse(raw);
       return !!(data && data.ok === true && data.uid);
-    }catch(e){
-      return false;
-    }
+    }catch(e){ return false; }
   }
+
+  function byId(id){ return document.getElementById(id); }
 
   function hideNode(node){
     if(!node) return;
@@ -1107,52 +1110,72 @@ h1,h2,h3,.title,.contact-name{
     try { node.style.pointerEvents = 'none'; } catch(e){}
     setTimeout(function(){
       try { node.remove(); } catch(e){ try { node.style.display = 'none'; } catch(_){} }
-    }, 450);
+    }, 420);
+  }
+
+  function setCorrectScreen(){
+    var appWrap = byId('appWrap');
+    var loginWrap = byId('loginWrap');
+    if(!appWrap || !loginWrap) return false;
+
+    var preferApp = hasStoredSession();
+    if(preferApp){
+      appWrap.style.display = 'block';
+      loginWrap.style.display = 'none';
+      document.body.classList.add('mode-app');
+      document.body.classList.remove('mode-login');
+    } else {
+      loginWrap.style.display = 'block';
+      appWrap.style.display = 'none';
+      document.body.classList.add('mode-login');
+      document.body.classList.remove('mode-app');
+    }
+    return true;
+  }
+
+  function queueRelease(reason, delay){
+    if(released) return;
+    if(retryTimer) return;
+    retryTimer = setTimeout(function(){
+      retryTimer = 0;
+      releaseBoot(reason || 'retry');
+    }, delay || 180);
   }
 
   function releaseBoot(reason){
     if(released) return;
-    released = true;
+    tries++;
     try { window.__BOOT_RELEASE_REASON = reason || 'timeout'; } catch(e){}
 
-    var appWrap = document.getElementById('appWrap');
-    var loginWrap = document.getElementById('loginWrap');
-    var preferApp = hasStoredSession();
+    var bodyReady = !!document.body;
+    var appWrap = byId('appWrap');
+    var loginWrap = byId('loginWrap');
+    var pre = byId('preSplash');
+    var main = byId('__yapeSplash');
 
-    if(appWrap && loginWrap){
-      if(preferApp){
-        appWrap.style.display = 'block';
-        loginWrap.style.display = 'none';
-        document.body.classList.add('mode-app');
-        document.body.classList.remove('mode-login');
-      } else {
-        loginWrap.style.display = 'block';
-        appWrap.style.display = 'none';
-        document.body.classList.add('mode-login');
-        document.body.classList.remove('mode-app');
-      }
+    // Si un error de imagen o Firebase dispara esto muy temprano, no marques como liberado todavía.
+    // Antes pasaba eso y el logo quedaba pegado.
+    if(!bodyReady || (!appWrap || !loginWrap)){
+      hideNode(pre);
+      hideNode(main);
+      if(tries < 40) queueRelease(reason || 'early', tries < 8 ? 180 : 500);
+      return;
     }
 
-    hideNode(document.getElementById('preSplash'));
-    hideNode(document.getElementById('__yapeSplash'));
+    released = true;
+    setCorrectScreen();
+    hideNode(pre);
+    hideNode(main);
   }
 
   window.__releaseBootSplash = releaseBoot;
-  window.addEventListener('error', function(){ setTimeout(function(){ releaseBoot('error'); }, 0); }, true);
-  window.addEventListener('unhandledrejection', function(){ setTimeout(function(){ releaseBoot('promise'); }, 0); });
+
+  // No dejar que errores de imágenes/recursos congelen el splash.
+  window.addEventListener('error', function(){ queueRelease('error', 120); }, true);
+  window.addEventListener('unhandledrejection', function(){ queueRelease('promise', 120); });
 
   function armWatchdog(){
-    setTimeout(function(){
-      var pre = document.getElementById('preSplash');
-      var main = document.getElementById('__yapeSplash');
-      var appWrap = document.getElementById('appWrap');
-      var loginWrap = document.getElementById('loginWrap');
-      var appVisible = !!(appWrap && appWrap.style.display !== 'none');
-      var loginVisible = !!(loginWrap && loginWrap.style.display !== 'none');
-      if(pre || main || (!appVisible && !loginVisible)){
-        releaseBoot('watchdog');
-      }
-    }, BOOT_MAX_WAIT);
+    setTimeout(function(){ releaseBoot('watchdog'); }, BOOT_MAX_WAIT);
   }
 
   if(document.readyState === 'loading'){
@@ -1161,9 +1184,8 @@ h1,h2,h3,.title,.contact-name{
     armWatchdog();
   }
 
-  window.addEventListener('pageshow', function(){
-    setTimeout(function(){ releaseBoot('pageshow'); }, 2500);
-  }, { once:true });
+  window.addEventListener('pageshow', function(){ queueRelease('pageshow', 1200); }, { once:true });
+  setTimeout(function(){ releaseBoot('hard-timeout'); }, BOOT_HARD_WAIT);
 })();
 </script>
 
@@ -35788,3 +35810,46 @@ try{
 })();
 </script>
 
+
+
+<script id="yosi-boot-final-fix">
+(function(){
+  var SESSION_KEY = 'yapeton_session';
+  function hasStoredSession(){
+    try{ var d=JSON.parse(localStorage.getItem(SESSION_KEY)||'null'); return !!(d && d.ok===true && d.uid); }catch(e){ return false; }
+  }
+  function hide(id){
+    var n=document.getElementById(id);
+    if(!n) return;
+    try{ n.classList.add('preSplashHide'); n.classList.add('__hide'); }catch(e){}
+    try{ n.style.opacity='0'; n.style.pointerEvents='none'; n.style.display='none'; }catch(e){}
+    try{ n.remove(); }catch(e){}
+  }
+  function fixBoot(){
+    var app=document.getElementById('appWrap');
+    var login=document.getElementById('loginWrap');
+    if(app && login){
+      if(hasStoredSession()){
+        app.style.display='block';
+        login.style.display='none';
+        document.body.classList.add('mode-app');
+        document.body.classList.remove('mode-login');
+      }else{
+        login.style.display='block';
+        app.style.display='none';
+        document.body.classList.add('mode-login');
+        document.body.classList.remove('mode-app');
+      }
+    }
+    hide('preSplash');
+    hide('__yapeSplash');
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', fixBoot, {once:true});
+  else fixBoot();
+  window.addEventListener('load', fixBoot, {once:true});
+  window.addEventListener('pageshow', function(){ setTimeout(fixBoot, 400); }, {once:true});
+  setTimeout(fixBoot, 1200);
+  setTimeout(fixBoot, 2600);
+  setTimeout(fixBoot, 5000);
+})();
+</script>
