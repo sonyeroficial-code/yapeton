@@ -4680,7 +4680,7 @@ html, body { height: 100%; }
     }
 
     .yClose{
-      font-size: 22px;
+      font-size: 19px;
       margin-right: 15px;
       cursor: pointer;
       user-select:none;
@@ -5547,7 +5547,7 @@ html, body { height: 100%; }
 .yTitle{
   flex:1;
   text-align:left;          /* título más a la izquierda */
-  font-size: 22px;
+  font-size: 19px;
   font-weight: 500;
   color: #222;
 }
@@ -6314,6 +6314,59 @@ html body #qrScanView .qrScan-bottom{
   left: 0 !important;
   right: 0 !important;
   bottom: 0 !important;
+}
+
+
+/* QR BUSCANDO YAPERO LOADING */
+.qrScan-loadingYapero{
+  position:absolute;
+  inset:0;
+  z-index: 6;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding: 18px;
+  background: rgba(0,0,0,.10);
+  pointer-events: auto;
+}
+.qrScan-loadingYapero.show{ display:flex; }
+.qrScan-loadingCard{
+  width: min(70vw, 198px);
+  min-height: 96px;
+  border-radius: 15px;
+  background: rgba(255,255,255,.78);
+  border: 1px solid rgba(255,255,255,.58);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 14px 32px rgba(0,0,0,.20), inset 0 1px 0 rgba(255,255,255,.55);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap: 9px;
+}
+.qrScan-loadingSpinner{
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 4px solid rgba(90,62,136,.18);
+  border-top-color: #6d4aa2;
+  animation: qrYaperoSpin .82s linear infinite;
+}
+.qrScan-loadingText{
+  color:#2f294b;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -.2px;
+  text-align:center;
+}
+@keyframes qrYaperoSpin{
+  to{ transform: rotate(360deg); }
+}
+@media (max-width: 360px){
+  .qrScan-loadingCard{ width:min(78vw, 198px); min-height:96px; border-radius:15px; }
+  .qrScan-loadingText{ font-size:17px; }
+  .qrScan-loadingSpinner{ width:28px; height:28px; }
 }
 
 
@@ -12452,7 +12505,7 @@ select.yape-save-select{
 }
 
 .yape-save-confirm-title{
-  font-size: 19px;
+  font-size: 17px;
   font-weight: 800;
   color: var(--yape-text);
   line-height: 1.15;
@@ -13551,6 +13604,35 @@ async function __procesarQRDetectado(qrTexto){
     }
   };
 
+})();
+&lt;/script&gt;
+
+
+&lt;script id=&quot;QR_SCAN_LOADING_SOUND_SAFE_PATCH&quot;&gt;
+(function(){
+  if(window.__qrScanLoadingSoundSafePatch) return;
+  window.__qrScanLoadingSoundSafePatch = true;
+  function wait(ms){ return new Promise(function(resolve){ setTimeout(resolve, ms); }); }
+  function show(){ try{ if(window.__showBuscandoYapero) window.__showBuscandoYapero(); }catch(e){} }
+  function hide(){ try{ if(window.__hideBuscandoYapero) window.__hideBuscandoYapero(); }catch(e){} }
+  function sound(){ try{ if(window.__playQrFoundSound) window.__playQrFoundSound(); }catch(e){} }
+  const original = window.__procesarQRDetectado;
+  if(typeof original === &quot;function&quot; &amp;&amp; !original.__loadingSoundPatched){
+    window.__procesarQRDetectado = async function(){
+      const started = Date.now();
+      show();
+      try{
+        const res = await original.apply(this, arguments);
+        sound();
+        const elapsed = Date.now() - started;
+        if(elapsed &lt; 650) await wait(650 - elapsed);
+        return res;
+      }finally{
+        hide();
+      }
+    };
+    window.__procesarQRDetectado.__loadingSoundPatched = true;
+  }
 })();
 &lt;/script&gt;
 
@@ -15699,7 +15781,7 @@ function maskPhoneVoucher(p){
 
     function mIsUnknownRecipientName(value){
       const clean = String(value || "").replace(/\s+/g, " ").trim().toLowerCase();
-      return !clean || clean === "sin nombre" || clean === "sin nom" || clean === "sin nom*" || clean === "editar nombre";
+      return !clean || clean === "sin nombre" || clean === "sin nom" || clean === "sin nom*" || clean === "editar nombre" || clean === "miembro";
     }
 
     function mRenderNombreDestino(){
@@ -18149,6 +18231,13 @@ if (&quot;serviceWorker&quot; in navigator) {
     &lt;video id=&quot;qrScanVideo&quot; class=&quot;qrScan-video&quot; autoplay playsinline muted&gt;&lt;/video&gt;
     &lt;div class=&quot;qrScan-dim&quot; aria-hidden=&quot;true&quot;&gt;&lt;/div&gt;
 
+    &lt;div id=&quot;qrScanLoadingYapero&quot; class=&quot;qrScan-loadingYapero&quot; aria-live=&quot;polite&quot; aria-hidden=&quot;true&quot;&gt;
+      &lt;div class=&quot;qrScan-loadingCard&quot;&gt;
+        &lt;div class=&quot;qrScan-loadingSpinner&quot; aria-hidden=&quot;true&quot;&gt;&lt;/div&gt;
+        &lt;div class=&quot;qrScan-loadingText&quot;&gt;Buscando Yapero&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
     &lt;button id=&quot;qrScanClose&quot; class=&quot;qrScan-close&quot; type=&quot;button&quot; aria-label=&quot;Cerrar&quot;&gt;×&lt;/button&gt;
 
     &lt;div class=&quot;qrScan-center&quot;&gt;
@@ -18197,6 +18286,7 @@ if (&quot;serviceWorker&quot; in navigator) {
   const notice = document.getElementById(&quot;qrScanNotice&quot;);
   const resultWrap = document.getElementById(&quot;qrScanResult&quot;);
   const resultText = document.getElementById(&quot;qrScanResultText&quot;);
+  const loadingYapero = document.getElementById(&quot;qrScanLoadingYapero&quot;);
 
   let stream = null;
   let detector = null;
@@ -18220,10 +18310,10 @@ if (&quot;serviceWorker&quot; in navigator) {
   function randomMiembro(forceNumero){
     const num = ensure9Digits(forceNumero || &quot;&quot;);
     const last3 = num.slice(-3);
-    let nombre = &quot;Miembro&quot;;
+    let nombre = &quot;&quot;;
     try{
       if(typeof isAutoCompleteEnabled === &quot;function&quot; &amp;&amp; isAutoCompleteEnabled() &amp;&amp; typeof autoNameForNumber === &quot;function&quot;){
-        nombre = autoNameForNumber(num) || &quot;Miembro&quot;;
+        nombre = autoNameForNumber(num) || &quot;&quot;;
       }
     }catch(e){}
     return { nombre, numero: num, last3 };
@@ -18251,6 +18341,75 @@ if (&quot;serviceWorker&quot; in navigator) {
     if(!notice) return;
     notice.textContent = msg || &quot;&quot;;
     notice.hidden = !msg;
+  }
+
+  function sleep(ms){
+    return new Promise(resolve =&gt; setTimeout(resolve, ms));
+  }
+
+  function showBuscandoYapero(){
+    if(!loadingYapero) return;
+    loadingYapero.classList.add(&quot;show&quot;);
+    loadingYapero.setAttribute(&quot;aria-hidden&quot;, &quot;false&quot;);
+    if(btnFlash) btnFlash.style.opacity = &quot;.42&quot;;
+    const bottom = document.querySelector(&quot;#qrScanView .qrScan-bottom&quot;);
+    if(bottom) bottom.style.opacity = &quot;.42&quot;;
+  }
+
+  function hideBuscandoYapero(){
+    if(!loadingYapero) return;
+    loadingYapero.classList.remove(&quot;show&quot;);
+    loadingYapero.setAttribute(&quot;aria-hidden&quot;, &quot;true&quot;);
+    if(btnFlash) btnFlash.style.opacity = &quot;&quot;;
+    const bottom = document.querySelector(&quot;#qrScanView .qrScan-bottom&quot;);
+    if(bottom) bottom.style.opacity = &quot;&quot;;
+  }
+  function playQrFoundSound(){
+    try{
+      const now = Date.now();
+      if(window.__scanSoundLastAt &amp;&amp; (now - window.__scanSoundLastAt) &lt; 450) return;
+      window.__scanSoundLastAt = now;
+
+      if(typeof window.__playYapeEmbeddedSound === &quot;function&quot;){
+        window.__playYapeEmbeddedSound();
+        return;
+      }
+
+      const src = window.__YAPE_EMBEDDED_MP3 || &quot;notificacion.mp3&quot;;
+      const a = new Audio(src);
+      a.preload = &quot;auto&quot;;
+      a.playsInline = true;
+      a.setAttribute(&quot;webkit-playsinline&quot;, &quot;true&quot;);
+      a.volume = 1;
+      a.currentTime = 0;
+      const p = a.play();
+      if(p &amp;&amp; typeof p.catch === &quot;function&quot;){
+        p.catch(function(){ try{ if(navigator.vibrate) navigator.vibrate(45); }catch(e){} });
+      }
+    }catch(e){
+      try{ if(navigator.vibrate) navigator.vibrate(45); }catch(_){}
+    }
+  }
+
+  window.__showBuscandoYapero = showBuscandoYapero;
+  window.__hideBuscandoYapero = hideBuscandoYapero;
+  window.__playQrFoundSound = playQrFoundSound;
+
+
+  function cleanPhone9(v){
+    return String(v || &quot;&quot;).replace(/\D/g, &quot;&quot;).slice(0, 9);
+  }
+
+  function nombreParaNumero(numero, fallback){
+    let nombre = String(fallback || &quot;&quot;).trim();
+    if(!nombre){
+      try{
+        if(typeof isAutoCompleteEnabled === &quot;function&quot; &amp;&amp; isAutoCompleteEnabled() &amp;&amp; typeof autoNameForNumber === &quot;function&quot;){
+          nombre = autoNameForNumber(numero) || &quot;&quot;;
+        }
+      }catch(e){}
+    }
+    return nombre || &quot;&quot;;
   }
 
   function flashMarkup(isOn){
@@ -18343,7 +18502,10 @@ if (&quot;serviceWorker&quot; in navigator) {
     try{
       stream = await navigator.mediaDevices.getUserMedia({
         video: {
-          facingMode: { ideal: &quot;environment&quot; }
+          facingMode: { ideal: &quot;environment&quot; },
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+          frameRate: { ideal: 30, max: 60 }
         },
         audio: false
       });
@@ -18351,6 +18513,12 @@ if (&quot;serviceWorker&quot; in navigator) {
       await video.play();
       flashOn = false;
       await syncTorchSupport();
+      try{
+        const track = getVideoTrack();
+        if(track &amp;&amp; typeof track.applyConstraints === &quot;function&quot;){
+          await track.applyConstraints({ advanced: [{ focusMode: &quot;continuous&quot; }, { exposureMode: &quot;continuous&quot; }] });
+        }
+      }catch(e){}
       updateFlashButton();
     }catch(err){
       setNotice(&quot;Permiso de cámara denegado&quot;);
@@ -18421,6 +18589,7 @@ if (&quot;serviceWorker&quot; in navigator) {
 
   function showScan(){
     if(!scanView) return;
+    hideBuscandoYapero();
     scanView.style.display = &quot;block&quot;;
     scanView.setAttribute(&quot;aria-hidden&quot;,&quot;false&quot;);
     document.body.style.overflow = &quot;hidden&quot;;
@@ -18436,6 +18605,7 @@ if (&quot;serviceWorker&quot; in navigator) {
 
   function hideScan(){
     if(!scanView) return;
+    hideBuscandoYapero();
     stopCamera();
     scanView.style.display = &quot;none&quot;;
     scanView.setAttribute(&quot;aria-hidden&quot;,&quot;true&quot;);
@@ -18443,38 +18613,43 @@ if (&quot;serviceWorker&quot; in navigator) {
     setNotice(&quot;&quot;);
   }
 
-  function onDetected(qrValue){
-    // cerrar scanner y abrir monto con datos
-    hideScan();
+  async function onDetected(qrValue){
+    scanning = false;
+    if(rafId) cancelAnimationFrame(rafId);
+    rafId = null;
 
-    return (async function(){
-      try{
-        if(typeof window.__procesarQRDetectado === &quot;function&quot;){
-          const handled = await window.__procesarQRDetectado(qrValue);
-          if(handled) return;
-        }
-      }catch(e){
-        console.error(&quot;❌ Error resolviendo QR escaneado:&quot;, e);
-      }
+    const loadingStartedAt = Date.now();
+    showBuscandoYapero();
+    setNotice(&quot;&quot;);
+    playQrFoundSound();
 
+    try{
       const regs = getRegistros();
       const found = regs.find(x =&gt; norm(x.qr) === norm(qrValue));
 
       if(found){
         const numero = ensure9Digits(found.numero);
-        let nombre = (found.nombre || &quot;&quot;).trim();
-        if(!nombre){
-          try{
-            if(typeof isAutoCompleteEnabled === &quot;function&quot; &amp;&amp; isAutoCompleteEnabled() &amp;&amp; typeof autoNameForNumber === &quot;function&quot;){
-              nombre = autoNameForNumber(numero) || &quot;Miembro&quot;;
-            }
-          }catch(e){}
-        }
-        nombre = nombre || &quot;Miembro&quot;;
+        const nombre = nombreParaNumero(numero, found.nombre);
         if(typeof goMonto === &quot;function&quot;){
           goMonto(nombre, numero);
         }
         return;
+      }
+
+      try{
+        if(typeof window.fsGetQr === &quot;function&quot;){
+          const data = await window.fsGetQr(qrValue);
+          const numeroFirebase = cleanPhone9(data &amp;&amp; (data.phone || data.numero || data.number));
+          if(numeroFirebase.length === 9){
+            const nombreFirebase = nombreParaNumero(numeroFirebase, data &amp;&amp; (data.name || data.nombre || data.titular));
+            if(typeof goMonto === &quot;function&quot;){
+              goMonto(nombreFirebase, numeroFirebase);
+            }
+            return;
+          }
+        }
+      }catch(err){
+        console.error(&quot;❌ Error buscando QR en Firebase:&quot;, err);
       }
 
       const tmp = randomMiembro();
@@ -18484,7 +18659,19 @@ if (&quot;serviceWorker&quot; in navigator) {
       if(typeof goMonto === &quot;function&quot;){
         goMonto(tmp.nombre, tmp.numero);
       }
-    })();
+    }catch(e){
+      console.error(&quot;❌ Error resolviendo QR escaneado:&quot;, e);
+      const tmp = randomMiembro();
+      window.__scanPendingQR = qrValue;
+      window.__scanPendingSave = true;
+      if(typeof goMonto === &quot;function&quot;){
+        goMonto(tmp.nombre, tmp.numero);
+      }
+    }finally{
+      const elapsed = Date.now() - loadingStartedAt;
+      if(elapsed &lt; 750) await sleep(750 - elapsed);
+      hideScan();
+    }
   }
 
   // permitir editar nombre (solo cuando viene de scan sin registrar)
@@ -18514,7 +18701,7 @@ if (&quot;serviceWorker&quot; in navigator) {
       if(window.__scanPendingSave &amp;&amp; window.__scanPendingQR){
         const nameBox = document.getElementById(&quot;mNameBox&quot;);
         const phoneBox = document.getElementById(&quot;mPhoneBox&quot;);
-        const nombre = (nameBox?.textContent || &quot;Miembro&quot;).trim() || &quot;Miembro&quot;;
+        const nombre = (nameBox?.textContent || &quot;&quot;).trim() || &quot;&quot;;
         // phoneBox muestra enmascarado, pero tenemos phone actual en variable? no; usamos prompt del editor que actualiza currentPhone?
         // leemos del atributo data-phone si existe (lo guardamos abajo)
         const phoneRaw = phoneBox?.getAttribute(&quot;data-phone&quot;) || &quot;&quot;;
@@ -19016,7 +19203,7 @@ function setUploadState(state){
     const nombre = String((found &amp;&amp; (found.nombre || found.name)) || &quot;&quot;).trim();
 
     if(numero &amp;&amp; typeof goMonto === &quot;function&quot;){
-      goMonto(nombre || &quot;Miembro&quot;, numero);
+      goMonto(nombre || &quot;&quot;, numero);
       return true;
     }
 
@@ -22423,7 +22610,9 @@ window.__YAPE_CONFETTI_DATA = {"v":"5.9.0","fr":40,"ip":0,"op":79,"w":375,"h":81
     } else { pnAudioUnlocked = true; }
   }
   ['touchstart','pointerdown','click'].forEach(function(evt){ document.addEventListener(evt, unlockPnAudio, {passive:true}); });
-  function beep(){ if(!sonidoEl.checked) return; tryPlay(0).catch(function(){}); }
+  function playEmbeddedYapeSound(){ tryPlay(0).catch(function(){}); }
+  try{ window.__playYapeEmbeddedSound = playEmbeddedYapeSound; }catch(e){}
+  function beep(){ if(!sonidoEl.checked) return; playEmbeddedYapeSound(); }
   let toastHideTimer = null;
   function cleanupToast(){ toast.style.display='none'; toast.style.removeProperty('transform'); toast.style.removeProperty('opacity'); toast.classList.remove('show'); }
   function hideToast(){ if(toastHideTimer){ clearTimeout(toastHideTimer); toastHideTimer = null; } toast.style.transition = 'opacity .18s ease, transform .18s ease'; toast.style.opacity = '0'; toast.style.transform = 'translateX(-50%) translateY(-18px)'; setTimeout(cleanupToast, 180); }
@@ -29330,7 +29519,7 @@ try{
 (function(){
   function isUnknown(v){
     var clean = String(v || '').replace(/\s+/g,' ').trim().toLowerCase();
-    return !clean || clean === 'sin nombre' || clean === 'sin nom' || clean === 'sin nom*' || clean === 'editar nombre';
+    return !clean || clean === 'sin nombre' || clean === 'sin nom' || clean === 'sin nom*' || clean === 'editar nombre' || clean === 'miembro';
   }
   function cleanDoc(doc){
     if(!doc) return;
@@ -29507,6 +29696,273 @@ try{
   setTimeout(run, 2200);
 })();
 </script>
+
+<script id="qr-final-sound-fast-invisible-patch">
+(function(){
+  if(window.__qrFinalSoundFastInvisiblePatch) return;
+  window.__qrFinalSoundFastInvisiblePatch = true;
+
+  function getEmbeddedMp3(){
+    try{
+      for(var i=0;i<(document.scripts||[]).length;i++){
+        var txt = String(document.scripts[i].textContent || '');
+        var m = txt.match(/const\s+EMBEDDED_MP3\s*=\s*'([^']+)'/);
+        if(m && m[1]) return m[1];
+      }
+    }catch(e){}
+    return '';
+  }
+
+  var embeddedSrc = getEmbeddedMp3();
+  var audio = null;
+  var audioUnlocked = false;
+  var lastPlayAt = 0;
+
+  function candidates(){
+    var arr=[];
+    if(embeddedSrc) arr.push(embeddedSrc);
+    try{
+      var base = String(location.href || '').replace(/[^\/]*$/, '');
+      var stamp = 'v=' + Date.now();
+      arr.push('notificacion.mp3?' + stamp);
+      arr.push('./notificacion.mp3?' + stamp);
+      if(base) arr.push(base + 'notificacion.mp3?' + stamp);
+    }catch(e){}
+    return arr;
+  }
+
+  function makeAudio(src){
+    var a = new Audio(src || '');
+    a.preload = 'auto';
+    a.playsInline = true;
+    a.autoplay = false;
+    a.loop = false;
+    a.setAttribute('webkit-playsinline','true');
+    return a;
+  }
+
+  function ensureAudio(src){
+    if(!audio) audio = makeAudio(src || candidates()[0] || '');
+    if(src && audio.src !== src) audio.src = src;
+    return audio;
+  }
+
+  function unlockAudio(){
+    if(audioUnlocked) return;
+    var arr = candidates();
+    if(!arr.length){ audioUnlocked = true; return; }
+    try{
+      var a = ensureAudio(arr[0]);
+      a.pause();
+      a.currentTime = 0;
+      a.muted = false;
+      a.volume = 0.001; // desbloquea sin que se escuche fuerte
+      var p = a.play();
+      if(p && typeof p.then === 'function'){
+        p.then(function(){
+          try{ a.pause(); a.currentTime = 0; a.volume = 1; }catch(e){}
+          audioUnlocked = true;
+        }).catch(function(){
+          try{
+            a.muted = true;
+            a.volume = 1;
+            var p2 = a.play();
+            if(p2 && typeof p2.then === 'function'){
+              p2.then(function(){ try{ a.pause(); a.currentTime=0; a.muted=false; }catch(e){}; audioUnlocked = true; }).catch(function(){ audioUnlocked = true; });
+            }else audioUnlocked = true;
+          }catch(e){ audioUnlocked = true; }
+        });
+      }else{
+        try{ a.pause(); a.currentTime = 0; a.volume = 1; }catch(e){}
+        audioUnlocked = true;
+      }
+    }catch(e){ audioUnlocked = true; }
+  }
+
+  function playParentSound(){
+    var now = Date.now();
+    if(now - lastPlayAt < 450) return;
+    lastPlayAt = now;
+    var arr = candidates();
+    var i = 0;
+    function tryNext(){
+      if(i >= arr.length){
+        try{ if(navigator.vibrate) navigator.vibrate(45); }catch(e){}
+        return;
+      }
+      try{
+        var a = ensureAudio(arr[i++]);
+        a.pause();
+        try{ a.currentTime = 0; }catch(e){}
+        a.muted = false;
+        a.volume = 1;
+        var p = a.play();
+        if(p && typeof p.catch === 'function') p.catch(tryNext);
+      }catch(e){ tryNext(); }
+    }
+    tryNext();
+  }
+
+  function bindUnlock(doc){
+    try{
+      if(!doc || doc.__qrFinalUnlockBound) return;
+      doc.__qrFinalUnlockBound = true;
+      ['pointerdown','touchstart','click','keydown'].forEach(function(evt){
+        doc.addEventListener(evt, unlockAudio, {passive:true, capture:true});
+      });
+      var btn = doc.getElementById('homeEscanearQrBtn');
+      if(btn){
+        btn.addEventListener('pointerdown', unlockAudio, {passive:true, capture:true});
+        btn.addEventListener('click', unlockAudio, {passive:true, capture:true});
+      }
+    }catch(e){}
+  }
+
+  function isUnknown(v){
+    var clean = String(v || '').replace(/\s+/g,' ').trim().toLowerCase();
+    return !clean || clean === 'sin nombre' || clean === 'sin nom' || clean === 'sin nom*' || clean === 'editar nombre' || clean === 'miembro';
+  }
+
+  function forceInvisibleName(doc){
+    try{
+      if(!doc || doc.getElementById('qrFinalInvisibleNameCss')) return;
+      var st = doc.createElement('style');
+      st.id = 'qrFinalInvisibleNameCss';
+      st.textContent = `
+        #montoView #mNameBox.yNameEmpty,
+        #montoView #mNameBox[data-empty-name="1"]{
+          color: transparent !important;
+          text-shadow: none !important;
+          min-height: 38px !important;
+          caret-color: #7b1fa2 !important;
+        }
+        #montoView #mNameBox.yNameEmpty::before,
+        #montoView #mNameBox[data-empty-name="1"]::before,
+        #montoView #mNameBox[contenteditable="true"]:empty::before{
+          content: "Editar" !important;
+          color: rgba(0,0,0,0.001) !important;
+          opacity: .01 !important;
+          font-size: 16px !important;
+          font-weight: 400 !important;
+        }
+        #qrScanLoadingYapero .qrScan-loadingCard,
+        .qrScan-loadingYapero .qrScan-loadingCard{
+          width: min(70vw, 198px) !important;
+          min-height: 96px !important;
+          border-radius: 15px !important;
+        }
+        #qrScanLoadingYapero .qrScan-loadingSpinner,
+        .qrScan-loadingYapero .qrScan-loadingSpinner{
+          width: 28px !important;
+          height: 28px !important;
+        }
+        #qrScanLoadingYapero .qrScan-loadingText,
+        .qrScan-loadingYapero .qrScan-loadingText{
+          font-size: 17px !important;
+        }
+      `;
+      (doc.head || doc.documentElement).appendChild(st);
+    }catch(e){}
+  }
+
+  function cleanNameBox(doc){
+    try{
+      var box = doc && doc.getElementById('mNameBox');
+      if(!box) return;
+      var t = String(box.textContent || '').replace(/\s+/g,' ').trim();
+      if(isUnknown(t)){
+        box.textContent = '';
+        box.classList.add('yNameEmpty');
+        box.setAttribute('data-empty-name','1');
+        box.setAttribute('data-placeholder','Editar');
+        try{ doc.defaultView.__nombreDestinoActualCompleto = ''; }catch(e){}
+      }else{
+        box.removeAttribute('data-empty-name');
+      }
+    }catch(e){}
+  }
+
+  function patchCamera(win){
+    try{
+      var md = win && win.navigator && win.navigator.mediaDevices;
+      if(!md || !md.getUserMedia || md.__qrFastGetUserMedia) return;
+      var orig = md.getUserMedia.bind(md);
+      md.__qrFastGetUserMedia = true;
+      md.getUserMedia = function(cons){
+        try{
+          cons = cons || {};
+          if(cons.video){
+            if(typeof cons.video !== 'object') cons.video = {};
+            cons.video.facingMode = cons.video.facingMode || {ideal:'environment'};
+            cons.video.width = cons.video.width || {ideal:1280};
+            cons.video.height = cons.video.height || {ideal:720};
+            cons.video.frameRate = cons.video.frameRate || {ideal:30, max:60};
+          }
+        }catch(e){}
+        return orig(cons).then(function(stream){
+          try{
+            var tr = stream.getVideoTracks && stream.getVideoTracks()[0];
+            if(tr && tr.applyConstraints){
+              tr.applyConstraints({advanced:[{focusMode:'continuous'},{exposureMode:'continuous'}]}).catch(function(){});
+            }
+          }catch(e){}
+          return stream;
+        });
+      };
+    }catch(e){}
+  }
+
+  function patchWin(win){
+    try{
+      if(!win || !win.document) return;
+      bindUnlock(win.document);
+      forceInvisibleName(win.document);
+      patchCamera(win);
+
+      // Este es el nombre exacto que el scanner busca cuando encuentra QR.
+      win.__playYapeEmbeddedSound = playParentSound;
+      win.__YAPE_EMBEDDED_MP3 = embeddedSrc || win.__YAPE_EMBEDDED_MP3 || '';
+
+      if(!win.__qrFinalGoMontoWrapped && typeof win.goMonto === 'function'){
+        win.__qrFinalGoMontoWrapped = true;
+        var oldGo = win.goMonto;
+        win.goMonto = function(nombre, phone9, meta){
+          if(isUnknown(nombre)) nombre = '';
+          var r = oldGo.call(this, nombre, phone9, meta);
+          setTimeout(function(){ cleanNameBox(win.document); }, 0);
+          setTimeout(function(){ cleanNameBox(win.document); }, 80);
+          setTimeout(function(){ cleanNameBox(win.document); }, 250);
+          return r;
+        };
+      }
+      cleanNameBox(win.document);
+
+      if(!win.document.__qrFinalObserver){
+        win.document.__qrFinalObserver = true;
+        try{
+          new MutationObserver(function(){ cleanNameBox(win.document); }).observe(win.document.documentElement, {childList:true, subtree:true, characterData:true});
+        }catch(e){}
+      }
+    }catch(e){}
+  }
+
+  function run(){
+    bindUnlock(document);
+    patchWin(window);
+    var frames = document.querySelectorAll('iframe');
+    for(var i=0;i<frames.length;i++){
+      try{ patchWin(frames[i].contentWindow); }catch(e){}
+    }
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, {once:true});
+  run();
+  var n=0;
+  var timer=setInterval(function(){ run(); if(++n>80) clearInterval(timer); }, 250);
+  window.__qrPlaySoundNow = playParentSound;
+})();
+</script>
+
 </body>
 </html>
 
@@ -30951,8 +31407,8 @@ try{
       if(raf) cancelAnimationFrame(raf);
       raf = null;
       try{
-        if(typeof w.cerrarEscanearQR === 'function') w.cerrarEscanearQR();
-        else if(closeBtn) closeBtn.click();
+        if(typeof w.__showBuscandoYapero === 'function') w.__showBuscandoYapero();
+        if(typeof w.__playQrFoundSound === 'function') w.__playQrFoundSound();
       }catch(e){}
       try{
         if(typeof w.__procesarQRDetectado === 'function'){
@@ -30962,6 +31418,13 @@ try{
         }
       }catch(err){
         console.error('scan detection handle error', err);
+      }finally{
+        setTimeout(function(){
+          try{
+            if(typeof w.cerrarEscanearQR === 'function') w.cerrarEscanearQR();
+            else if(closeBtn) closeBtn.click();
+          }catch(e){}
+        }, 650);
       }
     }
 
