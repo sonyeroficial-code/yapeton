@@ -1,5 +1,5 @@
 /* PWA Service Worker - actualiza PNG e imagenes sin quedarse con cache vieja */
-const CACHE_VERSION = 'png-refresh-v3';
+const CACHE_VERSION = 'boot-fix-v4';
 const PRECACHE_NAME = `app-precache-${CACHE_VERSION}`;
 const RUNTIME_NAME = `app-runtime-${CACHE_VERSION}`;
 
