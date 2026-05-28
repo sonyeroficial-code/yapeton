@@ -31869,58 +31869,6 @@ html,body{height:100% !important;overflow:hidden !important;overscroll-behavior:
 })();
 </script>
 
-
-<script id="PWA_RESUME_STABILITY_PATCH">
-(function(){
-  try{
-    if(window.__pwaResumeStabilityPatchInstalled) return;
-    window.__pwaResumeStabilityPatchInstalled = true;
-
-    var hiddenAt = 0;
-    var lastReloadAt = 0;
-    var RESUME_RELOAD_AFTER = 20000;
-    var RELOAD_THROTTLE = 15000;
-
-    function safeReload(reason){
-      var now = Date.now();
-      if(now - lastReloadAt < RELOAD_THROTTLE) return;
-      lastReloadAt = now;
-      try{ console.info('[PWA resume patch]', reason); }catch(e){}
-      setTimeout(function(){
-        try{ location.reload(); }catch(e){}
-      }, 120);
-    }
-
-    document.addEventListener('visibilitychange', function(){
-      if(document.visibilityState === 'hidden'){
-        hiddenAt = Date.now();
-        return;
-      }
-      if(!hiddenAt) return;
-      if(Date.now() - hiddenAt >= RESUME_RELOAD_AFTER){
-        safeReload('resume-after-background');
-      }
-    }, true);
-
-    window.addEventListener('pageshow', function(ev){
-      if(ev && ev.persisted){
-        safeReload('pageshow-persisted');
-      }
-    }, true);
-
-    window.addEventListener('online', function(){
-      try{
-        navigator.serviceWorker && navigator.serviceWorker.getRegistration && navigator.serviceWorker.getRegistration().then(function(reg){
-          try{ reg && reg.update && reg.update(); }catch(e){}
-        });
-      }catch(e){}
-    }, true);
-  }catch(e){
-    console.warn('PWA resume patch error', e);
-  }
-})();
-</script>
-
 </body>
 
 <script id="yosi-qr-update-existing-final">
