@@ -85,3 +85,5 @@ self.addEventListener('notificationclick', (event) => {
     if (clients.openWindow) return clients.openWindow('./index.html');
   }));
 });
+
+// Alias file for Firebase Messaging registration fallback.

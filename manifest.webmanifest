@@ -1,21 +1,27 @@
 {
   "name": "Yape",
   "short_name": "Yape",
+  "description": "App web instalable con soporte offline básico.",
+  "id": "./index.html",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#742284",
   "theme_color": "#742284",
+  "categories": [
+    "finance",
+    "utilities"
+  ],
   "icons": [
     {
-      "src": "./icon-192.png",
+      "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "./icon-512.png",
+      "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
