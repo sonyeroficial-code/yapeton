@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" height="73.1px" width="73.1px" viewBox="0 0 73.1 73.1" preserveAspectRatio="xMidYMid meet" style="shape-rendering:geometricPrecision;text-rendering:geometricPrecision;image-rendering:optimizeQuality">
+  <g transform="matrix(1.0, 0.0, 0.0, 1.0, 36.55, 36.55)">
+    <use height="73.1" transform="matrix(1.0, 0.0, 0.0, 1.0, -36.55, -36.55)" width="73.1" xlink:href="#shape0"/>
+  </g>
+  <defs>
+    <g id="shape0" transform="matrix(1.0, 0.0, 0.0, 1.0, 36.55, 36.55)">
+      <path d="M36.55 0.0 Q36.55 15.15 25.85 25.85 15.15 36.55 0.0 36.55 -15.15 36.55 -25.85 25.85 -36.55 15.15 -36.55 0.0 -36.55 -15.15 -25.85 -25.85 -15.15 -36.55 0.0 -36.55 15.15 -36.55 25.85 -25.85 36.55 -15.15 36.55 0.0" fill="#317ae7" fill-rule="evenodd" stroke="none"/>
+      <path d="M0.0 -36.55 Q10.3 -36.55 18.6 -31.55 8.15 -22.4 -2.0 -27.05 -0.25 -31.25 -9.3 -35.45 -4.9 -36.55 0.0 -36.55 M36.55 0.0 Q36.55 9.45 32.4 17.15 25.3 -2.1 28.25 -1.8 13.5 -13.85 31.45 -18.75 36.55 -10.45 36.55 0.0 M-25.85 -25.85 Q-22.2 -29.5 -18.05 -31.9 -3.65 -14.7 -6.95 -8.8 -11.7 -3.25 -17.1 -3.1 -35.1 19.5 -28.1 -8.25 L-33.65 -14.6 Q-30.95 -20.75 -25.85 -25.85" fill="#44adee" fill-rule="evenodd" stroke="none"/>
+      <path d="M-25.85 25.85 Q-30.15 21.55 -32.7 16.6 -9.3 17.6 -3.4 7.95 -7.85 3.65 -7.55 1.95 -7.25 0.25 -3.0 -0.45 L4.75 -1.55 12.1 -2.2 Q15.9 -2.45 16.75 0.85 17.55 4.15 17.0 13.0 16.4 21.85 14.05 22.6 12.5 23.05 7.65 19.1 -0.35 28.3 -20.65 30.25 -23.35 28.35 -25.85 25.85" fill="#06cdb9" fill-rule="evenodd" stroke="none"/>
+    </g>
+  </defs>
+</svg>
