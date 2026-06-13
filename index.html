@@ -39599,7 +39599,7 @@ import { getFirestore, doc, getDoc, collection, query, where, getDocs, limit } f
   }
   function setPhone(phone){
     var p = clean9(phone);
-    try{ window.mPhoneFull = p; }catch(e){}
+    try{ mPhoneFull = p; }catch(e){ try{ window.mPhoneFull = p; }catch(_e){} }
     try{ window.__bridgeRecipientPhone = p; }catch(e){}
     try{
       var phBox = document.getElementById('mPhoneBox');
@@ -39608,6 +39608,7 @@ import { getFirestore, doc, getDoc, collection, query, where, getDocs, limit } f
       if(inp && p) inp.value = p;
     }catch(e){}
     try{ if(typeof mPaintPhone === 'function') mPaintPhone(); }catch(e){}
+    try{ var phBox2 = document.getElementById('mPhoneBox'); if(phBox2 && p){ phBox2.setAttribute('data-phone', p); phBox2.textContent = '*** *** ' + p.slice(-3); } }catch(e){}
   }
   function setName(name, phone, destino){
     var p = clean9(phone);
