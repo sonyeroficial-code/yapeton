@@ -24701,7 +24701,8 @@ html.ios-final-fix iframe{
     logo.style.width = '58px';
     logo.style.height = '74px';
     logo.style.marginLeft = '16px';
-    logo.style.marginTop = '28px';
+    var __movLogoIOS = /iPhone|iPad|iPod/.test(navigator.userAgent || '') || (/Macintosh/.test(navigator.userAgent || '') && 'ontouchend' in document);
+    logo.style.marginTop = __movLogoIOS ? '56px' : '28px';
     logo.style.marginBottom = '4px';
     logo.style.position = 'relative';
     logo.style.overflow = 'visible';
