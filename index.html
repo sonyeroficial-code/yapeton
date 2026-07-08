@@ -44863,3 +44863,41 @@ body.yosi-fast-baucher-switch #baucher-embed-frame{
 })();
 </script>
 <!-- /FIX: movimientos solo abre con tap real -->
+
+
+<!-- FIX iPhone: respeta el espacio superior del notch/status bar en Movimientos -->
+<style id="fix-iphone-safe-area-movimientos-final">
+  /* En iPhone la PWA usa viewport-fit=cover y black-translucent; por eso
+     el contenido puede quedar debajo de la hora/notch si no se suma safe-area. */
+  .yMovOverlay .mov-header,
+  #yMovOverlay .mov-header{
+    padding-top: calc(4vw + env(safe-area-inset-top, 0px)) !important;
+    padding-left: 4vw !important;
+    padding-right: 4vw !important;
+    padding-bottom: 4vw !important;
+    background: linear-gradient(#752386 0%, #681f80 62%, #4b1a70 100%) !important;
+  }
+
+  /* Fallback para versiones antiguas de iOS que usaban constant(). */
+  @supports (padding-top: constant(safe-area-inset-top)){
+    .yMovOverlay .mov-header,
+    #yMovOverlay .mov-header{
+      padding-top: calc(4vw + constant(safe-area-inset-top)) !important;
+    }
+  }
+
+  .yMovOverlay .mov-page,
+  #yMovOverlay .mov-page{
+    height: 100dvh !important;
+    min-height: 100vh !important;
+    min-height: -webkit-fill-available !important;
+  }
+
+  /* Por si alguna versión anterior de la pantalla usa yMovTop en vez de mov-header. */
+  .yMovTop{
+    padding-top: calc(12px + env(safe-area-inset-top, 0px)) !important;
+    min-height: calc(56px + env(safe-area-inset-top, 0px)) !important;
+    box-sizing: border-box !important;
+  }
+</style>
+<!-- /FIX iPhone Movimientos -->
