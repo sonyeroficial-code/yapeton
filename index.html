@@ -6,6 +6,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" name="viewport"/>
 <title>Yape</title>
+<meta name="yosi-build" content="ios-movimientos-safearea-v2-20260708"/>
 <!-- PWA -->
 <link href="manifest.webmanifest" rel="manifest"/>
 <meta content="#742284" name="theme-color"/>
@@ -24337,7 +24338,7 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
     align-items:center;
     justify-content:space-between;
     background:linear-gradient(#752386 0%,#681f80 62%,#4b1a70 100%);
-    padding:4vw;
+    padding:calc(4vw + env(safe-area-inset-top,0px)) 4vw 4vw 4vw;
     position:sticky;
     top:0;
     z-index:10;
@@ -24390,7 +24391,7 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
   #yMovMailSend{background:#6e27ad;color:#fff;box-shadow:none}
   #yMovMailSend:disabled{opacity:.6}
   #yMovOverlay.yMovLoading .mov-banner{display:block}
-  #yMovOverlay.yMovLoading .yMovBody{background:#fff!important;padding-top:2vw!important;min-height:calc(100dvh - 16vw)}
+  #yMovOverlay.yMovLoading .yMovBody{background:#fff!important;padding-top:2vw!important;min-height:calc(100dvh - 16vw - env(safe-area-inset-top,0px))}
   .yMovSkeletonWrap{padding:2vw 0 8vw;background:#fff;min-height:calc(100dvh - 16vw)}
   .yMovSkRow{display:flex;align-items:center;gap:3vw;padding:4vw 5vw;border-bottom:1px solid #f3f3f3}
   .yMovSkAvatar{width:0;height:0;display:none}
@@ -44865,39 +44866,127 @@ body.yosi-fast-baucher-switch #baucher-embed-frame{
 <!-- /FIX: movimientos solo abre con tap real -->
 
 
-<!-- FIX iPhone: respeta el espacio superior del notch/status bar en Movimientos -->
-<style id="fix-iphone-safe-area-movimientos-final">
-  /* En iPhone la PWA usa viewport-fit=cover y black-translucent; por eso
-     el contenido puede quedar debajo de la hora/notch si no se suma safe-area. */
-  .yMovOverlay .mov-header,
-  #yMovOverlay .mov-header{
-    padding-top: calc(4vw + env(safe-area-inset-top, 0px)) !important;
-    padding-left: 4vw !important;
-    padding-right: 4vw !important;
-    padding-bottom: 4vw !important;
-    background: linear-gradient(#752386 0%, #681f80 62%, #4b1a70 100%) !important;
+<!-- FIX FUERTE iPhone/iOS: baja la pantalla de Movimientos bajo el notch/status bar -->
+<style id="fix-ios-movimientos-parent-strong-v2">
+  html.yosi-ios-device #yMovOverlay .mov-header,
+  html.yosi-ios-device .yMovOverlay .mov-header{
+    padding-top:calc(4vw + var(--yosi-ios-safe-top, 30px)) !important;
+    padding-left:4vw !important;
+    padding-right:4vw !important;
+    padding-bottom:4vw !important;
+    min-height:calc(14vw + var(--yosi-ios-safe-top, 30px)) !important;
+    box-sizing:border-box !important;
   }
-
-  /* Fallback para versiones antiguas de iOS que usaban constant(). */
-  @supports (padding-top: constant(safe-area-inset-top)){
-    .yMovOverlay .mov-header,
-    #yMovOverlay .mov-header{
-      padding-top: calc(4vw + constant(safe-area-inset-top)) !important;
-    }
+  html.yosi-ios-device #yMovOverlay .mov-page,
+  html.yosi-ios-device .yMovOverlay .mov-page{
+    height:100dvh !important;
+    min-height:100vh !important;
+    min-height:-webkit-fill-available !important;
+    background:#fff !important;
   }
-
-  .yMovOverlay .mov-page,
-  #yMovOverlay .mov-page{
-    height: 100dvh !important;
-    min-height: 100vh !important;
-    min-height: -webkit-fill-available !important;
+  html.yosi-ios-device #yMovOverlay,
+  html.yosi-ios-device .yMovOverlay{
+    background:#742284 !important;
   }
-
-  /* Por si alguna versión anterior de la pantalla usa yMovTop en vez de mov-header. */
-  .yMovTop{
-    padding-top: calc(12px + env(safe-area-inset-top, 0px)) !important;
-    min-height: calc(56px + env(safe-area-inset-top, 0px)) !important;
-    box-sizing: border-box !important;
+  html.yosi-ios-device .yMovTop{
+    padding-top:calc(12px + var(--yosi-ios-safe-top, 30px)) !important;
+    min-height:calc(56px + var(--yosi-ios-safe-top, 30px)) !important;
+    box-sizing:border-box !important;
   }
 </style>
-<!-- /FIX iPhone Movimientos -->
+<script id="fix-ios-movimientos-iframe-strong-v2">
+(function(){
+  var STYLE_ID = 'fix-ios-movimientos-injected-strong-v2';
+  var CSS = '' +
+    'html.yosi-ios-device #yMovOverlay .mov-header,html.yosi-ios-device .yMovOverlay .mov-header{' +
+    'padding-top:calc(4vw + var(--yosi-ios-safe-top,30px))!important;' +
+    'padding-left:4vw!important;padding-right:4vw!important;padding-bottom:4vw!important;' +
+    'min-height:calc(14vw + var(--yosi-ios-safe-top,30px))!important;box-sizing:border-box!important;' +
+    'background:linear-gradient(#752386 0%,#681f80 62%,#4b1a70 100%)!important;}' +
+    'html.yosi-ios-device #yMovOverlay .mov-page,html.yosi-ios-device .yMovOverlay .mov-page{' +
+    'height:100dvh!important;min-height:100vh!important;min-height:-webkit-fill-available!important;background:#fff!important;}' +
+    'html.yosi-ios-device #yMovOverlay,html.yosi-ios-device .yMovOverlay{background:#742284!important;}' +
+    'html.yosi-ios-device .mov-title{line-height:1.15!important;}' +
+    'html.yosi-ios-device .mov-back,html.yosi-ios-device .mov-header-actions{padding-top:0!important;}' +
+    'html.yosi-ios-device .yMovTop{padding-top:calc(12px + var(--yosi-ios-safe-top,30px))!important;min-height:calc(56px + var(--yosi-ios-safe-top,30px))!important;box-sizing:border-box!important;}';
+
+  function safe(fn, fallback){ try{return fn();}catch(e){return fallback;} }
+  function isIOS(win){
+    var nav = safe(function(){ return win.navigator; }, navigator);
+    var ua = String((nav && nav.userAgent) || '');
+    var platform = String((nav && nav.platform) || '');
+    var points = Number((nav && nav.maxTouchPoints) || 0);
+    return /iPad|iPhone|iPod/i.test(ua) || (platform === 'MacIntel' && points > 1);
+  }
+  function readEnvTop(doc, win){
+    var v = 0;
+    try{
+      var el = doc.createElement('div');
+      el.style.cssText = 'position:fixed;left:-9999px;top:0;width:1px;height:1px;padding-top:constant(safe-area-inset-top);padding-top:env(safe-area-inset-top);visibility:hidden;pointer-events:none;';
+      (doc.body || doc.documentElement).appendChild(el);
+      v = parseFloat((win.getComputedStyle ? win.getComputedStyle(el) : doc.defaultView.getComputedStyle(el)).paddingTop) || 0;
+      el.remove();
+    }catch(e){}
+    if(isIOS(win) && v < 24) v = 32; // fallback cuando iOS/Safari devuelve env() en 0 dentro del iframe
+    if(v > 70) v = 70;
+    return Math.round(v);
+  }
+  function inject(win){
+    if(!win) return;
+    var doc = safe(function(){ return win.document; }, null);
+    if(!doc || !doc.documentElement) return;
+    if(isIOS(win)){
+      var top = readEnvTop(doc, win);
+      doc.documentElement.classList.add('yosi-ios-device');
+      doc.documentElement.style.setProperty('--yosi-ios-safe-top', top + 'px');
+    }
+    var head = doc.head || doc.documentElement;
+    var st = doc.getElementById(STYLE_ID);
+    if(!st){
+      st = doc.createElement('style');
+      st.id = STYLE_ID;
+      st.textContent = CSS;
+      head.appendChild(st);
+    }
+    if(isIOS(win)){
+      var top2 = doc.documentElement.style.getPropertyValue('--yosi-ios-safe-top') || '32px';
+      var headers = doc.querySelectorAll('#yMovOverlay .mov-header,.yMovOverlay .mov-header,.yMovTop');
+      for(var i=0;i<headers.length;i++){
+        var h = headers[i];
+        if(h.classList && h.classList.contains('yMovTop')){
+          h.style.setProperty('padding-top','calc(12px + '+top2+')','important');
+          h.style.setProperty('min-height','calc(56px + '+top2+')','important');
+        }else{
+          h.style.setProperty('padding-top','calc(4vw + '+top2+')','important');
+          h.style.setProperty('padding-left','4vw','important');
+          h.style.setProperty('padding-right','4vw','important');
+          h.style.setProperty('padding-bottom','4vw','important');
+          h.style.setProperty('min-height','calc(14vw + '+top2+')','important');
+          h.style.setProperty('box-sizing','border-box','important');
+        }
+      }
+    }
+  }
+  function scan(win, depth){
+    if(!win || depth > 6) return;
+    inject(win);
+    var doc = safe(function(){ return win.document; }, null);
+    if(!doc) return;
+    var frames = safe(function(){ return doc.querySelectorAll('iframe'); }, []);
+    for(var i=0;i<frames.length;i++){
+      try{ scan(frames[i].contentWindow, depth + 1); }catch(e){}
+    }
+  }
+  function run(){ scan(window, 0); }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, {once:true}); else run();
+  window.addEventListener('load', function(){ [0,80,180,350,700,1200,2000,3500,5500].forEach(function(ms){ setTimeout(run, ms); }); }, {once:true});
+  [0,60,150,300,600,1000,1700,2600,4200].forEach(function(ms){ setTimeout(run, ms); });
+  try{
+    if(window.__fixIOSMovStrongTimer) clearInterval(window.__fixIOSMovStrongTimer);
+    window.__fixIOSMovStrongTimer = setInterval(run, 500);
+    setTimeout(function(){ try{ clearInterval(window.__fixIOSMovStrongTimer); }catch(e){} }, 45000);
+  }catch(e){}
+  try{ new MutationObserver(function(){ setTimeout(run,0); }).observe(document.documentElement, {childList:true, subtree:true, attributes:true}); }catch(e){}
+})();
+</script>
+<!-- /FIX FUERTE iPhone/iOS Movimientos -->
