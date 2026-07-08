@@ -22420,6 +22420,161 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
 })();
 </script>
 
+
+<!-- ===== FIX iPhone SAFE AREA - PANTALLA YAPEAR A / BANCOS ===== -->
+<script id="ios-banks-safearea-v4">
+(function(){
+  function getDoc(frame){
+    try{ return frame && (frame.contentDocument || (frame.contentWindow && frame.contentWindow.document)) || null; }catch(e){ return null; }
+  }
+
+  function injectIntoBanksDoc(doc){
+    if(!doc || !doc.head) return false;
+    var old = doc.getElementById('ios-banks-safearea-style-v4');
+    if(old) old.remove();
+    var st = doc.createElement('style');
+    st.id = 'ios-banks-safearea-style-v4';
+    st.textContent = `
+      :root{
+        --ios-safe-top: env(safe-area-inset-top, 0px);
+        --ios-safe-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      html,body{
+        background:#ffffff !important;
+        min-height:100dvh !important;
+        height:100% !important;
+      }
+      body{
+        overflow:auto !important;
+        -webkit-overflow-scrolling:touch !important;
+      }
+      .father, .father[_ngcontent-ng-c170397691]{
+        width:100vw !important;
+        min-height:100dvh !important;
+        height:auto !important;
+        overflow:auto !important;
+        -webkit-overflow-scrolling:touch !important;
+        padding-top:max(var(--ios-safe-top), 8px) !important;
+        padding-bottom:calc(var(--ios-safe-bottom) + 18px) !important;
+        background:#ffffff !important;
+      }
+      .father > div:first-child,
+      .father[_ngcontent-ng-c170397691] > div:first-child{
+        background:#ffffff !important;
+      }
+      .head, .head[_ngcontent-ng-c170397691]{
+        height:58px !important;
+        min-height:58px !important;
+        display:grid !important;
+        grid-template-columns:40px 1fr 40px !important;
+        align-items:center !important;
+        column-gap:8px !important;
+        padding:0 14px !important;
+        border-radius:0 !important;
+        background:#ffffff !important;
+        box-sizing:border-box !important;
+      }
+      .head > div,
+      .head[_ngcontent-ng-c170397691] > div{
+        width:40px !important;
+        height:40px !important;
+        background-size:18px auto !important;
+      }
+      .head h3,
+      .head[_ngcontent-ng-c170397691] h3{
+        width:auto !important;
+        height:auto !important;
+        margin:0 !important;
+        display:block !important;
+        font-size:clamp(18px, 5.8vw, 22px) !important;
+        line-height:1.15 !important;
+        font-weight:700 !important;
+        color:#212e41 !important;
+      }
+      .datos, .datos[_ngcontent-ng-c170397691]{
+        padding-top:8px !important;
+        align-items:center !important;
+      }
+      .contenedor-datos, .contenedor-datos[_ngcontent-ng-c170397691]{
+        width:calc(100vw - 32px) !important;
+        max-width:680px !important;
+        min-height:60px !important;
+        height:auto !important;
+        padding:0 14px !important;
+        border-radius:14px !important;
+        box-shadow:0 3px 10px rgba(0,0,0,.08) !important;
+        box-sizing:border-box !important;
+      }
+      .datos img, .datos[_ngcontent-ng-c170397691] img{
+        width:36px !important;
+        height:36px !important;
+        margin-left:0 !important;
+        flex:0 0 36px !important;
+      }
+      .titulo-bancas{
+        width:calc(100vw - 32px) !important;
+        margin:16px 0 12px !important;
+        font-size:clamp(16px, 4.5vw, 19px) !important;
+        line-height:1.2 !important;
+        font-weight:700 !important;
+        color:#742284 !important;
+      }
+      .contenedor-datos.bank-card{
+        min-height:60px !important;
+        height:auto !important;
+        margin:0 0 10px !important;
+        border:.5px solid #ece8ef !important;
+        border-radius:14px !important;
+        box-shadow:0 4px 12px rgba(0,0,0,.07) !important;
+      }
+      .bank-ico{
+        width:36px !important;
+        height:36px !important;
+        flex:0 0 36px !important;
+        margin-left:0 !important;
+      }
+      .bank-ico:before{
+        background-size:20px 20px !important;
+      }
+      .datos h3, .datos[_ngcontent-ng-c170397691] h3,
+      .contenedor-datos h3, .contenedor-datos[_ngcontent-ng-c170397691] h3{
+        width:auto !important;
+        flex:1 1 auto !important;
+        min-width:0 !important;
+        font-size:clamp(16px, 4.5vw, 18px) !important;
+        line-height:1.15 !important;
+        font-weight:600 !important;
+      }
+      .margin-l{ margin-left:12px !important; }
+    `;
+    doc.head.appendChild(st);
+    return true;
+  }
+
+  function run(){
+    try{
+      var homeFrame = document.getElementById('homeFrame');
+      var homeDoc = getDoc(homeFrame);
+      if(!homeDoc) return;
+      var banksFrame = homeDoc.getElementById('banksNewFrame');
+      var banksDoc = getDoc(banksFrame);
+      if(!banksDoc) return;
+      injectIntoBanksDoc(banksDoc);
+    }catch(e){}
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, {once:true});
+  else run();
+  window.addEventListener('load', run, {once:true});
+  window.addEventListener('resize', run, {passive:true});
+  window.addEventListener('orientationchange', run, {passive:true});
+  setTimeout(run, 300);
+  setTimeout(run, 900);
+  setTimeout(run, 1800);
+  setTimeout(run, 3200);
+})();
+</script>
+
 </body></html></template>
 <script>
 (function(){
@@ -33813,6 +33968,161 @@ html,body,.stage,#homeFrame,#newHomeFrame,#voucherView,#baucher-embed-wrap,#bauc
   }
 })();
 </script>
+
+<!-- ===== FIX iPhone SAFE AREA - PANTALLA YAPEAR A / BANCOS ===== -->
+<script id="ios-banks-safearea-v4">
+(function(){
+  function getDoc(frame){
+    try{ return frame && (frame.contentDocument || (frame.contentWindow && frame.contentWindow.document)) || null; }catch(e){ return null; }
+  }
+
+  function injectIntoBanksDoc(doc){
+    if(!doc || !doc.head) return false;
+    var old = doc.getElementById('ios-banks-safearea-style-v4');
+    if(old) old.remove();
+    var st = doc.createElement('style');
+    st.id = 'ios-banks-safearea-style-v4';
+    st.textContent = `
+      :root{
+        --ios-safe-top: env(safe-area-inset-top, 0px);
+        --ios-safe-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      html,body{
+        background:#ffffff !important;
+        min-height:100dvh !important;
+        height:100% !important;
+      }
+      body{
+        overflow:auto !important;
+        -webkit-overflow-scrolling:touch !important;
+      }
+      .father, .father[_ngcontent-ng-c170397691]{
+        width:100vw !important;
+        min-height:100dvh !important;
+        height:auto !important;
+        overflow:auto !important;
+        -webkit-overflow-scrolling:touch !important;
+        padding-top:max(var(--ios-safe-top), 8px) !important;
+        padding-bottom:calc(var(--ios-safe-bottom) + 18px) !important;
+        background:#ffffff !important;
+      }
+      .father > div:first-child,
+      .father[_ngcontent-ng-c170397691] > div:first-child{
+        background:#ffffff !important;
+      }
+      .head, .head[_ngcontent-ng-c170397691]{
+        height:58px !important;
+        min-height:58px !important;
+        display:grid !important;
+        grid-template-columns:40px 1fr 40px !important;
+        align-items:center !important;
+        column-gap:8px !important;
+        padding:0 14px !important;
+        border-radius:0 !important;
+        background:#ffffff !important;
+        box-sizing:border-box !important;
+      }
+      .head > div,
+      .head[_ngcontent-ng-c170397691] > div{
+        width:40px !important;
+        height:40px !important;
+        background-size:18px auto !important;
+      }
+      .head h3,
+      .head[_ngcontent-ng-c170397691] h3{
+        width:auto !important;
+        height:auto !important;
+        margin:0 !important;
+        display:block !important;
+        font-size:clamp(18px, 5.8vw, 22px) !important;
+        line-height:1.15 !important;
+        font-weight:700 !important;
+        color:#212e41 !important;
+      }
+      .datos, .datos[_ngcontent-ng-c170397691]{
+        padding-top:8px !important;
+        align-items:center !important;
+      }
+      .contenedor-datos, .contenedor-datos[_ngcontent-ng-c170397691]{
+        width:calc(100vw - 32px) !important;
+        max-width:680px !important;
+        min-height:60px !important;
+        height:auto !important;
+        padding:0 14px !important;
+        border-radius:14px !important;
+        box-shadow:0 3px 10px rgba(0,0,0,.08) !important;
+        box-sizing:border-box !important;
+      }
+      .datos img, .datos[_ngcontent-ng-c170397691] img{
+        width:36px !important;
+        height:36px !important;
+        margin-left:0 !important;
+        flex:0 0 36px !important;
+      }
+      .titulo-bancas{
+        width:calc(100vw - 32px) !important;
+        margin:16px 0 12px !important;
+        font-size:clamp(16px, 4.5vw, 19px) !important;
+        line-height:1.2 !important;
+        font-weight:700 !important;
+        color:#742284 !important;
+      }
+      .contenedor-datos.bank-card{
+        min-height:60px !important;
+        height:auto !important;
+        margin:0 0 10px !important;
+        border:.5px solid #ece8ef !important;
+        border-radius:14px !important;
+        box-shadow:0 4px 12px rgba(0,0,0,.07) !important;
+      }
+      .bank-ico{
+        width:36px !important;
+        height:36px !important;
+        flex:0 0 36px !important;
+        margin-left:0 !important;
+      }
+      .bank-ico:before{
+        background-size:20px 20px !important;
+      }
+      .datos h3, .datos[_ngcontent-ng-c170397691] h3,
+      .contenedor-datos h3, .contenedor-datos[_ngcontent-ng-c170397691] h3{
+        width:auto !important;
+        flex:1 1 auto !important;
+        min-width:0 !important;
+        font-size:clamp(16px, 4.5vw, 18px) !important;
+        line-height:1.15 !important;
+        font-weight:600 !important;
+      }
+      .margin-l{ margin-left:12px !important; }
+    `;
+    doc.head.appendChild(st);
+    return true;
+  }
+
+  function run(){
+    try{
+      var homeFrame = document.getElementById('homeFrame');
+      var homeDoc = getDoc(homeFrame);
+      if(!homeDoc) return;
+      var banksFrame = homeDoc.getElementById('banksNewFrame');
+      var banksDoc = getDoc(banksFrame);
+      if(!banksDoc) return;
+      injectIntoBanksDoc(banksDoc);
+    }catch(e){}
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, {once:true});
+  else run();
+  window.addEventListener('load', run, {once:true});
+  window.addEventListener('resize', run, {passive:true});
+  window.addEventListener('orientationchange', run, {passive:true});
+  setTimeout(run, 300);
+  setTimeout(run, 900);
+  setTimeout(run, 1800);
+  setTimeout(run, 3200);
+})();
+</script>
+
 </body>
 <!-- yosi-confetti-no-restart-fix: one smooth run, no repeated restarts -->
 <script id="yosi-fix-flecha-opciones-no-home-final">
