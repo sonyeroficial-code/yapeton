@@ -22702,6 +22702,51 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
 })();
 </script>
 
+
+<!-- ===== AJUSTE EXTERNO SUAVE SOLO iPHONE: sube un poco el iframe del baucher ===== -->
+<script id="ios-baucher-outer-offset-v12">
+(function(){
+  function isIOS(){
+    try{
+      var ua = navigator.userAgent || '';
+      return /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    }catch(e){ return false; }
+  }
+  function apply(){
+    try{
+      var st = document.getElementById('ios-baucher-outer-offset-style-v12');
+      if(!isIOS()){
+        if(st) st.remove();
+        return;
+      }
+      if(!st){
+        st = document.createElement('style');
+        st.id = 'ios-baucher-outer-offset-style-v12';
+        document.head.appendChild(st);
+      }
+      st.textContent = `
+        #voucherView #baucher-embed-wrap{
+          top:-12px !important;
+          right:0 !important;
+          bottom:0 !important;
+          left:0 !important;
+        }
+        @media (max-width: 390px){
+          #voucherView #baucher-embed-wrap{
+            top:-14px !important;
+          }
+        }
+      `;
+    }catch(e){}
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply, {once:true});
+  else apply();
+  window.addEventListener('load', apply, {once:true});
+  window.addEventListener('resize', apply, {passive:true});
+  window.addEventListener('orientationchange', apply, {passive:true});
+})();
+</script>
+
 </body></html></template>
 <script>
 (function(){
@@ -34374,6 +34419,51 @@ html,body,.stage,#homeFrame,#newHomeFrame,#voucherView,#baucher-embed-wrap,#bauc
   setTimeout(run, 800);
   setTimeout(run, 1600);
   setTimeout(run, 3000);
+})();
+</script>
+
+
+<!-- ===== AJUSTE EXTERNO SUAVE SOLO iPHONE: sube un poco el iframe del baucher ===== -->
+<script id="ios-baucher-outer-offset-v12">
+(function(){
+  function isIOS(){
+    try{
+      var ua = navigator.userAgent || '';
+      return /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    }catch(e){ return false; }
+  }
+  function apply(){
+    try{
+      var st = document.getElementById('ios-baucher-outer-offset-style-v12');
+      if(!isIOS()){
+        if(st) st.remove();
+        return;
+      }
+      if(!st){
+        st = document.createElement('style');
+        st.id = 'ios-baucher-outer-offset-style-v12';
+        document.head.appendChild(st);
+      }
+      st.textContent = `
+        #voucherView #baucher-embed-wrap{
+          top:-12px !important;
+          right:0 !important;
+          bottom:0 !important;
+          left:0 !important;
+        }
+        @media (max-width: 390px){
+          #voucherView #baucher-embed-wrap{
+            top:-14px !important;
+          }
+        }
+      `;
+    }catch(e){}
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply, {once:true});
+  else apply();
+  window.addEventListener('load', apply, {once:true});
+  window.addEventListener('resize', apply, {passive:true});
+  window.addEventListener('orientationchange', apply, {passive:true});
 })();
 </script>
 
