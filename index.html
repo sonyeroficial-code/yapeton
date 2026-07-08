@@ -22702,6 +22702,86 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
 })();
 </script>
 
+
+<!-- ===== FIX iPhone SAFE AREA - PANTALLA VOUCHER / YAPEASTE ===== -->
+<script id="ios-voucher-safearea-v6">
+(function(){
+  function getDoc(frame){
+    try{ return frame && (frame.contentDocument || (frame.contentWindow && frame.contentWindow.document)) || null; }catch(e){ return null; }
+  }
+  function inject(doc){
+    if(!doc || !doc.head) return false;
+    var old = doc.getElementById('ios-voucher-safearea-style-v6');
+    if(old) old.remove();
+    var st = doc.createElement('style');
+    st.id = 'ios-voucher-safearea-style-v6';
+    st.textContent = `
+      :root{
+        --v-safe-top:max(env(safe-area-inset-top, 0px), 18px);
+        --v-safe-right:max(env(safe-area-inset-right, 0px), 10px);
+        --v-safe-bottom:max(env(safe-area-inset-bottom, 0px), 12px);
+      }
+      html,body{
+        min-height:100% !important;
+        height:100% !important;
+        background:#742284 !important;
+      }
+      body{
+        padding-top:var(--v-safe-top) !important;
+        padding-bottom:var(--v-safe-bottom) !important;
+        box-sizing:border-box !important;
+        overflow:auto !important;
+        -webkit-overflow-scrolling:touch !important;
+      }
+      app-root, app-yapeo, .father, .father[_ngcontent-ng-c755697887]{
+        display:block !important;
+        min-height:calc(100dvh - var(--v-safe-top)) !important;
+      }
+      .father, .father[_ngcontent-ng-c755697887]{
+        padding-top:8px !important;
+        box-sizing:border-box !important;
+      }
+      .close-btn-yape{
+        top:calc(var(--v-safe-top) + 12px) !important;
+        right:calc(var(--v-safe-right) + 12px) !important;
+        width:46px !important;
+        height:46px !important;
+      }
+      #promoFrame{background-position:center center !important;}
+      .yapeaste,.yape-title{margin-top:0 !important;}
+      .paraServicios{padding-bottom:8px !important;}
+      @media (max-width:390px){
+        body{padding-top:max(env(safe-area-inset-top, 0px), 14px) !important;}
+        .father, .father[_ngcontent-ng-c755697887]{padding-top:10px !important;}
+        .close-btn-yape{top:calc(max(env(safe-area-inset-top,0px),14px) + 12px) !important;}
+      }
+    `;
+    doc.head.appendChild(st);
+    return true;
+  }
+  function run(){
+    try{
+      var homeFrame = document.getElementById('homeFrame');
+      var homeDoc = getDoc(homeFrame);
+      if(!homeDoc) return;
+      var voucherFrame = homeDoc.getElementById('baucher-embed-frame');
+      var voucherDoc = getDoc(voucherFrame);
+      if(!voucherDoc) return;
+      inject(voucherDoc);
+    }catch(e){}
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, {once:true});
+  else run();
+  window.addEventListener('load', run, {once:true});
+  window.addEventListener('resize', run, {passive:true});
+  window.addEventListener('orientationchange', run, {passive:true});
+  setTimeout(run, 250);
+  setTimeout(run, 800);
+  setTimeout(run, 1600);
+  setTimeout(run, 3200);
+})();
+</script>
+
 </body></html></template>
 <script>
 (function(){
@@ -34374,6 +34454,86 @@ html,body,.stage,#homeFrame,#newHomeFrame,#voucherView,#baucher-embed-wrap,#bauc
   setTimeout(run, 800);
   setTimeout(run, 1600);
   setTimeout(run, 3000);
+})();
+</script>
+
+
+<!-- ===== FIX iPhone SAFE AREA - PANTALLA VOUCHER / YAPEASTE ===== -->
+<script id="ios-voucher-safearea-v6">
+(function(){
+  function getDoc(frame){
+    try{ return frame && (frame.contentDocument || (frame.contentWindow && frame.contentWindow.document)) || null; }catch(e){ return null; }
+  }
+  function inject(doc){
+    if(!doc || !doc.head) return false;
+    var old = doc.getElementById('ios-voucher-safearea-style-v6');
+    if(old) old.remove();
+    var st = doc.createElement('style');
+    st.id = 'ios-voucher-safearea-style-v6';
+    st.textContent = `
+      :root{
+        --v-safe-top:max(env(safe-area-inset-top, 0px), 18px);
+        --v-safe-right:max(env(safe-area-inset-right, 0px), 10px);
+        --v-safe-bottom:max(env(safe-area-inset-bottom, 0px), 12px);
+      }
+      html,body{
+        min-height:100% !important;
+        height:100% !important;
+        background:#742284 !important;
+      }
+      body{
+        padding-top:var(--v-safe-top) !important;
+        padding-bottom:var(--v-safe-bottom) !important;
+        box-sizing:border-box !important;
+        overflow:auto !important;
+        -webkit-overflow-scrolling:touch !important;
+      }
+      app-root, app-yapeo, .father, .father[_ngcontent-ng-c755697887]{
+        display:block !important;
+        min-height:calc(100dvh - var(--v-safe-top)) !important;
+      }
+      .father, .father[_ngcontent-ng-c755697887]{
+        padding-top:8px !important;
+        box-sizing:border-box !important;
+      }
+      .close-btn-yape{
+        top:calc(var(--v-safe-top) + 12px) !important;
+        right:calc(var(--v-safe-right) + 12px) !important;
+        width:46px !important;
+        height:46px !important;
+      }
+      #promoFrame{background-position:center center !important;}
+      .yapeaste,.yape-title{margin-top:0 !important;}
+      .paraServicios{padding-bottom:8px !important;}
+      @media (max-width:390px){
+        body{padding-top:max(env(safe-area-inset-top, 0px), 14px) !important;}
+        .father, .father[_ngcontent-ng-c755697887]{padding-top:10px !important;}
+        .close-btn-yape{top:calc(max(env(safe-area-inset-top,0px),14px) + 12px) !important;}
+      }
+    `;
+    doc.head.appendChild(st);
+    return true;
+  }
+  function run(){
+    try{
+      var homeFrame = document.getElementById('homeFrame');
+      var homeDoc = getDoc(homeFrame);
+      if(!homeDoc) return;
+      var voucherFrame = homeDoc.getElementById('baucher-embed-frame');
+      var voucherDoc = getDoc(voucherFrame);
+      if(!voucherDoc) return;
+      inject(voucherDoc);
+    }catch(e){}
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, {once:true});
+  else run();
+  window.addEventListener('load', run, {once:true});
+  window.addEventListener('resize', run, {passive:true});
+  window.addEventListener('orientationchange', run, {passive:true});
+  setTimeout(run, 250);
+  setTimeout(run, 800);
+  setTimeout(run, 1600);
+  setTimeout(run, 3200);
 })();
 </script>
 
