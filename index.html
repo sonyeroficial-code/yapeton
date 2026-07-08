@@ -22702,6 +22702,63 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
 })();
 </script>
 
+
+<!-- ===== AJUSTE SUAVE SOLO iPHONE: subir un poco el baucher sin tocar logos ===== -->
+<script id="ios-voucher-top-soft-fix-v11">
+(function(){
+  function isIOS(){
+    try{
+      var ua = navigator.userAgent || '';
+      return /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    }catch(e){ return false; }
+  }
+  function getDoc(frame){
+    try{ return frame && (frame.contentDocument || (frame.contentWindow && frame.contentWindow.document)) || null; }catch(e){ return null; }
+  }
+  function apply(){
+    try{
+      var homeFrame = document.getElementById('homeFrame');
+      var homeDoc = getDoc(homeFrame);
+      if(!homeDoc) return;
+      var voucherFrame = homeDoc.getElementById('baucher-embed-frame');
+      var voucherDoc = getDoc(voucherFrame);
+      if(!voucherDoc || !voucherDoc.head) return;
+
+      var st = voucherDoc.getElementById('ios-voucher-top-soft-style-v11');
+      if(!isIOS()){
+        if(st) st.remove();
+        return;
+      }
+      if(!st){
+        st = voucherDoc.createElement('style');
+        st.id = 'ios-voucher-top-soft-style-v11';
+        voucherDoc.head.appendChild(st);
+      }
+      st.textContent = `
+        .father > div:nth-child(3),
+        .father[_ngcontent-ng-c755697887] > div:nth-child(3){
+          transform: translateY(-12px) !important;
+        }
+        @media (max-width: 390px){
+          .father > div:nth-child(3),
+          .father[_ngcontent-ng-c755697887] > div:nth-child(3){
+            transform: translateY(-14px) !important;
+          }
+        }
+      `;
+    }catch(e){}
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply, {once:true});
+  else apply();
+  window.addEventListener('load', apply, {once:true});
+  window.addEventListener('resize', apply, {passive:true});
+  window.addEventListener('orientationchange', apply, {passive:true});
+  setTimeout(apply, 250);
+  setTimeout(apply, 800);
+  setTimeout(apply, 1600);
+})();
+</script>
+
 </body></html></template>
 <script>
 (function(){
@@ -34374,6 +34431,63 @@ html,body,.stage,#homeFrame,#newHomeFrame,#voucherView,#baucher-embed-wrap,#bauc
   setTimeout(run, 800);
   setTimeout(run, 1600);
   setTimeout(run, 3000);
+})();
+</script>
+
+
+<!-- ===== AJUSTE SUAVE SOLO iPHONE: subir un poco el baucher sin tocar logos ===== -->
+<script id="ios-voucher-top-soft-fix-v11">
+(function(){
+  function isIOS(){
+    try{
+      var ua = navigator.userAgent || '';
+      return /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    }catch(e){ return false; }
+  }
+  function getDoc(frame){
+    try{ return frame && (frame.contentDocument || (frame.contentWindow && frame.contentWindow.document)) || null; }catch(e){ return null; }
+  }
+  function apply(){
+    try{
+      var homeFrame = document.getElementById('homeFrame');
+      var homeDoc = getDoc(homeFrame);
+      if(!homeDoc) return;
+      var voucherFrame = homeDoc.getElementById('baucher-embed-frame');
+      var voucherDoc = getDoc(voucherFrame);
+      if(!voucherDoc || !voucherDoc.head) return;
+
+      var st = voucherDoc.getElementById('ios-voucher-top-soft-style-v11');
+      if(!isIOS()){
+        if(st) st.remove();
+        return;
+      }
+      if(!st){
+        st = voucherDoc.createElement('style');
+        st.id = 'ios-voucher-top-soft-style-v11';
+        voucherDoc.head.appendChild(st);
+      }
+      st.textContent = `
+        .father > div:nth-child(3),
+        .father[_ngcontent-ng-c755697887] > div:nth-child(3){
+          transform: translateY(-12px) !important;
+        }
+        @media (max-width: 390px){
+          .father > div:nth-child(3),
+          .father[_ngcontent-ng-c755697887] > div:nth-child(3){
+            transform: translateY(-14px) !important;
+          }
+        }
+      `;
+    }catch(e){}
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply, {once:true});
+  else apply();
+  window.addEventListener('load', apply, {once:true});
+  window.addEventListener('resize', apply, {passive:true});
+  window.addEventListener('orientationchange', apply, {passive:true});
+  setTimeout(apply, 250);
+  setTimeout(apply, 800);
+  setTimeout(apply, 1600);
 })();
 </script>
 
