@@ -307,13 +307,13 @@ height:100% !important;
 
     .wrap{width:min(420px, 100%)}
 
-    .topbar{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+    .topbar{display:flex;align-items:center;gap:10px;margin-bottom:10px}
     .back{
       width:40px;height:40px;border-radius:14px;display:grid;place-items:center;
       background:rgba(0,0,0,.18); border:1px solid rgba(255,255,255,.18);
       backdrop-filter: blur(8px); cursor:pointer;
     }
-    .back svg{width:16px;height:16px;opacity:.95}
+    .back svg{width:18px;height:18px;opacity:.95}
 
     .infoPill{
       flex:1;height:44px;border-radius:18px;
@@ -457,7 +457,7 @@ height:100% !important;
     @keyframes floatIos{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
     @keyframes floatAndroid{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
 
-    .osIcon{width:16px;height:16px;display:block}
+    .osIcon{width:18px;height:18px;display:block}
     .osName{font-weight:500;font-size:12.5px;color:#2c2c2c;letter-spacing:.02em}
 
     .toast{
@@ -1368,7 +1368,7 @@ body.mode-login .toast{
     width:min(340px, calc(100vw - 28px)) !important;
     min-height:52px !important;
     border-radius:18px !important;
-    font-size:11.8px !important;
+    font-size:12.8px !important;
   }
   body.mode-login .toast::before{
     width:32px !important;
@@ -3300,7 +3300,7 @@ html, body { height: 100%; }
       background: rgba(255,255,255,.14);
       flex:0 0 auto;
     }
-    .avatar svg{width:16px;height:16px;opacity:.95}
+    .avatar svg{width:18px;height:18px;opacity:.95}
 
     .hello{
       font-weight:400;
@@ -3389,7 +3389,7 @@ html, body { height: 100%; }
       background: rgba(255,255,255,.14);
       display:grid;place-items:center;
     }
-    .circleIcon svg{width:16px;height:16px;opacity:.95}
+    .circleIcon svg{width:18px;height:18px;opacity:.95}
 
     .grid{
       display:grid;
@@ -3681,7 +3681,7 @@ html, body { height: 100%; }
       margin-top:auto;
       padding-top: 4px;
     }
-.btnIcon{width:20px;height:20px;object-fit:contain;flex:0 0 auto;}
+.btnIcon{width:22px;height:22px;object-fit:contain;flex:0 0 auto;}
 
     .btn{
       flex:1;
@@ -3731,7 +3731,7 @@ html, body { height: 100%; }
   font-weight:800 !important;
 }
 
-    .btn svg{width:15px;height:15px;fill: currentColor}
+    .btn svg{width:19px;height:19px;fill: currentColor}
     .clickable{ cursor:pointer; }
 
     /* ================= YAPEAR CONTACTOS ================= */
@@ -4198,7 +4198,7 @@ html, body { height: 100%; }
       border:1px solid rgba(17,24,39,.02);
     }
     #voucherView .vMsgIcon{
-      width:20px;height:20px;
+      width:26px;height:26px;
       border-radius:10px;
       display:flex;
       align-items:center;
@@ -4206,10 +4206,10 @@ html, body { height: 100%; }
       background: transparent;
       flex:0 0 auto;
     }
-    .msg-icon-img{width:20px;height:20px;display:block;object-fit:contain;}
-    .msg-icon-svg{width:16px;height:16px;display:block;}
+    .msg-icon-img{width:26px;height:26px;display:block;object-fit:contain;}
+    .msg-icon-svg{width:18px;height:18px;display:block;}
     #voucherView .vMsgIcon img{
-      width:20px;height:20px;
+      width:26px;height:26px;
       display:block;
       object-fit:contain;
     }
@@ -5621,7 +5621,7 @@ html body #qrScanView .qrScan-bottom{
   flex:0 0 auto;
 }
 #qrRegView .qrReg-hIcon svg{
-  width:20px;height:20px;
+  width:26px;height:26px;
   color:#fff;
 }
 #qrRegView .qrReg-hTitle{
@@ -8498,10 +8498,6 @@ body{
   line-height:1;
   cursor:pointer;
   user-select:none;
-  touch-action:manipulation;
-  -webkit-tap-highlight-color: transparent;
-  position:relative;
-  z-index:12;
 }
 #datosView #backFromDatos:active{ transform: scale(.98); opacity:.9; }
 
@@ -8973,7 +8969,7 @@ body{
   flex:0 0 auto;
 }
 #qrRegView .qrReg-hIcon svg{
-  width:20px;height:20px;
+  width:26px;height:26px;
   color:#fff;
 }
 #qrRegView .qrReg-hTitle{
@@ -12484,47 +12480,8 @@ function maskPhoneVoucher(p){
     }
   });
 
-  function bindFastBack(el, handler){
-    if(!el || el.dataset.fastBackBound === &quot;1&quot;) return;
-    el.dataset.fastBackBound = &quot;1&quot;;
-    var lastTapTs = 0;
-    var run = function(ev){
-      try{
-        if(ev){
-          if(typeof ev.preventDefault === &quot;function&quot;) ev.preventDefault();
-          if(typeof ev.stopPropagation === &quot;function&quot;) ev.stopPropagation();
-          if(typeof ev.stopImmediatePropagation === &quot;function&quot;) ev.stopImmediatePropagation();
-        }
-      }catch(e){}
-      try{
-        var active = document.activeElement;
-        if(active && typeof active.blur === &quot;function&quot;) active.blur();
-      }catch(e){}
-      lastTapTs = Date.now();
-      handler();
-      return false;
-    };
-    el.style.touchAction = &quot;manipulation&quot;;
-    el.style.webkitTapHighlightColor = &quot;transparent&quot;;
-    el.addEventListener(&quot;pointerdown&quot;, run, true);
-    el.addEventListener(&quot;touchstart&quot;, run, { passive:false, capture:true });
-    el.addEventListener(&quot;click&quot;, function(ev){
-      if(Date.now() - lastTapTs < 700){
-        try{
-          if(ev){
-            if(typeof ev.preventDefault === &quot;function&quot;) ev.preventDefault();
-            if(typeof ev.stopPropagation === &quot;function&quot;) ev.stopPropagation();
-            if(typeof ev.stopImmediatePropagation === &quot;function&quot;) ev.stopImmediatePropagation();
-          }
-        }catch(e){}
-        return false;
-      }
-      return run(ev);
-    }, true);
-  }
-
   if(backFromDatos){
-    bindFastBack(backFromDatos, showHome);
+    backFromDatos.addEventListener(&quot;click&quot;, showHome);
   }
 })();
 
@@ -18632,7 +18589,7 @@ function setUploadState(state){
     .promosClose:active{background:rgba(255,255,255,.16); transform:scale(.96);}
     .promosClose svg{width:23px;height:23px;}
     .promosSearch{height:45px; border-radius:12px; background:white; color:#6c6074; display:flex; align-items:center; gap:10px; padding:0 14px; box-sizing:border-box; box-shadow:0 4px 12px rgba(64,21,83,.08);}
-    .promosSearch svg{width:20px;height:20px;color:#342045;flex:0 0 auto;}
+    .promosSearch svg{width:22px;height:22px;color:#342045;flex:0 0 auto;}
     .promosSearch input{border:0; outline:0; flex:1; height:100%; background:transparent; font-size:16px; color:#37233e; font-weight:650; min-width:0;}
     .promosSearch input::placeholder{color:#8b8590;font-weight:650;}
     .promosBlock{padding:13px 0 0;}
@@ -20680,7 +20637,7 @@ function setUploadState(state){
 &lt;title&gt;Yape Tienda&lt;/title&gt;
 &lt;style&gt;
 :root{--purple:#7a0fbf;--purple2:#a000d8;--bg:#f7f4fa;--card:#fff;--text:#271934;--muted:#75697f;--teal:#21bdb5;--yellow:#f7d84d;--line:#eee7f5;--shadow:0 8px 18px rgba(38,12,60,.08);--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px)}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}html,body{margin:0;min-height:100%;background:var(--bg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Roboto,Arial,sans-serif;color:var(--text);overflow-x:hidden}button,a,input{font:inherit}button{border:0;background:transparent}input{user-select:text;-webkit-user-select:text}img{display:block;max-width:100%;pointer-events:none;-webkit-user-drag:none}.app{width:100%;max-width:430px;min-height:100dvh;margin:0 auto;background:var(--bg);padding-bottom:calc(78px + var(--safe-bottom));position:relative;overflow:hidden}.header{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,var(--purple),var(--purple2));color:#fff;padding:calc(var(--safe-top) + 10px) 17px 12px;border-bottom-left-radius:20px;border-bottom-right-radius:20px;box-shadow:0 9px 22px rgba(112,17,172,.22)}.topbar{display:grid;grid-template-columns:40px 1fr 40px;align-items:center;gap:8px;margin-bottom:12px}.icon-btn{width:40px;height:40px;border-radius:999px;background:rgba(255,255,255,.14);display:grid;place-items:center;color:#fff;backdrop-filter:blur(8px);position:relative}.title{text-align:center;font-size:18px;font-weight:800;letter-spacing:.05px}.cart-count{position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 5px;border-radius:999px;background:#ffcf3e;color:#4b3400;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 5px 12px rgba(0,0,0,.18)}.search-wrap{height:48px;border-radius:17px;background:#fff;display:flex;align-items:center;gap:11px;padding:0 15px;color:#8a6f9f;box-shadow:0 7px 18px rgba(31,11,55,.11)}.search-wrap input{border:0;outline:0;background:transparent;width:100%;font-size:14.5px;color:#382548}.search-wrap input::placeholder{color:#918898}.location-row{display:grid;grid-template-columns:20px 1fr 20px;align-items:center;gap:10px;margin-top:12px;font-size:13px;line-height:1.15;color:#fff;cursor:pointer}.location-row svg{width:20px;height:20px}.location-title{font-weight:800}.location-sub{display:block;font-size:11.2px;color:rgba(255,255,255,.78);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.near-strip{margin-top:9px;display:flex;gap:7px;overflow-x:auto;scrollbar-width:none}.near-strip::-webkit-scrollbar{display:none}.near-chip{flex:0 0 auto;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:999px;padding:5px 8px;font-size:10.8px;font-weight:800;white-space:nowrap}.near-chip.active{background:#fff;color:#7b12c7}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}html,body{margin:0;min-height:100%;background:var(--bg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Roboto,Arial,sans-serif;color:var(--text);overflow-x:hidden}button,a,input{font:inherit}button{border:0;background:transparent}input{user-select:text;-webkit-user-select:text}img{display:block;max-width:100%;pointer-events:none;-webkit-user-drag:none}.app{width:100%;max-width:430px;min-height:100dvh;margin:0 auto;background:var(--bg);padding-bottom:calc(78px + var(--safe-bottom));position:relative;overflow:hidden}.header{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,var(--purple),var(--purple2));color:#fff;padding:calc(var(--safe-top) + 10px) 17px 12px;border-bottom-left-radius:20px;border-bottom-right-radius:20px;box-shadow:0 9px 22px rgba(112,17,172,.22)}.topbar{display:grid;grid-template-columns:40px 1fr 40px;align-items:center;gap:8px;margin-bottom:12px}.icon-btn{width:40px;height:40px;border-radius:999px;background:rgba(255,255,255,.14);display:grid;place-items:center;color:#fff;backdrop-filter:blur(8px);position:relative}.title{text-align:center;font-size:18px;font-weight:800;letter-spacing:.05px}.cart-count{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#ffcf3e;color:#4b3400;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 5px 12px rgba(0,0,0,.18)}.search-wrap{height:48px;border-radius:17px;background:#fff;display:flex;align-items:center;gap:11px;padding:0 15px;color:#8a6f9f;box-shadow:0 7px 18px rgba(31,11,55,.11)}.search-wrap input{border:0;outline:0;background:transparent;width:100%;font-size:14.5px;color:#382548}.search-wrap input::placeholder{color:#918898}.location-row{display:grid;grid-template-columns:20px 1fr 20px;align-items:center;gap:10px;margin-top:12px;font-size:13px;line-height:1.15;color:#fff;cursor:pointer}.location-row svg{width:20px;height:20px}.location-title{font-weight:800}.location-sub{display:block;font-size:11.2px;color:rgba(255,255,255,.78);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.near-strip{margin-top:9px;display:flex;gap:7px;overflow-x:auto;scrollbar-width:none}.near-strip::-webkit-scrollbar{display:none}.near-chip{flex:0 0 auto;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:999px;padding:5px 8px;font-size:10.8px;font-weight:800;white-space:nowrap}.near-chip.active{background:#fff;color:#7b12c7}
 main{padding:10px 0 14px}.hero{padding:0 17px}.hero-track{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;scroll-behavior:smooth}.hero-track::-webkit-scrollbar,.cat-row::-webkit-scrollbar,.product-track::-webkit-scrollbar{display:none}.hero-card{min-width:100%;height:112px;border-radius:17px;overflow:hidden;background:#fff;box-shadow:var(--shadow);scroll-snap-align:start;position:relative}.hero-content{height:100%;display:grid;grid-template-columns:43% 57%}.hero-copy{padding:12px 11px;background:#fff;position:relative;z-index:2}.hero-copy:after{content:&quot;&quot;;position:absolute;top:0;right:-20px;width:43px;height:100%;background:linear-gradient(90deg,#fff 0%,rgba(255,255,255,.86) 50%,rgba(255,255,255,0) 100%)}.hero-kicker{font-size:16px;line-height:.95;font-weight:950;text-transform:uppercase;letter-spacing:.1px;color:#21132d;margin-bottom:5px}.hero-title{font-size:12.5px;line-height:1.05;font-weight:850;color:#372345;margin-bottom:3px}.hero-sub{font-size:10.2px;line-height:1.12;color:#66596f;max-width:126px}.price-badge{margin-top:5px;font-size:11px;font-weight:950;color:#8e09d1;line-height:1;white-space:nowrap}.price-badge b{font-size:20px;letter-spacing:-.7px}.price-badge small{display:block;margin-top:2px;color:#6b5e74;font-size:9px;font-weight:750}.hero-media{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#8c0fd1 0%,#bf23e4 55%,#f0dbff 100%)}.hero-media img{width:100%;height:100%;object-fit:cover;object-position:center}.hero-media:after{content:&quot;&quot;;position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,.1),rgba(146,10,202,.34))}.brand-chip{position:absolute;right:9px;bottom:8px;z-index:2;background:#fff;color:#23142e;border-radius:11px;padding:5px 10px;font-size:10.5px;font-weight:950;letter-spacing:1px;box-shadow:0 7px 16px rgba(0,0,0,.13)}.dots{display:flex;justify-content:center;gap:7px;padding:8px 0 1px}.dot{width:7px;height:7px;border-radius:999px;background:#d8d2df;transition:.2s ease}.dot.active{width:32px;background:var(--purple2)}
 .section{margin-top:13px;padding:0 16px}.section.compact{margin-top:9px;padding:0}.cat-row{display:flex;gap:11px;overflow-x:auto;scroll-snap-type:x proximity;padding:0 16px 3px}.cat-card{min-width:58px;max-width:58px;text-align:center;scroll-snap-align:start}.cat-tag{display:inline-flex;align-items:center;justify-content:center;height:22px;min-width:58px;max-width:72px;padding:0 6px;border-radius:999px;background:var(--yellow);color:#5d4300;font-size:9.8px;font-weight:850;white-space:nowrap;box-shadow:0 5px 10px rgba(217,174,28,.18);margin-bottom:7px;overflow:hidden;text-overflow:ellipsis}.cat-thumb{width:54px;height:54px;border-radius:999px;background:#fff;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;margin:0 auto 6px;overflow:hidden;border:1px solid #fff;padding:5px}.cat-thumb img{width:100%;height:100%;object-fit:contain;object-position:center}.cat-name{font-size:10.8px;line-height:1.08;font-weight:850;color:#30223d;white-space:normal}.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}.section-head h2{margin:0;font-size:16px;line-height:1.08;color:#2b1a3d;letter-spacing:-.15px;font-weight:950}.more{color:var(--teal);font-size:13.5px;font-weight:850;white-space:nowrap}.product-track{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;padding:0 16px 7px;margin:0 -16px}.product-card{min-width:138px;max-width:138px;background:#fff;border-radius:18px;box-shadow:var(--shadow);border:1px solid #f0eaf7;overflow:hidden;scroll-snap-align:start;position:relative;padding-bottom:9px}.discount{position:absolute;right:7px;top:7px;z-index:4;background:#f6d955;color:#5b4300;font-weight:950;font-size:11px;line-height:1;border-radius:999px;padding:6px 9px;box-shadow:0 4px 10px rgba(203,163,25,.16)}.product-media{height:96px;background:#faf8fd;display:flex;align-items:center;justify-content:center;overflow:hidden;border-bottom:1px solid #f0eaf6;padding:7px}.product-media img{width:100%;height:100%;object-fit:contain;object-position:center}.product-info{padding:8px 9px 0}.options{font-size:10.2px;color:#6f6690;font-weight:850;margin-bottom:6px}.brand{font-size:10.2px;letter-spacing:.55px;color:#2b2235;font-weight:950;margin-bottom:3px}.name{font-size:11.3px;line-height:1.15;color:#443551;min-height:38px}.price{color:var(--purple);font-size:14.2px;font-weight:950;margin-top:6px}.old{display:inline-block;color:#8a8098;font-size:10px;text-decoration:line-through;margin-top:2px}.add-btn{margin:7px 9px 0;width:calc(100% - 18px);height:31px;border-radius:11px;background:var(--teal);color:#fff;font-size:12.2px;font-weight:950;display:flex;align-items:center;justify-content:center;gap:5px;box-shadow:0 8px 16px rgba(33,199,187,.18)}.search-empty{display:none;text-align:center;color:#7a7088;font-size:12.5px;padding:10px 16px 0}.is-hidden{display:none!important}
 .bottom-nav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;z-index:30;width:100%;max-width:430px;background:rgba(255,255,255,.94);backdrop-filter:blur(16px);border-top:1px solid #ece5f4;padding:8px 10px calc(8px + var(--safe-bottom));display:grid;grid-template-columns:repeat(4,1fr)}.nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;color:#6f6577;font-size:11.5px;font-weight:750}.nav-icon-wrap{width:43px;height:33px;border-radius:999px;display:grid;place-items:center}.nav-item.active{color:#7b12c7}.nav-item.active .nav-icon-wrap{background:#f0defd}.nav-item svg{width:21px;height:21px}.orders-sheet,.stores-sheet,.catalog-sheet,.help-sheet{position:fixed;inset:0;z-index:120;display:none}.orders-sheet.open,.stores-sheet.open,.catalog-sheet.open,.help-sheet.open{display:block}.sheet-backdrop{position:absolute;inset:0;background:rgba(22,11,35,.42);backdrop-filter:blur(3px)}.sheet-panel{position:absolute;left:0;right:0;bottom:0;background:#fff;border-top-left-radius:26px;border-top-right-radius:26px;box-shadow:0 -18px 38px rgba(30,8,52,.22);padding:12px 15px calc(17px + var(--safe-bottom));max-height:78vh;display:flex;flex-direction:column}.sheet-grab{width:54px;height:5px;border-radius:999px;background:#ddd4ea;margin:2px auto 12px}.sheet-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}.sheet-title{font-size:18px;font-weight:950;color:#2b1a3d}.sheet-sub{font-size:11px;color:#7b7087;margin-top:2px}.sheet-close{width:34px;height:34px;border-radius:999px;background:#f3ecfb;color:#7b12c7;display:grid;place-items:center}.store-list,.order-list{overflow:auto;display:flex;flex-direction:column;gap:9px;padding:5px 0 10px}.store-item{display:grid;grid-template-columns:44px 1fr auto;gap:10px;align-items:center;background:#faf8fd;border:1px solid #efe8f6;border-radius:17px;padding:10px}.store-icon{width:44px;height:44px;border-radius:15px;background:#fff;display:grid;place-items:center;font-size:20px;border:1px solid #eee5f5}.store-name{font-size:13.5px;font-weight:900;color:#2f223d}.store-meta{font-size:11.3px;color:#7d728c;margin-top:3px}.select-store{height:30px;border-radius:999px;background:#7b12c7;color:#fff;padding:0 11px;font-size:11.5px;font-weight:900}.order-item{display:grid;grid-template-columns:46px 1fr auto;gap:10px;align-items:center;background:#faf8fd;border:1px solid #efe8f6;border-radius:16px;padding:8px}.order-thumb{width:46px;height:46px;border-radius:13px;background:#fff;border:1px solid #eee5f5;overflow:hidden;padding:4px}.order-thumb img{width:100%;height:100%;object-fit:contain}.order-name{font-size:13px;font-weight:850;color:#2f223d;line-height:1.18}.order-meta{font-size:11px;color:#7d728c;margin-top:3px}.qty-pill{min-width:30px;height:27px;border-radius:999px;background:#efe5fb;color:#7b12c7;display:grid;place-items:center;font-weight:950;font-size:11px;padding:0 9px}.checkout{height:44px;border-radius:15px;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;font-weight:950;box-shadow:0 10px 22px rgba(126,18,199,.24)}.catalog-panel{max-height:86vh}.catalog-tools{display:flex;gap:7px;overflow-x:auto;padding:3px 0 11px;scrollbar-width:none}.catalog-tools::-webkit-scrollbar{display:none}.catalog-chip{flex:0 0 auto;border-radius:999px;background:#f1e8fb;color:#6d1bb0;border:1px solid #eadcf7;height:31px;padding:0 11px;font-size:11.5px;font-weight:900}.catalog-chip.active{background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border-color:transparent}.catalog-grid{overflow:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:2px 0 10px}.catalog-grid .product-card{min-width:0;max-width:none;width:100%;scroll-snap-align:none}.catalog-grid .product-media{height:88px}.catalog-grid .name{min-height:34px}.catalog-grid .add-btn{height:30px}.help-card{background:linear-gradient(180deg,#fbf8ff,#f7f1fb);border:1px solid #eee4f7;border-radius:18px;padding:13px;display:grid;gap:10px}.help-row{display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:start}.help-icon{width:34px;height:34px;border-radius:12px;background:#fff;display:grid;place-items:center;border:1px solid #ece3f5;font-size:17px}.help-title{font-size:13.5px;font-weight:950;color:#2b1a3d}.help-text{font-size:11px;color:#70657c;line-height:1.25;margin-top:2px}.help-action{margin-top:4px;height:40px;border-radius:14px;background:var(--teal);color:#fff;font-weight:950}.toast-mini{position:fixed;left:50%;bottom:calc(86px + var(--safe-bottom));transform:translateX(-50%) translateY(12px);z-index:200;background:rgba(35,22,49,.95);color:#fff;border-radius:999px;padding:9px 13px;font-size:11px;font-weight:850;opacity:0;pointer-events:none;transition:.2s}.toast-mini.show{opacity:1;transform:translateX(-50%) translateY(0)}@media (min-width:390px){.product-card{min-width:146px;max-width:146px}.cat-card{min-width:62px;max-width:62px}.cat-thumb{width:56px;height:56px}.cat-tag{min-width:62px}.hero-card{height:116px}}
@@ -23193,9 +23150,8 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
     seller.textContent = sellerId || "—";
     user.textContent = username || "—";
 
-    card.classList.remove("pending", "approved", "trial", "blocked");
-
     if(kind === "approved"){
+      card.classList.remove("pending");
       card.classList.add("approved");
       pill.textContent = "Aprobado";
       title.textContent = "Fue aprobado su acceso";
@@ -23203,21 +23159,8 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
       state.textContent = "Aprobado";
       if($("loginSeller")) $("loginSeller").value = sellerId;
       if($("loginUser")) $("loginUser").value = username;
-    } else if(kind === "trial"){
-      card.classList.add("approved", "trial");
-      pill.textContent = "Prueba activa";
-      title.textContent = "Tu prueba de 5 minutos fue activada";
-      text.textContent = "Ya puedes ingresar temporalmente. Verás un contador con el tiempo restante dentro de la app.";
-      state.textContent = "Prueba";
-      if($("loginSeller")) $("loginSeller").value = sellerId;
-      if($("loginUser")) $("loginUser").value = username;
-    } else if(kind === "blocked"){
-      card.classList.add("pending", "blocked");
-      pill.textContent = "Bloqueado";
-      title.textContent = "Tu acceso está bloqueado";
-      text.textContent = "Tu prueba gratuita terminó o tu acceso fue bloqueado. Contacta al vendedor para reactivar tu cuenta.";
-      state.textContent = "Bloqueado";
     } else {
+      card.classList.remove("approved");
       card.classList.add("pending");
       pill.textContent = "En espera";
       title.textContent = "Espera aprobación del vendedor";
@@ -23254,19 +23197,14 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
       const data = snap.data() || {};
       const sellerId = data.sellerId || info?.sellerId || "";
       const username = data.username || info?.username || "";
-      const stateNow = await normalizeUserAccessState(userRef, data);
 
-      if(stateNow === "approved" || stateNow === "trial" || stateNow === "blocked"){
+      if(data.approved === true){
         if(approvalPollTimer) clearInterval(approvalPollTimer);
         approvalPollTimer = null;
         clearPendingRegistration();
-        setApprovalModalState(stateNow, { sellerId, username });
-        if(!silent){
-          if(stateNow === "approved") showToast("Fue aprobado su acceso.");
-          else if(stateNow === "trial") showToast("Tu prueba fue activada.");
-          else showToast("Tu acceso fue bloqueado.");
-        }
-        return stateNow;
+        setApprovalModalState("approved", { sellerId, username });
+        showToast("Fue aprobado su acceso.");
+        return "approved";
       }
 
       setApprovalModalState("pending", { sellerId, username });
@@ -23298,453 +23236,6 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
     }catch(e){}
   }
 
-  function toMillis(value){
-    if(value == null) return 0;
-    if(typeof value === "number") return value;
-    if(value instanceof Date) return value.getTime();
-    if(typeof value?.toMillis === "function") return value.toMillis();
-    if(typeof value?.seconds === "number"){
-      return (value.seconds * 1000) + Math.floor((value.nanoseconds || 0) / 1000000);
-    }
-    const parsed = new Date(value).getTime();
-    return Number.isFinite(parsed) ? parsed : 0;
-  }
-
-  async function normalizeUserAccessState(userRef, data){
-    const rawStatus = String(data?.status || data?.estado || "").trim().toLowerCase();
-
-    const normalizedStatus =
-      rawStatus === "aprobado" ? "approved" :
-      (rawStatus === "bloqueado" ? "blocked" :
-      ((rawStatus === "prueba" || rawStatus === "prueba gratis") ? "trial" : rawStatus));
-
-    if(data?.approved === true && normalizedStatus !== "blocked" && normalizedStatus !== "trial"){
-      return "approved";
-    }
-
-    const status =
-      normalizedStatus ||
-      (data?.blocked === true ? "blocked" :
-      (data?.trial === true ? "trial" : "pending"));
-
-    if(status === "trial"){
-      const trialEndMs = toMillis(data?.trialEnd);
-      if(trialEndMs && Date.now() >= trialEndMs){
-        try{
-          await updateDoc(userRef, {
-            status: "blocked",
-            estado: "Bloqueado",
-            approved: false,
-            blocked: true,
-            trial: false
-          });
-        }catch(e){
-          console.error(e);
-        }
-        return "blocked";
-      }
-    }
-
-    return status;
-  }
-
-  let accessGuardPollTimer = null;
-  let trialTickTimer = null;
-  let trialBlockingNow = false;
-  let accessGuardContactUrl = "";
-  let accessGuardShareText = "";
-
-  function ensureAccessGuardUi(){
-    if(!document.getElementById("accessGuardStyle")){
-      const style = document.createElement("style");
-      style.id = "accessGuardStyle";
-      style.textContent = `
-        #accessGuardOverlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:12px;background:radial-gradient(circle at 12% 40%, rgba(255,175,220,.18), transparent 20%),radial-gradient(circle at 88% 18%, rgba(255,255,255,.10), transparent 14%),linear-gradient(180deg,rgba(74,14,95,.36),rgba(55,12,73,.50));backdrop-filter:blur(10px);z-index:2147483646}
-        #accessGuardOverlay.show{display:flex}
-        #accessGuardOverlay .ag-card{width:min(100%,326px);background:linear-gradient(180deg,#ffffff,#fcf7fd);border-radius:22px;padding:16px 14px 14px;box-shadow:0 16px 40px rgba(60,14,77,.18),0 5px 14px rgba(0,0,0,.09);text-align:center;color:#351046;position:relative;border:1px solid rgba(138,87,165,.10)}
-        #accessGuardOverlay .ag-hero{width:66px;height:66px;margin:0 auto 7px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#f8f0fb,#efe3f4);box-shadow:inset 0 0 0 1px rgba(116,34,132,.06)}
-        #accessGuardOverlay .ag-heroInner{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#f1e4f7,#e8d7ef);box-shadow:inset 0 0 0 1px rgba(116,34,132,.05)}
-        #accessGuardOverlay .ag-shield{width:26px;height:30px;display:block;filter:drop-shadow(0 6px 12px rgba(116,34,132,.18))}
-        #accessGuardOverlay .ag-pill{display:inline-flex;align-items:center;justify-content:center;min-height:26px;padding:0 12px;border-radius:999px;background:#74228410;color:#7b2d98;font-size:10.5px;font-weight:900;letter-spacing:.04em;text-transform:uppercase;margin-bottom:7px}
-        #accessGuardOverlay .ag-title{font-size:clamp(16px,4.6vw,19px);line-height:1.06;font-weight:900;margin:0 0 6px;color:#4e1568}
-        #accessGuardOverlay .ag-text{font-size:11.5px;line-height:1.36;color:#6e6275;margin:0 0 11px}
-        #accessGuardOverlay .ag-box{background:linear-gradient(180deg,#fbf8fc,#f8f1fa);border:1px solid rgba(116,34,132,.10);border-radius:16px;padding:7px 10px 3px;margin-bottom:10px;text-align:left;box-shadow:inset 0 0 0 1px rgba(255,255,255,.65)}
-        #accessGuardOverlay .ag-row{display:grid;grid-template-columns:26px minmax(0,1fr) auto;align-items:center;gap:8px;margin-bottom:5px;padding:5px 0;border-bottom:1px solid rgba(116,34,132,.07);font-size:11.4px}
-        #accessGuardOverlay .ag-row:last-child{border-bottom:none;margin-bottom:0}
-        #accessGuardOverlay .ag-iconWrap{width:20px;height:20px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#7b2d98}
-        #accessGuardOverlay .ag-row svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-        #accessGuardOverlay .ag-row span{color:#7c7083;font-weight:500}
-        #accessGuardOverlay .ag-row strong{color:#4a1a62;word-break:break-word;text-align:right;font-size:12.8px}
-        #accessGuardOverlay .ag-actions{display:grid;gap:10px}
-        #accessGuardOverlay .ag-btn{height:37px;border:none;border-radius:15px;font-size:12.8px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;letter-spacing:.01em}
-        #accessGuardOverlay .ag-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-        #accessGuardOverlay .ag-btn.primary{background:linear-gradient(180deg,#d14cff 0%,#8e22cf 55%,#7015aa 100%);color:#fff;box-shadow:0 10px 18px rgba(136,36,196,.26)}
-        #accessGuardOverlay .ag-btn.secondary{background:linear-gradient(180deg,#fbf7fc,#f4ecf7);color:#7b2d98;border:1.5px solid rgba(123,45,152,.24)}
-        #accessGuardOverlay .ag-btn:disabled{opacity:.55;cursor:default}
-        #trialCountdownBadge{position:fixed;top:max(82px, calc(env(safe-area-inset-top) + 8px));right:12px;left:auto;bottom:auto;display:none;align-items:center;gap:0;padding:8px 12px;border-radius:18px;background:linear-gradient(135deg,rgba(121,32,155,.96),rgba(93,18,132,.97));color:#fff;box-shadow:0 12px 26px rgba(0,0,0,.22);z-index:2147483645;font-weight:800;letter-spacing:.01em;width:min(220px, calc(100vw - 24px));max-width:calc(100vw - 24px);box-sizing:border-box;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
-        #trialCountdownBadge.show{display:flex}
-        #trialCountdownBadge .tt-small{display:block;font-size:10px;line-height:1.05;opacity:.88;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px}
-        #trialCountdownBadge .tt-big{display:block;font-size:14px;line-height:1.08;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-      `;
-      document.head.appendChild(style);
-    }
-
-    if(!document.getElementById("accessGuardOverlay")){
-      const overlay = document.createElement("div");
-      overlay.id = "accessGuardOverlay";
-      overlay.innerHTML = `
-        <div class="ag-card" role="dialog" aria-modal="true" aria-label="Control de acceso">
-          <div class="ag-hero"><div class="ag-heroInner"><svg class="ag-shield" viewBox="0 0 24 28" aria-hidden="true"><defs><linearGradient id="agShieldGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#bf66ff"/><stop offset="60%" stop-color="#8e22cf"/><stop offset="100%" stop-color="#6a16a5"/></linearGradient></defs><path d="M12 1.8 21 5.2v7.2c0 6.3-3.8 10.5-9 13.1-5.2-2.6-9-6.8-9-13.1V5.2L12 1.8Z" fill="url(#agShieldGrad)"/><rect x="8.2" y="11.1" width="7.6" height="5.7" rx="1.5" fill="#fff" opacity=".95"/><path d="M9.6 11.1V9.7a2.4 2.4 0 0 1 4.8 0v1.4" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/><circle cx="12" cy="14" r=".9" fill="#8e22cf"/></svg></div></div>
-          <div class="ag-pill" id="agPill">Estado</div>
-          <h3 class="ag-title" id="agTitle">Control de acceso</h3>
-          <p class="ag-text" id="agText">Tu acceso está restringido.</p>
-          <div class="ag-box">
-            <div class="ag-row"><div class="ag-iconWrap"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M8 9h6"/><path d="M8 13h3.5"/><circle cx="17" cy="12" r="2.2"/></svg></div><span>ID vendedor</span><strong id="agSeller">—</strong></div>
-            <div class="ag-row"><div class="ag-iconWrap"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z"/><path d="M4 20a8 8 0 0 1 16 0"/></svg></div><span>Usuario</span><strong id="agUser">—</strong></div>
-            <div class="ag-row"><div class="ag-iconWrap"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 19 6v5.5c0 4.9-2.9 8.2-7 10.3-4.1-2.1-7-5.4-7-10.3V6Z"/><path d="M12 9.4v4.3"/><circle cx="12" cy="16.7" r=".7" fill="currentColor" stroke="none"/></svg></div><span>Estado</span><strong id="agState">—</strong></div>
-          </div>
-          <div class="ag-actions">
-            <button type="button" class="ag-btn primary" id="agContactBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V5"/><path d="M8 9l4-4 4 4"/><path d="M20 16.5v1.3A2.2 2.2 0 0 1 17.8 20H6.2A2.2 2.2 0 0 1 4 17.8v-1.3"/></svg><span>Compartir solicitud</span></button>
-            <button type="button" class="ag-btn secondary" id="agBackLoginBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 7 5 12l5 5"/><path d="M6 12h13"/></svg><span>Volver al login</span></button>
-          </div>
-        </div>
-      `;
-      document.body.appendChild(overlay);
-      document.getElementById("agBackLoginBtn")?.addEventListener("click", ()=>{
-        overlay.classList.remove("show");
-        go("login");
-      });
-      document.getElementById("agContactBtn")?.addEventListener("click", async ()=>{
-        const shareText = accessGuardShareText || "Ya usé la prueba gratis y quiero adquirir el acceso a la app.";
-        try{
-          if(navigator.share){
-            await navigator.share({
-              title: "Solicitud de acceso",
-              text: shareText
-            });
-            return;
-          }
-          if(navigator.clipboard?.writeText){
-            await navigator.clipboard.writeText(shareText);
-            showToast("Mensaje copiado para compartir.");
-            return;
-          }
-        }catch(e){
-          if(String(e?.name || "").toLowerCase() === "aborterror") return;
-        }
-        try{
-          const area = document.createElement("textarea");
-          area.value = shareText;
-          document.body.appendChild(area);
-          area.select();
-          document.execCommand("copy");
-          area.remove();
-          showToast("Mensaje copiado para compartir.");
-        }catch(err){
-          showToast(shareText);
-        }
-      });
-    }
-
-    if(!document.getElementById("trialCountdownBadge")){
-      const badge = document.createElement("div");
-      badge.id = "trialCountdownBadge";
-      badge.innerHTML = `<div><div class="tt-small">Prueba activa</div><div class="tt-big" id="trialCountdownText">04:59</div></div>`;
-      document.body.appendChild(badge);
-    }
-    initTrialBadgeDrag();
-  }
-
-  async function getSellerContactUrl(sellerId){
-    try{
-      if(!sellerId) return "";
-      const snap = await getDoc(doc(db, "sellers", sellerId));
-      if(!snap.exists()) return "";
-      const data = snap.data() || {};
-      const directLink = data.whatsappLink || data.whatsappUrl || data.contactLink || data.contactUrl || data.whatsApp || data.linkWhatsapp || "";
-      if(directLink) return String(directLink);
-      const rawPhone = data.phone || data.phoneNumber || data.numero || data.contactPhone || data.sellerPhone || data.whatsapp || "";
-      const digits = String(rawPhone || "").replace(/\D+/g, "");
-      if(!digits) return "";
-      return "https://wa.me/" + digits;
-    }catch(e){
-      return "";
-    }
-  }
-
-  async function showAccessGuard(kind, info){
-    ensureAccessGuardUi();
-    const overlay = document.getElementById("accessGuardOverlay");
-    const pill = document.getElementById("agPill");
-    const title = document.getElementById("agTitle");
-    const text = document.getElementById("agText");
-    const seller = document.getElementById("agSeller");
-    const user = document.getElementById("agUser");
-    const state = document.getElementById("agState");
-    const contactBtn = document.getElementById("agContactBtn");
-    const sellerId = cleanId(info?.sellerId || "");
-    const username = cleanUser(info?.username || "");
-
-    seller.textContent = sellerId || "—";
-    user.textContent = username || "—";
-    accessGuardContactUrl = "";
-    accessGuardShareText = "";
-    contactBtn.disabled = false;
-
-    if(kind === "blocked"){
-      pill.textContent = "Bloqueado";
-      title.textContent = "Tu prueba gratuita terminó";
-      text.textContent = "Para seguir usando la app, comparte tu solicitud con el vendedor.";
-      state.textContent = "Bloqueado";
-      accessGuardShareText = `Hola, ya usé la prueba gratis y quiero adquirir el acceso a la app. Usuario: ${username || "Sin usuario"}. ID vendedor: ${sellerId || "Sin vendedor"}.`;
-    } else {
-      pill.textContent = "Pendiente";
-      title.textContent = "Tu cuenta está pendiente de aprobación";
-      text.textContent = "Comparte tu solicitud con el vendedor para activar tu acceso.";
-      state.textContent = "Pendiente";
-      accessGuardShareText = `Hola, mi cuenta está pendiente de aprobación. Usuario: ${username || "Sin usuario"}. ID vendedor: ${sellerId || "Sin vendedor"}.`;
-    }
-
-    overlay.classList.add("show");
-
-    const url = await getSellerContactUrl(sellerId);
-    accessGuardContactUrl = url;
-  }
-
-  function hideAccessGuard(){
-    ensureAccessGuardUi();
-    document.getElementById("accessGuardOverlay")?.classList.remove("show");
-  }
-
-  function formatTrialMs(ms){
-    const total = Math.max(0, Math.ceil(ms / 1000));
-    const mm = String(Math.floor(total / 60)).padStart(2, "0");
-    const ss = String(total % 60).padStart(2, "0");
-    return mm + ":" + ss;
-  }
-
-  function initTrialBadgeDrag(){
-    const badge = document.getElementById("trialCountdownBadge");
-    if(!badge || badge.__dragReady) return;
-    badge.__dragReady = true;
-
-    const storageKey = "trialBadgePosClean";
-    let dragging = false;
-    let startX = 0;
-    let startY = 0;
-    let baseLeft = 0;
-    let baseTop = 0;
-
-    function clamp(left, top){
-      const rect = badge.getBoundingClientRect();
-      const maxLeft = Math.max(8, window.innerWidth - rect.width - 8);
-      const maxTop = Math.max(8, window.innerHeight - rect.height - 8);
-      return {
-        left: Math.min(Math.max(8, left), maxLeft),
-        top: Math.min(Math.max(8, top), maxTop)
-      };
-    }
-
-    function save(left, top){
-      try{ localStorage.setItem(storageKey, JSON.stringify({ left, top })); }catch(e){}
-    }
-
-    function restore(){
-      try{
-        const raw = localStorage.getItem(storageKey);
-        if(!raw) return;
-        const pos = JSON.parse(raw);
-        if(typeof pos?.left !== "number" || typeof pos?.top !== "number") return;
-        const next = clamp(pos.left, pos.top);
-        badge.style.left = next.left + "px";
-        badge.style.top = next.top + "px";
-        badge.style.right = "auto";
-      }catch(e){}
-    }
-
-    badge.addEventListener("pointerdown", function(ev){
-      if(ev.button !== undefined && ev.button !== 0) return;
-      const rect = badge.getBoundingClientRect();
-      dragging = true;
-      startX = ev.clientX;
-      startY = ev.clientY;
-      baseLeft = rect.left;
-      baseTop = rect.top;
-      badge.style.left = rect.left + "px";
-      badge.style.top = rect.top + "px";
-      badge.style.right = "auto";
-      badge.style.cursor = "grabbing";
-      try{ badge.setPointerCapture(ev.pointerId); }catch(e){}
-      ev.preventDefault();
-    }, { passive:false });
-
-    badge.addEventListener("pointermove", function(ev){
-      if(!dragging) return;
-      const dx = ev.clientX - startX;
-      const dy = ev.clientY - startY;
-      const next = clamp(baseLeft + dx, baseTop + dy);
-      badge.style.left = next.left + "px";
-      badge.style.top = next.top + "px";
-      badge.style.right = "auto";
-      ev.preventDefault();
-    }, { passive:false });
-
-    function end(ev){
-      if(!dragging) return;
-      dragging = false;
-      badge.style.cursor = "grab";
-      const rect = badge.getBoundingClientRect();
-      const next = clamp(rect.left, rect.top);
-      badge.style.left = next.left + "px";
-      badge.style.top = next.top + "px";
-      badge.style.right = "auto";
-      save(next.left, next.top);
-      try{ badge.releasePointerCapture(ev.pointerId); }catch(e){}
-    }
-
-    badge.addEventListener("pointerup", end, { passive:true });
-    badge.addEventListener("pointercancel", end, { passive:true });
-    window.addEventListener("resize", function(){
-      const rect = badge.getBoundingClientRect();
-      const next = clamp(rect.left, rect.top);
-      badge.style.left = next.left + "px";
-      badge.style.top = next.top + "px";
-      badge.style.right = "auto";
-    }, { passive:true });
-
-    restore();
-  }
-
-  function showTrialBadge(ms){
-    ensureAccessGuardUi();
-    const badge = document.getElementById("trialCountdownBadge");
-    const text = document.getElementById("trialCountdownText");
-    text.textContent = "Prueba activa: " + formatTrialMs(ms);
-    badge.classList.add("show");
-  }
-
-  function hideTrialBadge(){
-    document.getElementById("trialCountdownBadge")?.classList.remove("show");
-  }
-
-  function stopTrialCountdown(){
-    if(trialTickTimer) clearInterval(trialTickTimer);
-    trialTickTimer = null;
-    hideTrialBadge();
-  }
-
-  async function forceBlockExpiredTrial(userRef, info){
-    if(trialBlockingNow) return;
-    trialBlockingNow = true;
-    try{
-      await updateDoc(userRef, {
-        status: "blocked",
-        approved: false
-      });
-    }catch(e){
-      console.error(e);
-    }
-    clearSession();
-    stopTrialCountdown();
-    window.__showLoginFromAuth?.();
-    await showAccessGuard("blocked", info);
-    showToast("Tu prueba gratuita terminó.");
-    setTimeout(()=>{ trialBlockingNow = false; }, 900);
-  }
-
-  function startTrialCountdown(userRef, data, ses){
-    stopTrialCountdown();
-    const trialEndMs = toMillis(data?.trialEnd);
-    const info = {
-      sellerId: data?.sellerId || ses?.sellerId || "",
-      username: data?.username || ses?.username || ""
-    };
-
-    if(!trialEndMs){
-      showTrialBadge(0);
-      forceBlockExpiredTrial(userRef, info);
-      return;
-    }
-
-    const tick = ()=>{
-      const left = trialEndMs - Date.now();
-      if(left <= 0){
-        showTrialBadge(0);
-        forceBlockExpiredTrial(userRef, info);
-        return;
-      }
-      showTrialBadge(left);
-    };
-
-    tick();
-    trialTickTimer = setInterval(tick, 1000);
-  }
-
-  function stopAccessGuardMonitor(){
-    if(accessGuardPollTimer) clearInterval(accessGuardPollTimer);
-    accessGuardPollTimer = null;
-    stopTrialCountdown();
-  }
-
-  async function refreshSessionAccessState(){
-    const ses = getSession();
-    if(!(ses?.ok === true) || !ses?.uid){
-      stopTrialCountdown();
-      return "none";
-    }
-
-    const ref = doc(db, "users", ses.uid);
-    const snap = await getDoc(ref);
-    if(!snap.exists()) throw new Error("missing-user");
-
-    const data = snap.data() || {};
-    const statusNow = await normalizeUserAccessState(ref, data);
-    const deviceId = getDeviceId();
-
-    if((data.sellerId || "") !== ses.sellerId) throw new Error("seller-mismatch");
-    if((data.username || "") !== ses.username) throw new Error("username-mismatch");
-
-    if(statusNow !== "pending" && statusNow !== "blocked"){
-      if(data.deviceId && data.deviceId !== deviceId) throw new Error("device-mismatch");
-      if(!data.deviceId || data.deviceId === "null"){
-        await updateDoc(ref, { deviceId });
-      }
-    }
-
-    if(statusNow === "approved"){
-      hideAccessGuard();
-      stopTrialCountdown();
-      return "approved";
-    }
-
-    if(statusNow === "trial"){
-      hideAccessGuard();
-      startTrialCountdown(ref, data, ses);
-      return "trial";
-    }
-
-    clearSession();
-    stopTrialCountdown();
-    window.__showLoginFromAuth?.();
-    await showAccessGuard(statusNow === "blocked" ? "blocked" : "pending", {
-      sellerId: data.sellerId || ses.sellerId || "",
-      username: data.username || ses.username || ""
-    });
-    return statusNow;
-  }
-
-  function startAccessGuardMonitor(){
-    stopAccessGuardMonitor();
-    refreshSessionAccessState().catch(err=>{
-      if(!(isNetworkLikeError(err) || navigator.onLine === false)) console.error(err);
-    });
-    accessGuardPollTimer = setInterval(()=>{
-      refreshSessionAccessState().catch(err=>{
-        if(!(isNetworkLikeError(err) || navigator.onLine === false)) console.error(err);
-      });
-    }, 3500);
-  }
-
 
   $("btnCreate").addEventListener("click", async ()=>{
     const id = cleanId($("regSeller").value);
@@ -23762,16 +23253,9 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
       const existing = await findUserDoc(id, u);
       if(existing){
         const data = existing.data() || {};
-        const stateNow = await normalizeUserAccessState(existing.ref, data);
-        if(stateNow === "approved"){
+        if(data.approved === true){
           setApprovalModalState("approved", { sellerId:id, username:u });
           showToast("Fue aprobado su acceso.");
-        } else if(stateNow === "trial"){
-          setApprovalModalState("trial", { sellerId:id, username:u });
-          showToast("Tu prueba está activa.");
-        } else if(stateNow === "blocked"){
-          setApprovalModalState("blocked", { sellerId:id, username:u });
-          showToast("Tu acceso está bloqueado.");
         } else {
           watchApproval(existing.ref, { sellerId:id, username:u });
           showToast("Cuenta en espera de aprobación.");
@@ -23783,10 +23267,7 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
         sellerId: id,
         username: u,
         password: pw,
-        status: "pending",
         approved: false,
-        trialStart: null,
-        trialEnd: null,
         deviceId: null,
         createdAt: serverTimestamp()
       });
@@ -23812,27 +23293,15 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
 
     try {
       const st = await getSellerStatus(id);
-      if(!st.exists) return showToast("Vendedor no existe");
-      if(st.active !== true) return showToast("Vendedor inactivo");
+    if(!st.exists) return showToast("Vendedor no existe");
+    if(st.active !== true) return showToast("Vendedor inactivo");
 
       const userDoc = await findUserDoc(id, u);
       if(!userDoc) return showToast("Usuario no existe");
 
-      const data = userDoc.data() || {};
+      const data = userDoc.data();
       if((data.password||"") !== pw) return showToast("Contraseña incorrecta");
-
-      const stateNow = await normalizeUserAccessState(userDoc.ref, data);
-      if(stateNow === "pending"){
-        await showAccessGuard("pending", { sellerId:id, username:u });
-        return showToast("Tu cuenta está pendiente de aprobación.");
-      }
-      if(stateNow === "blocked"){
-        await showAccessGuard("blocked", { sellerId:id, username:u });
-        return showToast("Tu acceso está bloqueado.");
-      }
-      if(stateNow !== "approved" && stateNow !== "trial"){
-        return showToast("No tienes acceso habilitado.");
-      }
+      if(data.approved !== true) return showToast("Cuenta pendiente de aprobación");
 
       const deviceId = getDeviceId();
       if(data.deviceId && data.deviceId !== deviceId) return showToast("Cuenta activa en otro dispositivo");
@@ -23841,17 +23310,9 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
         await updateDoc(userDoc.ref, { deviceId });
       }
 
-      saveSession({ ok:true, sellerId:id, username:u, deviceId, uid: userDoc.id, status: stateNow, ts: Date.now() });
-      hideAccessGuard();
-      if(stateNow === "trial"){
-        startTrialCountdown(userDoc.ref, data, { sellerId:id, username:u, uid:userDoc.id });
-        showToast("Prueba activa.");
-      } else {
-        stopTrialCountdown();
-        showToast("✅ Acceso correcto.");
-      }
+      saveSession({ ok:true, sellerId:id, username:u, deviceId, uid: userDoc.id, ts: Date.now() });
+      showToast("✅ Acceso correcto.");
       window.__showAppFromAuth?.();
-      startAccessGuardMonitor();
     } catch(e){
       console.error(e);
       showToast("Error al iniciar sesión.");
@@ -23885,8 +23346,6 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
   async function validateSessionAndEnter(forceOnlineCheck = false){
     const ses = getSession();
     if(!(ses?.ok === true) || !ses?.uid) {
-      stopAccessGuardMonitor();
-      hideAccessGuard();
       window.__showLoginFromAuth?.();
       return;
     }
@@ -23894,24 +23353,30 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
     window.__showAppFromAuth?.();
 
     if(__sessionValidationRunning) return;
-    if(!forceOnlineCheck && navigator.onLine === false){
-      if(String(ses.status || "").toLowerCase() === "trial") startAccessGuardMonitor();
-      return;
-    }
+    if(!forceOnlineCheck && navigator.onLine === false) return;
 
     __sessionValidationRunning = true;
 
     try{
-      const stateNow = await refreshSessionAccessState();
-      if(stateNow === "approved" || stateNow === "trial"){
-        startAccessGuardMonitor();
+      const ref = doc(db, "users", ses.uid);
+      const snap = await getDoc(ref);
+      if(!snap.exists()) throw new Error("missing-user");
+      const d = snap.data()||{};
+      const deviceId = getDeviceId();
+
+      if((d.sellerId||"") !== ses.sellerId) throw new Error("seller-mismatch");
+      if((d.username||"") !== ses.username) throw new Error("username-mismatch");
+      if(d.approved !== true) throw new Error("not-approved");
+      if(d.deviceId && d.deviceId !== deviceId) throw new Error("device-mismatch");
+
+      if(!d.deviceId || d.deviceId === "null"){
+        await updateDoc(ref, { deviceId });
       }
     }catch(e){
       console.error(e);
       if(isNetworkLikeError(e) || navigator.onLine === false){
         return;
       }
-      stopAccessGuardMonitor();
       clearSession();
       window.__showLoginFromAuth?.();
     } finally {
@@ -23928,9 +23393,6 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
     }catch(e){}
   }, 3000);
   window.addEventListener("online", ()=>{ setTimeout(()=>validateSessionAndEnter(true), 600); });
-  document.addEventListener("visibilitychange", ()=>{
-    if(document.visibilityState === "visible") setTimeout(()=>validateSessionAndEnter(true), 250);
-  });
 
   document.addEventListener('gesturestart', (e)=>e.preventDefault(), {passive:false});
 </script>
@@ -26763,14 +26225,6 @@ async function findCurrentUser(){
     bridgeUser = localUser;
     return localUser;
   }
-
-  const fallbackUser = getFallbackBridgeUser();
-  if(fallbackUser){
-    bridgeUser = fallbackUser;
-    persistLegacyUser(fallbackUser);
-    return fallbackUser;
-  }
-
   return null;
 }
 
@@ -26791,69 +26245,6 @@ function getLocalBridgeUser(){
       id: phone,
       phone,
       name: String(localStorage.getItem("yapeton_nombre") || "").trim() || "Sin nombre",
-      saldo: safeMoney(localStorage.getItem("yapeton_saldo") || 0),
-      yapeos: Number(localStorage.getItem("yapeton_yapeos") || 0) || 0,
-      loginUid: session && session.uid ? session.uid : ""
-    };
-  } catch (e) {
-    return null;
-  }
-}
-
-
-const TEMP_USER_PHONE_KEY = "yapeton_temp_user_phone";
-
-function getSessionDisplayName(session){
-  try {
-    const raw = session && (
-      session.name ||
-      session.nombre ||
-      session.displayName ||
-      session.username ||
-      session.userName ||
-      (session.email ? String(session.email).split("@")[0] : "")
-    );
-    return String(raw || "").replace(/\s+/g, " ").trim();
-  } catch (e) {
-    return "";
-  }
-}
-
-function hashTo8Digits(seed){
-  const raw = String(seed || "guest");
-  let hash = 0;
-  for(let i = 0; i < raw.length; i++){
-    hash = ((hash << 5) - hash + raw.charCodeAt(i)) >>> 0;
-  }
-  return String(hash % 100000000).padStart(8, "0");
-}
-
-function getTemporaryBridgePhone(){
-  try {
-    const stored = clean9(localStorage.getItem(TEMP_USER_PHONE_KEY) || "");
-    if(stored.length === 9) return stored;
-  } catch (e) {}
-
-  const session = readSession();
-  const seed = (session && (session.uid || session.email || session.phone || session.name))
-    || ("guest-" + Date.now() + "-" + Math.random());
-  const generated = "9" + hashTo8Digits(seed);
-
-  try { localStorage.setItem(TEMP_USER_PHONE_KEY, generated); } catch (e) {}
-  return generated;
-}
-
-function getFallbackBridgeUser(){
-  try {
-    const session = readSession();
-    const explicitPhone = clean9(localStorage.getItem(USER_PHONE_KEY) || "");
-    const phone = explicitPhone.length === 9 ? explicitPhone : getTemporaryBridgePhone();
-    if(phone.length !== 9) return null;
-
-    return {
-      id: phone,
-      phone,
-      name: String(localStorage.getItem("yapeton_nombre") || "").trim() || getSessionDisplayName(session) || "Usuario",
       saldo: safeMoney(localStorage.getItem("yapeton_saldo") || 0),
       yapeos: Number(localStorage.getItem("yapeton_yapeos") || 0) || 0,
       loginUid: session && session.uid ? session.uid : ""
@@ -28094,13 +27485,6 @@ async function handleExternalBankTransfer(homeWin, homeDoc, sender, destino){
   };
 
   if(!sender || !sender.phone){
-    sender = getFallbackBridgeUser();
-  }
-  if(sender && sender.phone){
-    bridgeUser = sender;
-    persistLegacyUser(sender);
-  }
-  if(!sender || !sender.phone){
     return syncLocalOnly();
   }
 
@@ -28194,14 +27578,7 @@ async function handleTransfer(homeWin, homeDoc){
   const destino = String(homeWin.__currentDestino || "Yape").trim();
   if(destino !== "Yape") return handleExternalBankTransfer(homeWin, homeDoc, sender, destino);
   if(!sender && senderFindError) throw senderFindError;
-  if(!sender || !sender.phone){
-    sender = getFallbackBridgeUser();
-  }
-  if(sender && sender.phone){
-    bridgeUser = sender;
-    persistLegacyUser(sender);
-  }
-  if(!sender || !sender.phone) throw new Error("No se pudo identificar al usuario actual.");
+  if(!sender || !sender.phone) throw new Error("Primero registra tu número en Datos de mi cuenta.");
 
   let receiverPhone = clean9(homeWin.__bridgeRecipientPhone || "");
   if(receiverPhone.length !== 9){
@@ -28272,16 +27649,9 @@ async function handleTransfer(homeWin, homeDoc){
       getDoc(receiverRef)
     ]);
 
-    const senderData = senderSnap.exists()
-      ? normalizeUserSnap(senderSnap)
-      : {
-          id: sender.phone,
-          phone: clean9(sender.phone),
-          name: String((sender && sender.name) || localStorage.getItem("yapeton_nombre") || "").trim() || "Usuario",
-          saldo: safeMoney((sender && sender.saldo) ?? (localStorage.getItem("yapeton_saldo") ?? 0)),
-          yapeos: Number((sender && sender.yapeos) ?? (localStorage.getItem("yapeton_yapeos") ?? 0)) || 0,
-          loginUid: session && session.uid ? session.uid : String(sender && sender.loginUid || "").trim()
-        };
+    if(!senderSnap.exists()) throw new Error("Tu usuario no existe en la colección users.");
+
+    const senderData = normalizeUserSnap(senderSnap);
     const receiverExists = receiverSnap.exists();
     const receiverData = receiverExists ? normalizeUserSnap(receiverSnap) : null;
 
@@ -37448,7 +36818,7 @@ try{
       #qrRegView .qrReg-upMain{font-size:14px!important;font-weight:800!important;color:#6b2394!important;margin:0 0 1px!important;}
       #qrRegView .qrReg-upSub{font-size:11px!important;color:#83748e!important;line-height:1.25!important;}
       #qrRegView .qr-upload-reading:before{content:"";position:absolute;left:0;bottom:0;height:3px;width:40%;border-radius:999px;background:linear-gradient(90deg,#7b24d0,#19c4b3);animation:qrLoadBar .9s ease-in-out infinite;}
-      #qrRegView .qr-upload-reading:after{content:"";position:absolute;right:12px;top:50%;width:16px;height:16px;margin-top:-9px;border-radius:50%;border:3px solid rgba(107,35,148,.18);border-top-color:#6b2394;animation:qrSpin .75s linear infinite;}
+      #qrRegView .qr-upload-reading:after{content:"";position:absolute;right:12px;top:50%;width:18px;height:18px;margin-top:-9px;border-radius:50%;border:3px solid rgba(107,35,148,.18);border-top-color:#6b2394;animation:qrSpin .75s linear infinite;}
       #qrRegView .qr-upload-ok{animation:qrOk .38s ease;}
       @keyframes qrSpin{to{transform:rotate(360deg)}}
       @keyframes qrLoadBar{0%{transform:translateX(-100%)}50%{transform:translateX(80%)}100%{transform:translateX(260%)}}
@@ -37710,11 +37080,11 @@ try{
       #qrRegView #__qr_v3_inner{display:block!important;}
       #qrRegView .qrV3Upload{min-height:56px;padding:9px 10px;border-radius:16px;display:flex;align-items:center;gap:9px;background:linear-gradient(180deg,#f8f3fb,#fff);border:1.3px dashed rgba(127,55,172,.26);position:relative;overflow:hidden;box-sizing:border-box;}
       #qrRegView .qrV3UploadIcon{width:35px;height:35px;min-width:35px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,#7b24d0,#5f18e8);color:#fff;box-shadow:0 8px 16px rgba(95,24,232,.16);}
-      #qrRegView .qrV3UploadIcon svg{width:15px;height:15px;display:block;}
+      #qrRegView .qrV3UploadIcon svg{width:19px;height:19px;display:block;}
       #qrRegView .qrV3UploadMain{font-size:13.5px;font-weight:850;color:#6b2394;line-height:1.1;}
       #qrRegView .qrV3UploadSub{margin-top:2px;font-size:11px;color:#83748e;line-height:1.2;}
       #qrRegView .qrV3Upload.reading:before{content:"";position:absolute;left:0;bottom:0;height:3px;width:35%;border-radius:999px;background:linear-gradient(90deg,#7b24d0,#19c4b3);animation:qrV3Load .85s ease-in-out infinite;}
-      #qrRegView .qrV3Upload.reading:after{content:"";position:absolute;right:10px;top:50%;width:15px;height:15px;margin-top:-8.5px;border-radius:50%;border:3px solid rgba(107,35,148,.18);border-top-color:#6b2394;animation:qrV3Spin .72s linear infinite;}
+      #qrRegView .qrV3Upload.reading:after{content:"";position:absolute;right:10px;top:50%;width:17px;height:17px;margin-top:-8.5px;border-radius:50%;border:3px solid rgba(107,35,148,.18);border-top-color:#6b2394;animation:qrV3Spin .72s linear infinite;}
       #qrRegView .qrV3Upload.ok{animation:qrV3Ok .34s ease;}
       @keyframes qrV3Spin{to{transform:rotate(360deg)}}
       @keyframes qrV3Load{0%{transform:translateX(-120%)}50%{transform:translateX(95%)}100%{transform:translateX(310%)}}
@@ -45493,177 +44863,3 @@ body.yosi-fast-baucher-switch #baucher-embed-frame{
 })();
 </script>
 <!-- /FIX: movimientos solo abre con tap real -->
-
-
-<!-- FIX DEFINITIVO: Datos de mi cuenta - flecha atrás con un solo toque aunque el teclado/campo esté activo -->
-<script id="yosi-datos-back-one-tap-definitivo">
-(function(){
-  if(window.__yosiDatosBackOneTapDefinitivo) return;
-  window.__yosiDatosBackOneTapDefinitivo = true;
-
-  function safe(fn, fallback){ try{ return fn(); }catch(e){ return fallback; } }
-  function ready(doc){ return !!(doc && (doc.body || doc.documentElement)); }
-  function byId(doc, id){ return doc && doc.getElementById ? doc.getElementById(id) : null; }
-  function point(ev){
-    var t = (ev && ev.touches && ev.touches[0]) || (ev && ev.changedTouches && ev.changedTouches[0]) || ev || {};
-    return { x: Number(t.clientX || 0), y: Number(t.clientY || 0) };
-  }
-  function stop(ev){
-    if(!ev) return;
-    safe(function(){ ev.preventDefault(); });
-    safe(function(){ ev.stopPropagation(); });
-    safe(function(){ if(ev.stopImmediatePropagation) ev.stopImmediatePropagation(); });
-  }
-  function visible(win, el){
-    if(!win || !el) return false;
-    var cs = safe(function(){ return win.getComputedStyle(el); }, null);
-    if(cs && (cs.display === 'none' || cs.visibility === 'hidden' || cs.opacity === '0')) return false;
-    var r = safe(function(){ return el.getBoundingClientRect(); }, null);
-    return !r || (r.width > 1 && r.height > 1);
-  }
-  function closeDatos(win, doc){
-    if(!ready(doc)) return false;
-    var datos = byId(doc, 'datosView');
-    if(!datos) return false;
-
-    safe(function(){
-      var a = doc.activeElement;
-      if(a && typeof a.blur === 'function') a.blur();
-    });
-    safe(function(){
-      var sel = win.getSelection && win.getSelection();
-      if(sel && sel.removeAllRanges) sel.removeAllRanges();
-    });
-
-    safe(function(){ datos.style.display = 'none'; });
-    safe(function(){ datos.classList.remove('active','show','open'); });
-
-    var home = byId(doc, 'homeView');
-    if(home){
-      safe(function(){ home.style.display = 'block'; });
-      safe(function(){ home.classList.add('active'); });
-    }
-
-    var opciones = byId(doc, 'opcionesScreen');
-    if(opciones){
-      safe(function(){ opciones.classList.remove('active','closing','show','open','yosi-force-active','yosi-options-enter','yosi-fluid-enter','yosi-fluid-show','yosi-prewarm'); });
-      safe(function(){ opciones.style.pointerEvents = ''; opciones.style.opacity = ''; opciones.style.visibility = ''; opciones.style.transform = ''; });
-    }
-
-    var perfil = byId(doc, 'perfilScreen');
-    if(perfil){
-      safe(function(){ perfil.classList.add('active'); });
-      safe(function(){ perfil.style.display = 'block'; perfil.style.opacity = ''; perfil.style.pointerEvents = ''; perfil.style.transform = ''; });
-    }
-
-    safe(function(){ doc.body.classList.remove('yosi-opciones-activa'); });
-    safe(function(){ win.scrollTo(0,0); });
-    return true;
-  }
-  function inHotArea(win, doc, ev){
-    if(!ready(doc)) return false;
-    var datos = byId(doc, 'datosView');
-    if(!visible(win, datos)) return false;
-
-    var target = ev && ev.target;
-    if(target && target.closest && target.closest('#backFromDatos,#yosiDatosBackHotArea,[data-yosi-datos-back="1"]')) return true;
-
-    var p = point(ev);
-    var btn = byId(doc, 'backFromDatos');
-    if(btn){
-      var r = safe(function(){ return btn.getBoundingClientRect(); }, null);
-      if(r && p.x >= r.left - 38 && p.x <= r.right + 58 && p.y >= r.top - 38 && p.y <= r.bottom + 42) return true;
-    }
-
-    var dr = safe(function(){ return datos.getBoundingClientRect(); }, null);
-    if(dr && p.x >= dr.left && p.x <= dr.left + 112 && p.y >= dr.top && p.y <= dr.top + 126) return true;
-    return false;
-  }
-  function addStyle(doc){
-    if(!ready(doc) || byId(doc, 'yosiDatosBackOneTapStyle')) return;
-    var st = doc.createElement('style');
-    st.id = 'yosiDatosBackOneTapStyle';
-    st.textContent = [
-      '#datosView{position:relative!important;}',
-      '#datosView #backFromDatos{position:relative!important;z-index:2147483647!important;pointer-events:auto!important;touch-action:manipulation!important;-webkit-tap-highlight-color:transparent!important;cursor:pointer!important;}',
-      '#datosView #yosiDatosBackHotArea{position:absolute!important;left:0!important;top:0!important;width:112px!important;height:126px!important;z-index:2147483646!important;background:transparent!important;border:0!important;margin:0!important;padding:0!important;display:block!important;pointer-events:auto!important;touch-action:manipulation!important;-webkit-tap-highlight-color:transparent!important;}',
-      '#datosView .d-header{position:relative!important;z-index:2147483645!important;}'
-    ].join('\n');
-    (doc.head || doc.documentElement).appendChild(st);
-  }
-  function bindTarget(win, doc, el){
-    if(!el || el.__yosiDatosBackOneTapBound) return;
-    el.__yosiDatosBackOneTapBound = true;
-    safe(function(){ el.setAttribute('data-yosi-datos-back','1'); el.setAttribute('role','button'); el.setAttribute('aria-label','Volver'); });
-    var handler = function(ev){ stop(ev); closeDatos(win, doc); return false; };
-    safe(function(){ el.onclick = handler; });
-    ['touchstart','pointerdown','mousedown','touchend','pointerup','mouseup','click'].forEach(function(type){
-      safe(function(){ el.addEventListener(type, handler, {capture:true, passive:false}); });
-      safe(function(){ el.addEventListener(type, handler, true); });
-    });
-  }
-  function ensureHotArea(win, doc){
-    var datos = byId(doc, 'datosView');
-    if(!datos) return;
-    var hot = byId(doc, 'yosiDatosBackHotArea');
-    if(!hot){
-      hot = doc.createElement('button');
-      hot.id = 'yosiDatosBackHotArea';
-      hot.type = 'button';
-      hot.setAttribute('aria-label','Volver');
-      hot.setAttribute('data-yosi-datos-back','1');
-      try{ datos.insertBefore(hot, datos.firstChild); }catch(e){ datos.appendChild(hot); }
-    }
-    bindTarget(win, doc, hot);
-  }
-  function installIn(win, doc){
-    if(!win || !ready(doc)) return false;
-    addStyle(doc);
-    bindTarget(win, doc, byId(doc, 'backFromDatos'));
-    ensureHotArea(win, doc);
-
-    if(!doc.__yosiDatosBackOneTapGlobalBound){
-      doc.__yosiDatosBackOneTapGlobalBound = true;
-      var last = 0;
-      var handler = function(ev){
-        if(!inHotArea(win, doc, ev)) return;
-        var now = Date.now();
-        stop(ev);
-        if(now - last < 180) return false;
-        last = now;
-        closeDatos(win, doc);
-        return false;
-      };
-      ['touchstart','pointerdown','mousedown','touchend','pointerup','mouseup','click'].forEach(function(type){
-        safe(function(){ doc.addEventListener(type, handler, {capture:true, passive:false}); });
-        safe(function(){ win.addEventListener(type, handler, {capture:true, passive:false}); });
-      });
-      safe(function(){
-        new win.MutationObserver(function(){
-          setTimeout(function(){ installIn(win, doc); }, 0);
-        }).observe(doc.documentElement || doc.body, {childList:true, subtree:true, attributes:true, attributeFilter:['style','class']});
-      });
-    }
-    return true;
-  }
-  function scan(win, depth){
-    if(!win || depth > 6) return;
-    var doc = safe(function(){ return win.document; }, null);
-    if(!ready(doc)) return;
-    installIn(win, doc);
-    var frames = safe(function(){ return doc.querySelectorAll('iframe'); }, []);
-    for(var i=0; i<frames.length; i++){
-      scan(safe(function(){ return frames[i].contentWindow; }, null), depth + 1);
-    }
-  }
-  function run(){ scan(window, 0); }
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, {once:true}); else run();
-  window.addEventListener('load', function(){ [0,40,120,250,600,1000,1800,3000,5000].forEach(function(ms){ setTimeout(run, ms); }); }, {once:true});
-  [0,60,160,360,700,1200,2200,4200,7000].forEach(function(ms){ setTimeout(run, ms); });
-  try{
-    if(window.__yosiDatosBackOneTapTimer) clearInterval(window.__yosiDatosBackOneTapTimer);
-    window.__yosiDatosBackOneTapTimer = setInterval(run, 600);
-  }catch(e){}
-})();
-</script>
-<!-- /FIX DEFINITIVO: Datos de mi cuenta - flecha atrás con un solo toque -->
