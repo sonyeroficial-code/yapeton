@@ -22782,6 +22782,93 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
 })();
 </script>
 
+
+<!-- ===== FIX FINAL VOUCHER SOLO iPHONE / REVERT ANDROID ===== -->
+<script id="ios-voucher-safearea-v7-final">
+(function(){
+  function isIOS(){
+    try{
+      var ua = navigator.userAgent || '';
+      var iDevice = /iPhone|iPad|iPod/i.test(ua);
+      var iPadOS = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+      return iDevice || iPadOS;
+    }catch(e){ return false; }
+  }
+  function getDoc(frame){
+    try{ return frame && (frame.contentDocument || (frame.contentWindow && frame.contentWindow.document)) || null; }catch(e){ return null; }
+  }
+  function apply(){
+    try{
+      var homeFrame = document.getElementById('homeFrame');
+      var homeDoc = getDoc(homeFrame);
+      if(!homeDoc) return;
+      var voucherFrame = homeDoc.getElementById('baucher-embed-frame');
+      var voucherDoc = getDoc(voucherFrame);
+      if(!voucherDoc || !voucherDoc.head) return;
+
+      var oldV6 = voucherDoc.getElementById('ios-voucher-safearea-style-v6');
+      if(oldV6) oldV6.remove();
+
+      var st = voucherDoc.getElementById('ios-voucher-safearea-style-v7');
+      if(!isIOS()){
+        if(st) st.remove();
+        return;
+      }
+
+      if(!st){
+        st = voucherDoc.createElement('style');
+        st.id = 'ios-voucher-safearea-style-v7';
+        voucherDoc.head.appendChild(st);
+      }
+      st.textContent = `
+        :root{
+          --v-safe-top: env(safe-area-inset-top, 0px);
+          --v-safe-right: env(safe-area-inset-right, 0px);
+          --v-safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+        html,body{
+          min-height:100% !important;
+          height:100% !important;
+          background:#742284 !important;
+        }
+        body{
+          padding-top:0 !important;
+          padding-bottom:0 !important;
+          overflow:auto !important;
+          -webkit-overflow-scrolling:touch !important;
+          box-sizing:border-box !important;
+        }
+        app-root, app-yapeo, .father, .father[_ngcontent-ng-c755697887]{
+          display:block !important;
+          min-height:100dvh !important;
+        }
+        .father, .father[_ngcontent-ng-c755697887]{
+          padding-top:max(var(--v-safe-top), 8px) !important;
+          padding-bottom:calc(var(--v-safe-bottom) + 8px) !important;
+          box-sizing:border-box !important;
+        }
+        .close-btn-yape{
+          top:calc(var(--v-safe-top) + 10px) !important;
+          right:calc(var(--v-safe-right) + 12px) !important;
+          width:46px !important;
+          height:46px !important;
+        }
+        .paraServicios{padding-bottom:6px !important;}
+      `;
+    }catch(e){}
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply, {once:true});
+  else apply();
+  window.addEventListener('load', apply, {once:true});
+  window.addEventListener('resize', apply, {passive:true});
+  window.addEventListener('orientationchange', apply, {passive:true});
+  setTimeout(apply, 250);
+  setTimeout(apply, 900);
+  setTimeout(apply, 1800);
+  setTimeout(apply, 3200);
+})();
+</script>
+
 </body></html></template>
 <script>
 (function(){
@@ -34534,6 +34621,93 @@ html,body,.stage,#homeFrame,#newHomeFrame,#voucherView,#baucher-embed-wrap,#bauc
   setTimeout(run, 800);
   setTimeout(run, 1600);
   setTimeout(run, 3200);
+})();
+</script>
+
+
+<!-- ===== FIX FINAL VOUCHER SOLO iPHONE / REVERT ANDROID ===== -->
+<script id="ios-voucher-safearea-v7-final">
+(function(){
+  function isIOS(){
+    try{
+      var ua = navigator.userAgent || '';
+      var iDevice = /iPhone|iPad|iPod/i.test(ua);
+      var iPadOS = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+      return iDevice || iPadOS;
+    }catch(e){ return false; }
+  }
+  function getDoc(frame){
+    try{ return frame && (frame.contentDocument || (frame.contentWindow && frame.contentWindow.document)) || null; }catch(e){ return null; }
+  }
+  function apply(){
+    try{
+      var homeFrame = document.getElementById('homeFrame');
+      var homeDoc = getDoc(homeFrame);
+      if(!homeDoc) return;
+      var voucherFrame = homeDoc.getElementById('baucher-embed-frame');
+      var voucherDoc = getDoc(voucherFrame);
+      if(!voucherDoc || !voucherDoc.head) return;
+
+      var oldV6 = voucherDoc.getElementById('ios-voucher-safearea-style-v6');
+      if(oldV6) oldV6.remove();
+
+      var st = voucherDoc.getElementById('ios-voucher-safearea-style-v7');
+      if(!isIOS()){
+        if(st) st.remove();
+        return;
+      }
+
+      if(!st){
+        st = voucherDoc.createElement('style');
+        st.id = 'ios-voucher-safearea-style-v7';
+        voucherDoc.head.appendChild(st);
+      }
+      st.textContent = `
+        :root{
+          --v-safe-top: env(safe-area-inset-top, 0px);
+          --v-safe-right: env(safe-area-inset-right, 0px);
+          --v-safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+        html,body{
+          min-height:100% !important;
+          height:100% !important;
+          background:#742284 !important;
+        }
+        body{
+          padding-top:0 !important;
+          padding-bottom:0 !important;
+          overflow:auto !important;
+          -webkit-overflow-scrolling:touch !important;
+          box-sizing:border-box !important;
+        }
+        app-root, app-yapeo, .father, .father[_ngcontent-ng-c755697887]{
+          display:block !important;
+          min-height:100dvh !important;
+        }
+        .father, .father[_ngcontent-ng-c755697887]{
+          padding-top:max(var(--v-safe-top), 8px) !important;
+          padding-bottom:calc(var(--v-safe-bottom) + 8px) !important;
+          box-sizing:border-box !important;
+        }
+        .close-btn-yape{
+          top:calc(var(--v-safe-top) + 10px) !important;
+          right:calc(var(--v-safe-right) + 12px) !important;
+          width:46px !important;
+          height:46px !important;
+        }
+        .paraServicios{padding-bottom:6px !important;}
+      `;
+    }catch(e){}
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply, {once:true});
+  else apply();
+  window.addEventListener('load', apply, {once:true});
+  window.addEventListener('resize', apply, {passive:true});
+  window.addEventListener('orientationchange', apply, {passive:true});
+  setTimeout(apply, 250);
+  setTimeout(apply, 900);
+  setTimeout(apply, 1800);
+  setTimeout(apply, 3200);
 })();
 </script>
 
