@@ -6,7 +6,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" name="viewport"/>
 <title>Yape</title>
-<meta name="yosi-build" content="ios-movimientos-safearea-v2-20260708"/>
+<meta name="yosi-build" content="ios-movimientos-safearea-v3-lite-20260708"/>
 <!-- PWA -->
 <link href="manifest.webmanifest" rel="manifest"/>
 <meta content="#742284" name="theme-color"/>
@@ -44894,9 +44894,11 @@ body.yosi-fast-baucher-switch #baucher-embed-frame{
     box-sizing:border-box !important;
   }
 </style>
-<script id="fix-ios-movimientos-iframe-strong-v2">
+<script id="fix-ios-movimientos-iframe-strong-v3-lite">
 (function(){
-  var STYLE_ID = 'fix-ios-movimientos-injected-strong-v2';
+  /* V3 LITE: mantiene el arreglo del notch en iPhone, pero sin escanear la app cada 500 ms.
+     Esto evita trabas en iPhone/Safari PWA. */
+  var STYLE_ID = 'fix-ios-movimientos-injected-strong-v3-lite';
   var CSS = '' +
     'html.yosi-ios-device #yMovOverlay .mov-header,html.yosi-ios-device .yMovOverlay .mov-header{' +
     'padding-top:calc(4vw + var(--yosi-ios-safe-top,30px))!important;' +
@@ -44925,9 +44927,9 @@ body.yosi-fast-baucher-switch #baucher-embed-frame{
       el.style.cssText = 'position:fixed;left:-9999px;top:0;width:1px;height:1px;padding-top:constant(safe-area-inset-top);padding-top:env(safe-area-inset-top);visibility:hidden;pointer-events:none;';
       (doc.body || doc.documentElement).appendChild(el);
       v = parseFloat((win.getComputedStyle ? win.getComputedStyle(el) : doc.defaultView.getComputedStyle(el)).paddingTop) || 0;
-      el.remove();
+      if(el.parentNode) el.parentNode.removeChild(el);
     }catch(e){}
-    if(isIOS(win) && v < 24) v = 32; // fallback cuando iOS/Safari devuelve env() en 0 dentro del iframe
+    if(isIOS(win) && v < 24) v = 32;
     if(v > 70) v = 70;
     return Math.round(v);
   }
@@ -44935,36 +44937,22 @@ body.yosi-fast-baucher-switch #baucher-embed-frame{
     if(!win) return;
     var doc = safe(function(){ return win.document; }, null);
     if(!doc || !doc.documentElement) return;
-    if(isIOS(win)){
-      var top = readEnvTop(doc, win);
+    var ios = isIOS(win);
+    if(ios){
+      var top = doc.documentElement.getAttribute('data-yosi-safe-top');
+      if(!top){
+        top = String(readEnvTop(doc, win));
+        doc.documentElement.setAttribute('data-yosi-safe-top', top);
+      }
       doc.documentElement.classList.add('yosi-ios-device');
       doc.documentElement.style.setProperty('--yosi-ios-safe-top', top + 'px');
     }
     var head = doc.head || doc.documentElement;
-    var st = doc.getElementById(STYLE_ID);
-    if(!st){
-      st = doc.createElement('style');
+    if(!doc.getElementById(STYLE_ID)){
+      var st = doc.createElement('style');
       st.id = STYLE_ID;
       st.textContent = CSS;
       head.appendChild(st);
-    }
-    if(isIOS(win)){
-      var top2 = doc.documentElement.style.getPropertyValue('--yosi-ios-safe-top') || '32px';
-      var headers = doc.querySelectorAll('#yMovOverlay .mov-header,.yMovOverlay .mov-header,.yMovTop');
-      for(var i=0;i<headers.length;i++){
-        var h = headers[i];
-        if(h.classList && h.classList.contains('yMovTop')){
-          h.style.setProperty('padding-top','calc(12px + '+top2+')','important');
-          h.style.setProperty('min-height','calc(56px + '+top2+')','important');
-        }else{
-          h.style.setProperty('padding-top','calc(4vw + '+top2+')','important');
-          h.style.setProperty('padding-left','4vw','important');
-          h.style.setProperty('padding-right','4vw','important');
-          h.style.setProperty('padding-bottom','4vw','important');
-          h.style.setProperty('min-height','calc(14vw + '+top2+')','important');
-          h.style.setProperty('box-sizing','border-box','important');
-        }
-      }
     }
   }
   function scan(win, depth){
@@ -44977,16 +44965,31 @@ body.yosi-fast-baucher-switch #baucher-embed-frame{
       try{ scan(frames[i].contentWindow, depth + 1); }catch(e){}
     }
   }
-  function run(){ scan(window, 0); }
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, {once:true}); else run();
-  window.addEventListener('load', function(){ [0,80,180,350,700,1200,2000,3500,5500].forEach(function(ms){ setTimeout(run, ms); }); }, {once:true});
-  [0,60,150,300,600,1000,1700,2600,4200].forEach(function(ms){ setTimeout(run, ms); });
+
+  var queued = false;
+  function run(){ queued = false; scan(window, 0); }
+  function queue(){
+    if(queued) return;
+    queued = true;
+    if(window.requestAnimationFrame) requestAnimationFrame(run);
+    else setTimeout(run, 0);
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', queue, {once:true}); else queue();
+  window.addEventListener('load', function(){ [80,250,600,1200,2200,4000,6500].forEach(function(ms){ setTimeout(queue, ms); }); }, {once:true});
+  window.addEventListener('pageshow', queue, {passive:true});
+  window.addEventListener('resize', queue, {passive:true});
+  window.addEventListener('orientationchange', function(){ setTimeout(queue,80); setTimeout(queue,350); }, {passive:true});
+
+  /* Al tocar botones que abren Movimientos, se reaplica una sola vez. No hay polling continuo. */
+  document.addEventListener('click', function(){ setTimeout(queue,80); }, true);
+  document.addEventListener('touchend', function(){ setTimeout(queue,80); }, {passive:true, capture:true});
+
+  /* Solo observa si aparecen iframes/nodos nuevos, sin observar cambios de estilos ni atributos. */
   try{
-    if(window.__fixIOSMovStrongTimer) clearInterval(window.__fixIOSMovStrongTimer);
-    window.__fixIOSMovStrongTimer = setInterval(run, 500);
-    setTimeout(function(){ try{ clearInterval(window.__fixIOSMovStrongTimer); }catch(e){} }, 45000);
+    var obsTarget = document.body || document.documentElement;
+    new MutationObserver(function(){ setTimeout(queue,80); }).observe(obsTarget, {childList:true, subtree:true});
   }catch(e){}
-  try{ new MutationObserver(function(){ setTimeout(run,0); }).observe(document.documentElement, {childList:true, subtree:true, attributes:true}); }catch(e){}
 })();
 </script>
 <!-- /FIX FUERTE iPhone/iOS Movimientos -->
