@@ -22869,6 +22869,82 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
 })();
 </script>
 
+
+<!-- ===== AJUSTE FINO iPHONE VOUCHER - SUBIR UN POCO MÁS ===== -->
+<script id="ios-voucher-safearea-v8-tuneup">
+(function(){
+  function isIOS(){
+    try{
+      var ua = navigator.userAgent || '';
+      return /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    }catch(e){ return false; }
+  }
+  function getDoc(frame){
+    try{ return frame && (frame.contentDocument || (frame.contentWindow && frame.contentWindow.document)) || null; }catch(e){ return null; }
+  }
+  function apply(){
+    try{
+      var homeFrame = document.getElementById('homeFrame');
+      var homeDoc = getDoc(homeFrame);
+      if(!homeDoc) return;
+      var voucherFrame = homeDoc.getElementById('baucher-embed-frame');
+      var voucherDoc = getDoc(voucherFrame);
+      if(!voucherDoc || !voucherDoc.head) return;
+
+      var st = voucherDoc.getElementById('ios-voucher-safearea-style-v8');
+      if(!isIOS()){
+        if(st) st.remove();
+        return;
+      }
+      if(!st){
+        st = voucherDoc.createElement('style');
+        st.id = 'ios-voucher-safearea-style-v8';
+        voucherDoc.head.appendChild(st);
+      }
+      st.textContent = `
+        .father, .father[_ngcontent-ng-c755697887]{
+          padding-top:max(env(safe-area-inset-top, 0px), 4px) !important;
+        }
+        .animation, .animation[_ngcontent-ng-c755697887]{
+          width:27vw !important;
+          height:31vw !important;
+          background-size:17vw !important;
+          margin-left:8px !important;
+        }
+        .inicioCom + div,
+        .inicioCom[_ngcontent-ng-c755697887] + div{
+          transform:translateY(-12px) !important;
+        }
+        .inicioCom + div > div,
+        .inicioCom[_ngcontent-ng-c755697887] + div > div{
+          margin:0 0 1vh 0 !important;
+        }
+        @media (max-width:390px){
+          .inicioCom + div,
+          .inicioCom[_ngcontent-ng-c755697887] + div{
+            transform:translateY(-14px) !important;
+          }
+          .animation, .animation[_ngcontent-ng-c755697887]{
+            width:26vw !important;
+            height:30vw !important;
+            background-size:16vw !important;
+          }
+        }
+      `;
+    }catch(e){}
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply, {once:true});
+  else apply();
+  window.addEventListener('load', apply, {once:true});
+  window.addEventListener('resize', apply, {passive:true});
+  window.addEventListener('orientationchange', apply, {passive:true});
+  setTimeout(apply, 250);
+  setTimeout(apply, 900);
+  setTimeout(apply, 1800);
+  setTimeout(apply, 3200);
+})();
+</script>
+
 </body></html></template>
 <script>
 (function(){
@@ -34696,6 +34772,82 @@ html,body,.stage,#homeFrame,#newHomeFrame,#voucherView,#baucher-embed-wrap,#bauc
           height:46px !important;
         }
         .paraServicios{padding-bottom:6px !important;}
+      `;
+    }catch(e){}
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply, {once:true});
+  else apply();
+  window.addEventListener('load', apply, {once:true});
+  window.addEventListener('resize', apply, {passive:true});
+  window.addEventListener('orientationchange', apply, {passive:true});
+  setTimeout(apply, 250);
+  setTimeout(apply, 900);
+  setTimeout(apply, 1800);
+  setTimeout(apply, 3200);
+})();
+</script>
+
+
+<!-- ===== AJUSTE FINO iPHONE VOUCHER - SUBIR UN POCO MÁS ===== -->
+<script id="ios-voucher-safearea-v8-tuneup">
+(function(){
+  function isIOS(){
+    try{
+      var ua = navigator.userAgent || '';
+      return /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    }catch(e){ return false; }
+  }
+  function getDoc(frame){
+    try{ return frame && (frame.contentDocument || (frame.contentWindow && frame.contentWindow.document)) || null; }catch(e){ return null; }
+  }
+  function apply(){
+    try{
+      var homeFrame = document.getElementById('homeFrame');
+      var homeDoc = getDoc(homeFrame);
+      if(!homeDoc) return;
+      var voucherFrame = homeDoc.getElementById('baucher-embed-frame');
+      var voucherDoc = getDoc(voucherFrame);
+      if(!voucherDoc || !voucherDoc.head) return;
+
+      var st = voucherDoc.getElementById('ios-voucher-safearea-style-v8');
+      if(!isIOS()){
+        if(st) st.remove();
+        return;
+      }
+      if(!st){
+        st = voucherDoc.createElement('style');
+        st.id = 'ios-voucher-safearea-style-v8';
+        voucherDoc.head.appendChild(st);
+      }
+      st.textContent = `
+        .father, .father[_ngcontent-ng-c755697887]{
+          padding-top:max(env(safe-area-inset-top, 0px), 4px) !important;
+        }
+        .animation, .animation[_ngcontent-ng-c755697887]{
+          width:27vw !important;
+          height:31vw !important;
+          background-size:17vw !important;
+          margin-left:8px !important;
+        }
+        .inicioCom + div,
+        .inicioCom[_ngcontent-ng-c755697887] + div{
+          transform:translateY(-12px) !important;
+        }
+        .inicioCom + div > div,
+        .inicioCom[_ngcontent-ng-c755697887] + div > div{
+          margin:0 0 1vh 0 !important;
+        }
+        @media (max-width:390px){
+          .inicioCom + div,
+          .inicioCom[_ngcontent-ng-c755697887] + div{
+            transform:translateY(-14px) !important;
+          }
+          .animation, .animation[_ngcontent-ng-c755697887]{
+            width:26vw !important;
+            height:30vw !important;
+            background-size:16vw !important;
+          }
+        }
       `;
     }catch(e){}
   }
