@@ -22575,6 +22575,133 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
 })();
 </script>
 
+
+<!-- ===== FIX iPhone SAFE AREA - PANTALLA APROBAR COMPRAS ===== -->
+<script id="ios-approval-safearea-v5">
+(function(){
+  function getDoc(frame){
+    try{ return frame && (frame.contentDocument || (frame.contentWindow && frame.contentWindow.document)) || null; }catch(e){ return null; }
+  }
+
+  function inject(doc){
+    if(!doc || !doc.head) return false;
+    var old = doc.getElementById('ios-approval-safearea-style-v5');
+    if(old) old.remove();
+    var st = doc.createElement('style');
+    st.id = 'ios-approval-safearea-style-v5';
+    st.textContent = `
+      :root{
+        --ap-safe-top: max(env(safe-area-inset-top, 0px), 18px);
+        --ap-safe-bottom: max(env(safe-area-inset-bottom, 0px), 10px);
+      }
+      html,body{
+        margin:0 !important;
+        min-height:100% !important;
+        height:100% !important;
+      }
+      body{
+        overflow:auto !important;
+        -webkit-overflow-scrolling:touch !important;
+        background:linear-gradient(180deg,#faf9fc 0%, #f4f1f8 100%) !important;
+      }
+      .app{
+        min-height:100dvh !important;
+        overflow:auto !important;
+        padding-bottom:var(--ap-safe-bottom) !important;
+      }
+      .header{
+        padding-top:calc(var(--ap-safe-top) + 8px) !important;
+        padding-right:16px !important;
+        padding-left:16px !important;
+        padding-bottom:104px !important;
+        border-bottom-left-radius:30px !important;
+        border-bottom-right-radius:30px !important;
+      }
+      .top{
+        min-height:40px !important;
+        margin-bottom:18px !important;
+        align-items:center !important;
+      }
+      .back{
+        width:36px !important;
+        height:36px !important;
+      }
+      .title{
+        font-size:15px !important;
+        line-height:1.2 !important;
+        font-weight:700 !important;
+      }
+      .hero{
+        align-items:flex-start !important;
+      }
+      .hero h2{
+        max-width:66% !important;
+        font-size:clamp(20px, 7vw, 24px) !important;
+        line-height:1.02 !important;
+      }
+      .hero svg{
+        width:94px !important;
+        height:76px !important;
+        flex:0 0 94px !important;
+      }
+      .content{
+        margin-top:-74px !important;
+        padding:0 12px calc(18px + var(--ap-safe-bottom)) !important;
+      }
+      .card{
+        border-radius:26px !important;
+      }
+      .card h3{
+        font-size:19px !important;
+      }
+      .sub{
+        font-size:12.5px !important;
+      }
+      .empty span{
+        font-size:13px !important;
+        line-height:1.18 !important;
+      }
+      .codebox{
+        min-height:110px !important;
+      }
+
+      @media (max-width:390px){
+        .header{
+          padding-top:calc(var(--ap-safe-top) + 6px) !important;
+          padding-bottom:96px !important;
+        }
+        .title{font-size:14px !important;}
+        .hero h2{font-size:clamp(18px, 6.7vw, 22px) !important; max-width:64% !important;}
+        .hero svg{width:88px !important;height:72px !important;flex-basis:88px !important;}
+        .content{margin-top:-68px !important;}
+        .card h3{font-size:18px !important;}
+      }
+    `;
+    doc.head.appendChild(st);
+    return true;
+  }
+
+  function run(){
+    try{
+      var frame = document.getElementById('approvalFrame');
+      var doc = getDoc(frame);
+      if(!doc) return;
+      inject(doc);
+    }catch(e){}
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, {once:true});
+  else run();
+  window.addEventListener('load', run, {once:true});
+  window.addEventListener('resize', run, {passive:true});
+  window.addEventListener('orientationchange', run, {passive:true});
+  setTimeout(run, 250);
+  setTimeout(run, 800);
+  setTimeout(run, 1600);
+  setTimeout(run, 3000);
+})();
+</script>
+
 </body></html></template>
 <script>
 (function(){
@@ -34120,6 +34247,133 @@ html,body,.stage,#homeFrame,#newHomeFrame,#voucherView,#baucher-embed-wrap,#bauc
   setTimeout(run, 900);
   setTimeout(run, 1800);
   setTimeout(run, 3200);
+})();
+</script>
+
+
+<!-- ===== FIX iPhone SAFE AREA - PANTALLA APROBAR COMPRAS ===== -->
+<script id="ios-approval-safearea-v5">
+(function(){
+  function getDoc(frame){
+    try{ return frame && (frame.contentDocument || (frame.contentWindow && frame.contentWindow.document)) || null; }catch(e){ return null; }
+  }
+
+  function inject(doc){
+    if(!doc || !doc.head) return false;
+    var old = doc.getElementById('ios-approval-safearea-style-v5');
+    if(old) old.remove();
+    var st = doc.createElement('style');
+    st.id = 'ios-approval-safearea-style-v5';
+    st.textContent = `
+      :root{
+        --ap-safe-top: max(env(safe-area-inset-top, 0px), 18px);
+        --ap-safe-bottom: max(env(safe-area-inset-bottom, 0px), 10px);
+      }
+      html,body{
+        margin:0 !important;
+        min-height:100% !important;
+        height:100% !important;
+      }
+      body{
+        overflow:auto !important;
+        -webkit-overflow-scrolling:touch !important;
+        background:linear-gradient(180deg,#faf9fc 0%, #f4f1f8 100%) !important;
+      }
+      .app{
+        min-height:100dvh !important;
+        overflow:auto !important;
+        padding-bottom:var(--ap-safe-bottom) !important;
+      }
+      .header{
+        padding-top:calc(var(--ap-safe-top) + 8px) !important;
+        padding-right:16px !important;
+        padding-left:16px !important;
+        padding-bottom:104px !important;
+        border-bottom-left-radius:30px !important;
+        border-bottom-right-radius:30px !important;
+      }
+      .top{
+        min-height:40px !important;
+        margin-bottom:18px !important;
+        align-items:center !important;
+      }
+      .back{
+        width:36px !important;
+        height:36px !important;
+      }
+      .title{
+        font-size:15px !important;
+        line-height:1.2 !important;
+        font-weight:700 !important;
+      }
+      .hero{
+        align-items:flex-start !important;
+      }
+      .hero h2{
+        max-width:66% !important;
+        font-size:clamp(20px, 7vw, 24px) !important;
+        line-height:1.02 !important;
+      }
+      .hero svg{
+        width:94px !important;
+        height:76px !important;
+        flex:0 0 94px !important;
+      }
+      .content{
+        margin-top:-74px !important;
+        padding:0 12px calc(18px + var(--ap-safe-bottom)) !important;
+      }
+      .card{
+        border-radius:26px !important;
+      }
+      .card h3{
+        font-size:19px !important;
+      }
+      .sub{
+        font-size:12.5px !important;
+      }
+      .empty span{
+        font-size:13px !important;
+        line-height:1.18 !important;
+      }
+      .codebox{
+        min-height:110px !important;
+      }
+
+      @media (max-width:390px){
+        .header{
+          padding-top:calc(var(--ap-safe-top) + 6px) !important;
+          padding-bottom:96px !important;
+        }
+        .title{font-size:14px !important;}
+        .hero h2{font-size:clamp(18px, 6.7vw, 22px) !important; max-width:64% !important;}
+        .hero svg{width:88px !important;height:72px !important;flex-basis:88px !important;}
+        .content{margin-top:-68px !important;}
+        .card h3{font-size:18px !important;}
+      }
+    `;
+    doc.head.appendChild(st);
+    return true;
+  }
+
+  function run(){
+    try{
+      var frame = document.getElementById('approvalFrame');
+      var doc = getDoc(frame);
+      if(!doc) return;
+      inject(doc);
+    }catch(e){}
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, {once:true});
+  else run();
+  window.addEventListener('load', run, {once:true});
+  window.addEventListener('resize', run, {passive:true});
+  window.addEventListener('orientationchange', run, {passive:true});
+  setTimeout(run, 250);
+  setTimeout(run, 800);
+  setTimeout(run, 1600);
+  setTimeout(run, 3000);
 })();
 </script>
 
