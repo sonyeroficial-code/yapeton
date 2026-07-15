@@ -22738,6 +22738,14 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
   transform:scale(.97) !important;
   filter:brightness(.96) !important;
 }
+#yosiAccountWarning .yosiWarnContactBtn{
+  position:relative !important;
+  z-index:10 !important;
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+  -webkit-user-select:none !important;
+  user-select:none !important;
+}
 #yosiAccountWarning .yosiWarnContactBtn svg{
   width:19px !important;
   height:19px !important;
@@ -22814,11 +22822,11 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
 <div><strong>Soporte — Nueva Generación</strong></div>
 <div class="yosiWarnOwnerTip">Atención por WhatsApp: <strong>942 978 154</strong><br/>Telegram: <strong>@Yapetonn</strong></div>
 <div class="yosiWarnContactGrid">
-<a class="yosiWarnContactBtn yosiWarnWhatsApp" href="https://wa.me/51942978154?text=Hola%2C%20ya%20ten%C3%ADa%20una%20cuenta%20y%20necesito%20verificar%20mi%20acceso.%20Adjunto%20mi%20comprobante%20con%20los%20datos%20sensibles%20ocultos." rel="noopener noreferrer" target="_blank" aria-label="Contactar por WhatsApp al 942 978 154">
+<a class="yosiWarnContactBtn yosiWarnWhatsApp" href="https://api.whatsapp.com/send?phone=51942978154&amp;text=Hola%2C%20ya%20ten%C3%ADa%20una%20cuenta%20y%20necesito%20verificar%20mi%20acceso.%20Adjunto%20mi%20comprobante%20con%20los%20datos%20sensibles%20ocultos." target="_self" data-support-link="whatsapp" aria-label="Contactar por WhatsApp al 942 978 154">
 <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2a9.84 9.84 0 0 0-8.53 14.75L2 22l5.39-1.42A9.96 9.96 0 1 0 12.04 2Zm0 17.93a8.1 8.1 0 0 1-4.13-1.13l-.3-.18-3.2.84.86-3.12-.2-.32A8.07 8.07 0 1 1 12.04 19.93Zm4.43-6.05c-.24-.12-1.43-.7-1.65-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.43-1.34-1.67-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.47-.4-.4-.54-.41h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.7 2.6 4.12 3.64.58.25 1.03.4 1.38.51.58.18 1.1.16 1.52.1.46-.07 1.43-.58 1.63-1.15.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28Z"/></svg>
 <span>WhatsApp<br/>942 978 154</span>
 </a>
-<a class="yosiWarnContactBtn yosiWarnTelegram" href="https://t.me/Yapetonn" rel="noopener noreferrer" target="_blank" aria-label="Abrir Telegram Nueva Generación">
+<a class="yosiWarnContactBtn yosiWarnTelegram" href="https://t.me/Yapetonn" target="_self" data-support-link="telegram" aria-label="Abrir Telegram Nueva Generación">
 <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d="M21.78 3.42c.3-1.2-.45-1.68-1.34-1.34L2.5 8.99c-1.22.48-1.2 1.16-.22 1.46l4.6 1.44 10.68-6.74c.5-.31.97-.14.59.2l-8.65 7.81-.33 4.58c.48 0 .69-.22.96-.48l2.3-2.24 4.79 3.54c.88.49 1.52.24 1.74-.82l2.82-14.32Z"/></svg>
 <span>Telegram<br/>Nueva Generación</span>
 </a>
@@ -22844,20 +22852,42 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
     if(!modal) return;
 
     function keepWarningFixed(){
-      modal.classList.add('yosi-show');
-      modal.style.setProperty('display','flex','important');
-      modal.style.setProperty('visibility','visible','important');
-      modal.style.setProperty('opacity','1','important');
-      modal.style.setProperty('pointer-events','auto','important');
-      modal.setAttribute('aria-hidden','false');
+      if(!modal.classList.contains('yosi-show')) modal.classList.add('yosi-show');
+      if(modal.style.display !== 'flex') modal.style.setProperty('display','flex','important');
+      if(modal.style.visibility !== 'visible') modal.style.setProperty('visibility','visible','important');
+      if(modal.style.opacity !== '1') modal.style.setProperty('opacity','1','important');
+      if(modal.style.pointerEvents !== 'auto') modal.style.setProperty('pointer-events','auto','important');
+      if(modal.getAttribute('aria-hidden') !== 'false') modal.setAttribute('aria-hidden','false');
       document.documentElement.style.setProperty('overflow','hidden','important');
       if(document.body) document.body.style.setProperty('overflow','hidden','important');
     }
 
     keepWarningFixed();
 
-    // La advertencia permanece fija dentro de la aplicación.
-    // Los botones de soporte siguen funcionando, pero no existe acción para cerrarla.
+    var whatsAppWeb = 'https://api.whatsapp.com/send?phone=51942978154&text=' + encodeURIComponent('Hola, ya tenía una cuenta y necesito verificar mi acceso. Adjunto mi comprobante con los datos sensibles ocultos.');
+    var telegramWeb = 'https://t.me/Yapetonn';
+
+    function openSupport(kind, e){
+      if(e){
+        e.preventDefault();
+        e.stopPropagation();
+        if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+      }
+      var url = kind === 'whatsapp' ? whatsAppWeb : telegramWeb;
+      // Navegación en la misma pestaña: funciona mejor dentro de una PWA o navegador integrado.
+      try{ window.location.assign(url); }
+      catch(err){ window.location.href = url; }
+      return false;
+    }
+
+    modal.querySelectorAll('[data-support-link]').forEach(function(link){
+      if(link.__supportReady) return;
+      link.__supportReady = true;
+      var kind = link.getAttribute('data-support-link');
+      link.addEventListener('click', function(e){ return openSupport(kind, e); }, true);
+      link.addEventListener('touchend', function(e){ return openSupport(kind, e); }, {capture:true, passive:false});
+    });
+
     document.addEventListener('keydown', function(e){
       if(e.key === 'Escape'){
         e.preventDefault();
@@ -22867,12 +22897,12 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
     }, true);
 
     try{
-      new MutationObserver(keepWarningFixed).observe(modal, {attributes:true, attributeFilter:['class','style','aria-hidden']});
+      new MutationObserver(keepWarningFixed).observe(modal, {attributes:true, attributeFilter:['class','aria-hidden']});
     }catch(e){}
 
     window.addEventListener('pageshow', keepWarningFixed);
     window.addEventListener('focus', keepWarningFixed);
-    setInterval(keepWarningFixed, 1200);
+    setInterval(keepWarningFixed, 1500);
   });
 })();
 </script>
