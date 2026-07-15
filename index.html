@@ -2238,15 +2238,19 @@ body.mode-login #loginWrap.login-native-design .auth-card{
   height:100vh !important;
   height:100dvh !important;
   z-index:2147483647 !important;
-  display:none !important;
+  display:flex !important;
   align-items:center !important;
   justify-content:center !important;
   padding:12px !important;
   background:rgba(8,4,22,.72) !important;
   -webkit-backdrop-filter:blur(10px) !important;
   backdrop-filter:blur(10px) !important;
+  pointer-events:auto !important;
+  touch-action:pan-y !important;
+  overscroll-behavior:contain !important;
 }
 #yosiAccountWarning.yosi-show{display:flex !important;}
+#yosiAccountWarning .yosiWarnActions{display:none !important;}
 #yosiAccountWarning *{box-sizing:border-box !important; font-family:system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif !important;}
 #yosiAccountWarning .yosiWarnCard{
   width:min(344px, calc(100vw - 20px)) !important;
@@ -22704,55 +22708,128 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
   });
 })();
 </script>
+
+<style id="yosi-server-outage-warning-css">
+/* Aviso transparente del administrador: caída de servidores y canales de soporte */
+#yosiAccountWarning .yosiWarnContactGrid{
+  margin-top:10px !important;
+  display:grid !important;
+  grid-template-columns:1fr 1fr !important;
+  gap:8px !important;
+}
+#yosiAccountWarning .yosiWarnContactBtn{
+  min-height:44px !important;
+  border-radius:15px !important;
+  padding:9px 10px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:7px !important;
+  color:#fff !important;
+  text-decoration:none !important;
+  font-size:12px !important;
+  line-height:1.15 !important;
+  font-weight:900 !important;
+  text-align:center !important;
+  box-shadow:0 10px 22px rgba(0,0,0,.22) !important;
+  transition:transform .14s ease, filter .14s ease !important;
+}
+#yosiAccountWarning .yosiWarnContactBtn:active{
+  transform:scale(.97) !important;
+  filter:brightness(.96) !important;
+}
+#yosiAccountWarning .yosiWarnContactBtn svg{
+  width:19px !important;
+  height:19px !important;
+  flex:0 0 19px !important;
+}
+#yosiAccountWarning .yosiWarnWhatsApp{
+  background:linear-gradient(135deg,#25D366,#128C7E) !important;
+}
+#yosiAccountWarning .yosiWarnTelegram{
+  background:linear-gradient(135deg,#2AABEE,#1477B8) !important;
+}
+#yosiAccountWarning .yosiWarnSafety{
+  margin-top:8px !important;
+  padding:9px 10px !important;
+  border-radius:13px !important;
+  color:#ffe9a8 !important;
+  background:rgba(255,183,0,.10) !important;
+  border:1px solid rgba(255,201,71,.18) !important;
+  font-size:10.8px !important;
+  line-height:1.3 !important;
+  font-weight:700 !important;
+  text-align:left !important;
+}
+#yosiAccountWarning .yosiWarnBrandNotice{
+  margin:7px 4px 0 !important;
+  text-align:center !important;
+  color:rgba(255,255,255,.58) !important;
+  font-size:9.8px !important;
+  line-height:1.25 !important;
+}
+#yosiAccountWarning .yosiWarnActions{
+  margin-top:9px !important;
+}
+@media(max-width:340px){
+  #yosiAccountWarning .yosiWarnContactGrid{grid-template-columns:1fr !important;}
+}
+@media(max-height:700px){
+  #yosiAccountWarning .yosiWarnContactBtn{min-height:36px !important;font-size:10.8px !important;padding:7px 8px !important;}
+  #yosiAccountWarning .yosiWarnSafety{font-size:9.6px !important;padding:7px 8px !important;margin-top:6px !important;}
+  #yosiAccountWarning .yosiWarnBrandNotice{font-size:8.8px !important;margin-top:5px !important;}
+}
+</style>
+
 <div aria-hidden="true" id="yosiAccountWarning">
-<div class="yosiWarnCard">
-<button aria-label="Cerrar" class="yosiWarnClose" id="yosiWarnClose" type="button">×</button>
+<div class="yosiWarnCard" role="dialog" aria-modal="true" aria-labelledby="yosiWarnTitleText">
 <div class="yosiWarnHero">
 <div aria-hidden="true" class="yosiWarnIcon">
 <svg viewbox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-<defs>
-<lineargradient id="warnTriGrad" x1="0" x2="1" y1="0" y2="1">
-<stop offset="0%" stop-color="#ffe34d"></stop>
-<stop offset="100%" stop-color="#ffb300"></stop>
-</lineargradient>
-</defs>
+<defs><lineargradient id="warnTriGrad" x1="0" x2="1" y1="0" y2="1"><stop offset="0%" stop-color="#ffe34d"></stop><stop offset="100%" stop-color="#ffb300"></stop></lineargradient></defs>
 <path d="M32 8 58 54H6L32 8Z" fill="url(#warnTriGrad)" stroke="rgba(0,0,0,.18)" stroke-width="2"></path>
-<rect fill="#111" height="18" rx="2.4" width="4.8" x="29.6" y="21"></rect>
-<circle cx="32" cy="46.5" fill="#111" r="3"></circle>
+<rect fill="#111" height="18" rx="2.4" width="4.8" x="29.6" y="21"></rect><circle cx="32" cy="46.5" fill="#111" r="3"></circle>
 </svg>
 </div>
-<h2 class="yosiWarnTitle">ADVERTENCIA</h2>
-<p class="yosiWarnSub">Lee esto antes de continuar</p>
+<h2 class="yosiWarnTitle" id="yosiWarnTitleText">AVISO IMPORTANTE</h2>
+<p class="yosiWarnSub">Caída temporal de nuestros servidores</p>
 </div>
 <div class="yosiWarnSection">
-<h3 class="yosiWarnSectionTitle"><span aria-hidden="true" class="yosiWarnSecSymbol">◆</span><span>Reglas</span></h3>
+<h3 class="yosiWarnSectionTitle"><span aria-hidden="true">⚠️</span><span>¿Qué ocurrió?</span></h3>
 <ul class="yosiWarnList">
-<li>Está <strong>prohibida la reventa de usuarios</strong> a personas que no sean revendedores autorizados.</li>
-<li>La cuenta es <strong>única</strong>. Si se detecta que es compartida puede llegar a un <strong>baneo temporal</strong>.</li>
-<li>Al comprar la App aceptas los <strong>términos y condiciones</strong>. <strong>No hay devoluciones</strong>.</li>
+<li>Chicos, sufrimos una <strong>caída general en nuestros servidores</strong>.</li>
+<li>Por seguridad, <strong>todas las sesiones fueron cerradas</strong> y algunos accesos deberán verificarse nuevamente.</li>
+<li>Si ya tenías una cuenta, <strong>no crees otra todavía</strong>.</li>
 </ul>
 </div>
 <div class="yosiWarnSection">
-<h3 class="yosiWarnSectionTitle"><span aria-hidden="true" class="yosiWarnSecSymbol">◇</span><span>Si eres nuevo</span></h3>
+<h3 class="yosiWarnSectionTitle"><span aria-hidden="true">✓</span><span>Recuperación de acceso</span></h3>
 <ul class="yosiWarnList">
-<li>Ve a <strong>Crear Cuenta</strong> si es tu primera vez comprando.</li>
-<li>Ingresa el <strong>ID del Vendedor</strong> que te está vendiendo.</li>
-<li>Usa un usuario <strong>sin espacios ni tu nombre real</strong>.</li>
-<li>Igual para la contraseña.</li>
+<li>Comunícate con soporte mediante uno de los botones de abajo.</li>
+<li>Envía una <strong>captura de la compra o evidencia de pago</strong> para verificar que ya tenías acceso.</li>
 </ul>
+<div class="yosiWarnSafety">🔒 Antes de enviar la captura, oculta tus datos sensibles. Nunca compartas contraseñas, PIN, códigos SMS ni datos bancarios.</div>
 </div>
 <div class="yosiWarnOwner">
-<div><strong>Dueño Sonyer / Bebote</strong></div>
-<div class="yosiWarnOwnerTip">Únete a nuestro grupo de Telegram para ver novedades, avisos y actualizaciones.</div>
-<a href="https://t.me/Yapetonn" rel="noopener noreferrer" target="_blank">https://t.me/Yapetonn</a>
+<div><strong>Soporte — Nueva Generación</strong></div>
+<div class="yosiWarnOwnerTip">Atención por WhatsApp: <strong>942 978 154</strong><br/>Telegram: <strong>@Yapetonn</strong></div>
+<div class="yosiWarnContactGrid">
+<a class="yosiWarnContactBtn yosiWarnWhatsApp" href="https://wa.me/51942978154?text=Hola%2C%20ya%20ten%C3%ADa%20una%20cuenta%20y%20necesito%20verificar%20mi%20acceso.%20Adjunto%20mi%20comprobante%20con%20los%20datos%20sensibles%20ocultos." rel="noopener noreferrer" target="_blank" aria-label="Contactar por WhatsApp al 942 978 154">
+<svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2a9.84 9.84 0 0 0-8.53 14.75L2 22l5.39-1.42A9.96 9.96 0 1 0 12.04 2Zm0 17.93a8.1 8.1 0 0 1-4.13-1.13l-.3-.18-3.2.84.86-3.12-.2-.32A8.07 8.07 0 1 1 12.04 19.93Zm4.43-6.05c-.24-.12-1.43-.7-1.65-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.43-1.34-1.67-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.47-.4-.4-.54-.41h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.7 2.6 4.12 3.64.58.25 1.03.4 1.38.51.58.18 1.1.16 1.52.1.46-.07 1.43-.58 1.63-1.15.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28Z"/></svg>
+<span>WhatsApp<br/>942 978 154</span>
+</a>
+<a class="yosiWarnContactBtn yosiWarnTelegram" href="https://t.me/Yapetonn" rel="noopener noreferrer" target="_blank" aria-label="Abrir Telegram Nueva Generación">
+<svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d="M21.78 3.42c.3-1.2-.45-1.68-1.34-1.34L2.5 8.99c-1.22.48-1.2 1.16-.22 1.46l4.6 1.44 10.68-6.74c.5-.31.97-.14.59.2l-8.65 7.81-.33 4.58c.48 0 .69-.22.96-.48l2.3-2.24 4.79 3.54c.88.49 1.52.24 1.74-.82l2.82-14.32Z"/></svg>
+<span>Telegram<br/>Nueva Generación</span>
+</a>
 </div>
-<div class="yosiWarnActions">
-<button class="yosiWarnBtn yosiWarnLogin" id="yosiWarnLogin" type="button">ENTENDIDO</button>
 </div>
-<p class="yosiWarnNote">Los datos de tu app se configuran una vez estés dentro.</p>
+<p class="yosiWarnBrandNotice">Aviso del administrador de esta aplicación independiente; no es un comunicado oficial de Yape.</p>
 </div>
 </div>
-<!-- /yosiAccountWarning -->
+<!-- /yosiAccountWarning - PANTALLA FIJA, SIN BOTÓN DE CIERRE -->
+
+
 <script id="yosi-account-warning-js">
 (function(){
   'use strict';
@@ -22766,91 +22843,40 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
     var modal = document.getElementById('yosiAccountWarning');
     if(!modal) return;
 
-    var warnClosed = false;
-    var warnTimer1 = null;
-    var warnTimer2 = null;
-
-    function loginWrapVisible(){
-      var lw = document.getElementById('loginWrap');
-      if(!lw) return false;
-      var cs = window.getComputedStyle(lw);
-      return cs.display !== 'none' && cs.visibility !== 'hidden';
-    }
-
-    function hasOpenSession(){
-      try{
-        var raw = localStorage.getItem('yapeton_session');
-        var ses = raw ? JSON.parse(raw) : null;
-        return !!(ses && ses.ok === true && ses.uid);
-      }catch(e){
-        return false;
-      }
-    }
-
-    function createPromptVisible(){
-      var prompt = document.getElementById('yosiCreateAccountPrompt');
-      if(!prompt) return false;
-      return prompt.classList.contains('yosi-show');
-    }
-
-    function clearWarnTimers(){
-      if(warnTimer1){ clearTimeout(warnTimer1); warnTimer1 = null; }
-      if(warnTimer2){ clearTimeout(warnTimer2); warnTimer2 = null; }
-    }
-
-    function showWarn(){
-      if(warnClosed) return;
-      if(hasOpenSession()) return;
-      if(createPromptVisible()) return;
-      if(!document.body.classList.contains('mode-login') && !loginWrapVisible()) return;
+    function keepWarningFixed(){
       modal.classList.add('yosi-show');
       modal.style.setProperty('display','flex','important');
+      modal.style.setProperty('visibility','visible','important');
+      modal.style.setProperty('opacity','1','important');
+      modal.style.setProperty('pointer-events','auto','important');
       modal.setAttribute('aria-hidden','false');
+      document.documentElement.style.setProperty('overflow','hidden','important');
+      if(document.body) document.body.style.setProperty('overflow','hidden','important');
     }
 
-    function hideWarn(permanent){
-      if(permanent !== false){
-        warnClosed = true;
-        clearWarnTimers();
+    keepWarningFixed();
+
+    // La advertencia permanece fija dentro de la aplicación.
+    // Los botones de soporte siguen funcionando, pero no existe acción para cerrarla.
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape'){
+        e.preventDefault();
+        e.stopPropagation();
+        keepWarningFixed();
       }
-      modal.classList.remove('yosi-show');
-      modal.style.setProperty('display','none','important');
-      modal.setAttribute('aria-hidden','true');
-    }
+    }, true);
 
-    function openCreateChoiceAfterWarn(){
-      try{
-        hideWarn(true);
-        if(typeof window.__showCreateAccountPrompt === 'function'){
-          window.__showCreateAccountPrompt();
-          return;
-        }
-        var prompt = document.getElementById('yosiCreateAccountPrompt');
-        if(prompt){
-          prompt.classList.add('yosi-show');
-          prompt.style.setProperty('display','flex','important');
-          prompt.setAttribute('aria-hidden','false');
-        }
-      }catch(e){}
-    }
+    try{
+      new MutationObserver(keepWarningFixed).observe(modal, {attributes:true, attributeFilter:['class','style','aria-hidden']});
+    }catch(e){}
 
-    var closeBtn = document.getElementById('yosiWarnClose');
-    var okBtn = document.getElementById('yosiWarnLogin');
-
-    if(closeBtn) closeBtn.addEventListener('click', openCreateChoiceAfterWarn);
-    if(okBtn) okBtn.addEventListener('click', openCreateChoiceAfterWarn);
-
-    modal.addEventListener('click', function(e){
-      if(e.target === modal) hideWarn(true);
-    });
-
-    warnTimer1 = setTimeout(showWarn, 3300);
-    warnTimer2 = setTimeout(function(){
-      if(!modal.classList.contains('yosi-show') && !warnClosed && !createPromptVisible()) showWarn();
-    }, 4300);
+    window.addEventListener('pageshow', keepWarningFixed);
+    window.addEventListener('focus', keepWarningFixed);
+    setInterval(keepWarningFixed, 1200);
   });
 })();
 </script>
+
 <div aria-hidden="true" id="yosiCreateAccountPrompt">
 <div class="yosiCreateCard">
 <button aria-label="Cerrar" class="yosiCreateClose" id="yosiCreateClose" type="button">×</button>
