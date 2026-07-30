@@ -941,64 +941,80 @@
   /* Sin observer para evitar parpadeo al cambiar el carrusel */
 })();&amp;lt;/script&amp;gt;
 
-&amp;lt;style id=&amp;quot;ios-home-safe-bottom-layout-v11&amp;quot;&amp;gt;
-html.ios-home-safe-v11,
-html.ios-home-safe-v11 body,
-html.ios-home-safe-v11 app-root,
-html.ios-home-safe-v11 app-home{
-  width:100% !important;
-  height:100% !important;
-  min-height:100% !important;
-  max-height:100% !important;
-  margin:0 !important;
-  overflow:hidden !important;
-}
-html.ios-home-safe-v11 .father,
-html.ios-home-safe-v11 .father[_ngcontent-ng-c3451458181]{
-  position:relative !important;
-  width:100% !important;
-  height:100% !important;
-  min-height:100% !important;
-  max-height:100% !important;
-  overflow-y:auto !important;
-  overflow-x:hidden !important;
-  -webkit-overflow-scrolling:touch !important;
-  background:#fff !important;
-  box-sizing:border-box !important;
-}
-html.ios-home-safe-v11 .homefooter,
-html.ios-home-safe-v11 .homefooter[_ngcontent-ng-c3451458181]{
-  --ios-bottom-safe:max(env(safe-area-inset-bottom,0px),var(--ios-safe-bottom,0px));
-  position:fixed !important;
-  left:0 !important;
-  right:0 !important;
-  bottom:0 !important;
-  width:100% !important;
-  height:calc(18.2vw + var(--ios-bottom-safe)) !important;
-  min-height:calc(18.2vw + var(--ios-bottom-safe)) !important;
-  padding:0 4vw calc(1.6vw + var(--ios-bottom-safe)) !important;
-  margin:0 !important;
-  box-sizing:border-box !important;
-  background:#fff !important;
-  border-top:1px solid rgba(0,0,0,.08) !important;
-  z-index:9999 !important;
-}
-html.ios-home-safe-v11 .b-white-f,
-html.ios-home-safe-v11 .b-white-f[_ngcontent-ng-c3451458181]{
-  --ios-bottom-safe:max(env(safe-area-inset-bottom,0px),var(--ios-safe-bottom,0px));
-  display:block !important;
-  width:100% !important;
-  height:calc(18.2vw + var(--ios-bottom-safe)) !important;
-  min-height:calc(18.2vw + var(--ios-bottom-safe)) !important;
-  max-height:none !important;
-  flex:0 0 calc(18.2vw + var(--ios-bottom-safe)) !important;
-  background:#fff !important;
-}
-&amp;lt;/style&amp;gt;
+
 
 &amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;
 
 
+
+&amp;lt;style id=&amp;quot;ios-standalone-nested-fixed-v12&amp;quot;&amp;gt;
+html.ios-standalone-nested-fixed-v12,
+html.ios-standalone-nested-fixed-v12 body,
+html.ios-standalone-nested-fixed-v12 app-root,
+html.ios-standalone-nested-fixed-v12 app-home{
+  position:fixed !important;
+  top:0 !important;
+  right:0 !important;
+  bottom:0 !important;
+  left:0 !important;
+  width:auto !important;
+  height:auto !important;
+  min-height:0 !important;
+  max-height:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+  box-sizing:border-box !important;
+}
+html.ios-standalone-nested-fixed-v12 .father,
+html.ios-standalone-nested-fixed-v12 .father[_ngcontent-ng-c3451458181]{
+  position:fixed !important;
+  top:0 !important;
+  right:0 !important;
+  bottom:0 !important;
+  left:0 !important;
+  width:auto !important;
+  height:auto !important;
+  min-height:0 !important;
+  max-height:none !important;
+  margin:0 !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  -webkit-overflow-scrolling:touch !important;
+  overscroll-behavior:none !important;
+  background:#fff !important;
+  box-sizing:border-box !important;
+}
+html.ios-standalone-nested-fixed-v12 .homefooter,
+html.ios-standalone-nested-fixed-v12 .homefooter[_ngcontent-ng-c3451458181]{
+  --ios-v12-bottom:max(env(safe-area-inset-bottom,0px),var(--ios-safe-bottom,0px));
+  position:fixed !important;
+  left:0 !important;
+  right:0 !important;
+  bottom:0 !important;
+  width:auto !important;
+  height:calc(18.2vw + var(--ios-v12-bottom)) !important;
+  min-height:calc(18.2vw + var(--ios-v12-bottom)) !important;
+  max-height:none !important;
+  margin:0 !important;
+  padding:0 4vw calc(1.6vw + var(--ios-v12-bottom)) !important;
+  box-sizing:border-box !important;
+  background:#fff !important;
+  border-top:1px solid rgba(0,0,0,.08) !important;
+  z-index:999999 !important;
+}
+html.ios-standalone-nested-fixed-v12 .b-white-f,
+html.ios-standalone-nested-fixed-v12 .b-white-f[_ngcontent-ng-c3451458181]{
+  --ios-v12-bottom:max(env(safe-area-inset-bottom,0px),var(--ios-safe-bottom,0px));
+  display:block !important;
+  width:100% !important;
+  height:calc(18.2vw + var(--ios-v12-bottom)) !important;
+  min-height:calc(18.2vw + var(--ios-v12-bottom)) !important;
+  max-height:none !important;
+  flex:0 0 calc(18.2vw + var(--ios-v12-bottom)) !important;
+  background:#fff !important;
+}
+&amp;lt;/style&amp;gt;
 &quot; title=&quot;Home nuevo&quot;&gt;&lt;/iframe&gt;
 &lt;div aria-hidden=&quot;true&quot; id=&quot;legacyHomeBridge&quot;&gt;
 &lt;div class=&quot;app&quot;&gt;
@@ -3554,36 +3570,7 @@ html.ios-home-safe-v11 .b-white-f[_ngcontent-ng-c3451458181]{
   else init();
 })();&lt;/script&gt;
 
-&lt;style id=&quot;ios-home-controller-full-height-v11&quot;&gt;
-html.ios-home-controller-v11,
-html.ios-home-controller-v11 body{
-  width:100% !important;
-  height:100% !important;
-  min-height:100% !important;
-  max-height:100% !important;
-  margin:0 !important;
-  padding:0 !important;
-  overflow:hidden !important;
-}
-html.ios-home-controller-v11 .device,
-html.ios-home-controller-v11 .views,
-html.ios-home-controller-v11 #homeView{
-  width:100% !important;
-  height:100% !important;
-  min-height:100% !important;
-  max-height:100% !important;
-  box-sizing:border-box !important;
-}
-html.ios-home-controller-v11 #newHomeFrame{
-  position:absolute !important;
-  inset:0 !important;
-  width:100% !important;
-  height:100% !important;
-  min-height:100% !important;
-  max-height:100% !important;
-  border:0 !important;
-}
-&lt;/style&gt;
+
 
 &lt;/body&gt;&lt;/html&gt;
 &lt;/template&gt;
@@ -10782,7 +10769,65 @@ function setUploadState(state){
 })();
 &lt;/script&gt;
 &lt;/body&gt;
-&lt;/html&gt;"></iframe>
+&lt;/html&gt;
+&lt;style id=&quot;ios-standalone-home-fixed-v12&quot;&gt;
+html.ios-standalone-home-fixed-v12,
+html.ios-standalone-home-fixed-v12 body{
+  position:fixed !important;
+  top:0 !important;
+  right:0 !important;
+  bottom:0 !important;
+  left:0 !important;
+  width:auto !important;
+  height:auto !important;
+  min-height:0 !important;
+  max-height:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+  box-sizing:border-box !important;
+}
+html.ios-standalone-home-fixed-v12 .device,
+html.ios-standalone-home-fixed-v12 .views,
+html.ios-standalone-home-fixed-v12 .view,
+html.ios-standalone-home-fixed-v12 #homeView{
+  position:fixed !important;
+  top:0 !important;
+  right:0 !important;
+  bottom:0 !important;
+  left:0 !important;
+  width:auto !important;
+  height:auto !important;
+  min-height:0 !important;
+  max-height:none !important;
+  margin:0 !important;
+  box-sizing:border-box !important;
+}
+html.ios-standalone-home-fixed-v12 #homeView{
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  -webkit-overflow-scrolling:touch !important;
+}
+/* WebKit standalone bug: absolute bottom:0 can stop at the safe-area top inset.
+   Fixed positioning makes the iframe reach the physical bottom instead of covering it. */
+html.ios-standalone-home-fixed-v12 #newHomeFrame{
+  position:fixed !important;
+  top:0 !important;
+  right:0 !important;
+  bottom:0 !important;
+  left:0 !important;
+  width:auto !important;
+  height:auto !important;
+  min-height:0 !important;
+  max-height:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  display:block !important;
+  box-sizing:border-box !important;
+}
+&lt;/style&gt;
+"></iframe>
 <iframe allow="camera; microphone; clipboard-read; clipboard-write" id="approvalFrame" srcdoc="&lt;!DOCTYPE html&gt;
 &lt;html lang=&quot;es&quot;&gt;
 &lt;head&gt;
@@ -37155,90 +37200,195 @@ html.yosi-ios-monto-root #homeFrame{
 
 
 
-<style id="ios-whole-app-layout-viewport-v11">
-html.ios-whole-app-layout-v11,
-html.ios-whole-app-layout-v11 body{
-  width:100% !important;
-  height:100% !important;
-  min-height:100% !important;
-  max-height:100% !important;
-  margin:0 !important;
-  padding:0 !important;
-  overflow:hidden !important;
-  overscroll-behavior:none !important;
-}
-html.ios-whole-app-layout-v11 body.mode-app #appWrap,
-html.ios-whole-app-layout-v11 body.mode-app .stage{
+
+
+
+
+<style id="ios-standalone-fixed-iframe-v12">
+html.ios-standalone-fixed-v12,
+html.ios-standalone-fixed-v12 body{
   position:fixed !important;
-  inset:0 !important;
-  width:100% !important;
-  height:100% !important;
-  min-height:100% !important;
-  max-height:100% !important;
+  top:0 !important;
+  right:0 !important;
+  bottom:0 !important;
+  left:0 !important;
+  width:auto !important;
+  height:auto !important;
+  min-height:0 !important;
+  max-height:none !important;
   margin:0 !important;
   padding:0 !important;
   overflow:hidden !important;
   box-sizing:border-box !important;
 }
-html.ios-whole-app-layout-v11 body.mode-app .stage>iframe,
-html.ios-whole-app-layout-v11 body.mode-app #homeFrame,
-html.ios-whole-app-layout-v11 body.mode-app #loginFrame,
-html.ios-whole-app-layout-v11 body.mode-app #approvalFrame,
-html.ios-whole-app-layout-v11 body.mode-app #storeFrame{
-  position:absolute !important;
-  inset:0 !important;
-  width:100% !important;
-  height:100% !important;
-  min-height:100% !important;
-  max-height:100% !important;
+html.ios-standalone-fixed-v12 body.mode-app #appWrap,
+html.ios-standalone-fixed-v12 body.mode-app .stage{
+  position:fixed !important;
+  top:0 !important;
+  right:0 !important;
+  bottom:0 !important;
+  left:0 !important;
+  width:auto !important;
+  height:auto !important;
+  min-height:0 !important;
+  max-height:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+  box-sizing:border-box !important;
+}
+/* This is the actual Safari fix: the full-screen iframe must be fixed, not absolute. */
+html.ios-standalone-fixed-v12 body.mode-app .stage > iframe,
+html.ios-standalone-fixed-v12 body.mode-app #homeFrame,
+html.ios-standalone-fixed-v12 body.mode-app #loginFrame,
+html.ios-standalone-fixed-v12 body.mode-app #approvalFrame,
+html.ios-standalone-fixed-v12 body.mode-app #storeFrame{
+  position:fixed !important;
+  top:0 !important;
+  right:0 !important;
+  bottom:0 !important;
+  left:0 !important;
+  width:auto !important;
+  height:auto !important;
+  min-height:0 !important;
+  max-height:none !important;
   margin:0 !important;
   padding:0 !important;
   border:0 !important;
   box-sizing:border-box !important;
 }
+html.ios-standalone-fixed-v12 body.mode-login #loginWrap{
+  position:fixed !important;
+  top:0 !important;
+  right:0 !important;
+  bottom:0 !important;
+  left:0 !important;
+  width:auto !important;
+  height:auto !important;
+  min-height:0 !important;
+  max-height:none !important;
+  margin:0 !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  -webkit-overflow-scrolling:touch !important;
+  box-sizing:border-box !important;
+}
 </style>
-<script id="ios-whole-app-layout-viewport-v11-js">
+<script id="ios-standalone-fixed-iframe-v12-js">
 (function(){
   'use strict';
-  if(window.__iosWholeAppLayoutV11) return;
-  window.__iosWholeAppLayoutV11=true;
-  var ua=navigator.userAgent||'', platform=navigator.platform||'';
-  var isIOS=/iPhone|iPad|iPod/i.test(ua)||(platform==='MacIntel'&&navigator.maxTouchPoints>1)||(/Macintosh/i.test(ua)&&'ontouchend' in document);
-  if(!isIOS) return;
-  document.documentElement.classList.add('ios-whole-app-layout-v11');
+  if(window.__iosStandaloneFixedIframeV12) return;
+  window.__iosStandaloneFixedIframeV12 = true;
 
-  function imp(el,n,v){try{if(el)el.style.setProperty(n,v,'important');}catch(e){}}
-  function clearH(el){try{if(!el)return;el.style.removeProperty('height');el.style.removeProperty('min-height');el.style.removeProperty('max-height');}catch(e){}}
-  function docOf(f){try{return f&&(f.contentDocument||(f.contentWindow&&f.contentWindow.document));}catch(e){return null;}}
-  function measure(side){try{var p=document.createElement('div');p.style.cssText='position:fixed;visibility:hidden;pointer-events:none;padding-'+side+':env(safe-area-inset-'+side+',0px)';document.documentElement.appendChild(p);var v=parseFloat(getComputedStyle(p).getPropertyValue('padding-'+side))||0;p.remove();return v;}catch(e){return 0;}}
-  function safe(){return{top:measure('top'),right:measure('right'),bottom:measure('bottom'),left:measure('left')}}
-  function putSafe(d,x){try{if(!d||!d.documentElement)return;d.documentElement.style.setProperty('--ios-safe-top',x.top+'px');d.documentElement.style.setProperty('--ios-safe-right',x.right+'px');d.documentElement.style.setProperty('--ios-safe-bottom',x.bottom+'px');d.documentElement.style.setProperty('--ios-safe-left',x.left+'px');}catch(e){}}
+  var ua = navigator.userAgent || '';
+  var platform = navigator.platform || '';
+  var isIOS = /iPhone|iPad|iPod/i.test(ua) ||
+              (platform === 'MacIntel' && navigator.maxTouchPoints > 1) ||
+              (/Macintosh/i.test(ua) && 'ontouchend' in document);
+  var standalone = navigator.standalone === true ||
+                   (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+  if(!isIOS || !standalone) return;
 
-  function patchNested(nf,x){
-    var nd=docOf(nf); if(!nd)return;
-    nd.documentElement.classList.add('ios-home-safe-v11'); putSafe(nd,x);
-    [nd.documentElement,nd.body,nd.querySelector('app-root'),nd.querySelector('app-home'),nd.querySelector('.father')].forEach(clearH);
-    var father=nd.querySelector('.father'); if(father){imp(father,'height','100%');imp(father,'min-height','100%');imp(father,'max-height','100%');}
+  document.documentElement.classList.add('ios-standalone-fixed-v12');
+
+  function docOf(frame){
+    try{return frame && (frame.contentDocument || (frame.contentWindow && frame.contentWindow.document));}
+    catch(e){return null;}
   }
-  function patchHome(hf,x){
-    var hd=docOf(hf); if(!hd)return;
-    hd.documentElement.classList.add('ios-home-controller-v11'); putSafe(hd,x);
-    [hd.documentElement,hd.body,hd.querySelector('.device'),hd.querySelector('.views'),hd.getElementById('homeView')].forEach(clearH);
-    [hd.documentElement,hd.body,hd.querySelector('.device'),hd.querySelector('.views'),hd.getElementById('homeView')].forEach(function(el){if(el){imp(el,'height','100%');imp(el,'min-height','100%');imp(el,'max-height','100%');}});
-    var nf=hd.getElementById('newHomeFrame');
-    if(nf){clearH(nf);imp(nf,'position','absolute');imp(nf,'inset','0');imp(nf,'height','100%');imp(nf,'min-height','100%');imp(nf,'max-height','100%');patchNested(nf,x);if(!nf.__iosV11Load){nf.__iosV11Load=true;nf.addEventListener('load',function(){setTimeout(run,0);setTimeout(run,180);},{passive:true});}}
+  function measureSafe(side){
+    try{
+      var p = document.createElement('div');
+      p.style.cssText = 'position:fixed;visibility:hidden;pointer-events:none;left:0;top:0;padding-'+side+':env(safe-area-inset-'+side+',0px)';
+      document.documentElement.appendChild(p);
+      var value = parseFloat(getComputedStyle(p).getPropertyValue('padding-'+side)) || 0;
+      p.remove();
+      return value;
+    }catch(e){return 0;}
   }
-  function run(){
-    var x=safe(); putSafe(document,x);
-    var app=document.getElementById('appWrap'),stage=document.querySelector('.stage');
-    [app,stage].forEach(function(el){if(!el)return;clearH(el);imp(el,'position','fixed');imp(el,'inset','0');imp(el,'width','100%');imp(el,'height','100%');imp(el,'min-height','100%');imp(el,'max-height','100%');});
-    Array.prototype.forEach.call(document.querySelectorAll('.stage>iframe'),function(f){clearH(f);imp(f,'position','absolute');imp(f,'inset','0');imp(f,'width','100%');imp(f,'height','100%');imp(f,'min-height','100%');imp(f,'max-height','100%');putSafe(docOf(f),x);if(!f.__iosV11Load){f.__iosV11Load=true;f.addEventListener('load',function(){setTimeout(run,0);setTimeout(run,180);},{passive:true});}});
-    patchHome(document.getElementById('homeFrame'),x);
-    document.documentElement.dataset.iosLayout='layout-viewport-full-height-v11';
+  function safeInsets(){
+    return {top:measureSafe('top'),right:measureSafe('right'),bottom:measureSafe('bottom'),left:measureSafe('left')};
   }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();
-  window.addEventListener('load',run,{passive:true});window.addEventListener('pageshow',run,{passive:true});window.addEventListener('orientationchange',function(){setTimeout(run,120);setTimeout(run,450);},{passive:true});
-  [0,60,180,420,900,1600,2800].forEach(function(ms){setTimeout(run,ms)});
+  function setVars(doc, safe){
+    try{
+      if(!doc || !doc.documentElement) return;
+      doc.documentElement.style.setProperty('--ios-safe-top', safe.top+'px');
+      doc.documentElement.style.setProperty('--ios-safe-right', safe.right+'px');
+      doc.documentElement.style.setProperty('--ios-safe-bottom', safe.bottom+'px');
+      doc.documentElement.style.setProperty('--ios-safe-left', safe.left+'px');
+    }catch(e){}
+  }
+  function forceFixed(el){
+    try{
+      if(!el) return;
+      el.style.setProperty('position','fixed','important');
+      el.style.setProperty('top','0','important');
+      el.style.setProperty('right','0','important');
+      el.style.setProperty('bottom','0','important');
+      el.style.setProperty('left','0','important');
+      el.style.setProperty('width','auto','important');
+      el.style.setProperty('height','auto','important');
+      el.style.setProperty('min-height','0','important');
+      el.style.setProperty('max-height','none','important');
+      el.style.setProperty('margin','0','important');
+    }catch(e){}
+  }
+  function patchNested(frame, safe){
+    var nd = docOf(frame);
+    if(!nd || !nd.documentElement) return;
+    nd.documentElement.classList.add('ios-standalone-nested-fixed-v12');
+    setVars(nd, safe);
+    forceFixed(nd.documentElement);
+    forceFixed(nd.body);
+    forceFixed(nd.querySelector('app-root'));
+    forceFixed(nd.querySelector('app-home'));
+    forceFixed(nd.querySelector('.father'));
+  }
+  function patchHome(frame, safe){
+    var hd = docOf(frame);
+    if(!hd || !hd.documentElement) return;
+    hd.documentElement.classList.add('ios-standalone-home-fixed-v12');
+    setVars(hd, safe);
+    forceFixed(hd.documentElement);
+    forceFixed(hd.body);
+    forceFixed(hd.querySelector('.device'));
+    forceFixed(hd.querySelector('.views'));
+    Array.prototype.forEach.call(hd.querySelectorAll('.view'), forceFixed);
+    var nf = hd.getElementById('newHomeFrame');
+    if(nf){
+      forceFixed(nf);
+      patchNested(nf, safe);
+      if(!nf.__iosV12Load){
+        nf.__iosV12Load = true;
+        nf.addEventListener('load', function(){setTimeout(apply,0);setTimeout(apply,120);}, {passive:true});
+      }
+    }
+  }
+  function apply(){
+    var safe = safeInsets();
+    setVars(document, safe);
+    forceFixed(document.documentElement);
+    forceFixed(document.body);
+    forceFixed(document.getElementById('appWrap'));
+    forceFixed(document.querySelector('.stage'));
+    Array.prototype.forEach.call(document.querySelectorAll('.stage > iframe'), function(frame){
+      forceFixed(frame);
+      if(!frame.__iosV12Load){
+        frame.__iosV12Load = true;
+        frame.addEventListener('load', function(){setTimeout(apply,0);setTimeout(apply,120);}, {passive:true});
+      }
+    });
+    patchHome(document.getElementById('homeFrame'), safe);
+    document.documentElement.dataset.iosLayout = 'fixed-iframes-v12';
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', apply, {once:true});
+  }else{
+    apply();
+  }
+  window.addEventListener('load', apply, {passive:true});
+  window.addEventListener('pageshow', apply, {passive:true});
+  window.addEventListener('orientationchange', function(){setTimeout(apply,100);setTimeout(apply,420);}, {passive:true});
+  [40,120,300,700,1400,2600].forEach(function(ms){setTimeout(apply,ms);});
 })();
 </script>
-
