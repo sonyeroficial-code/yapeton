@@ -9,7 +9,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
-<meta name="yosi-build" content="monto-iphone-safe-20260729-v1"/>
+<meta name="yosi-build" content="monto-iphone-keyboard-20260729-v2"/>
 
 <link href="manifest.webmanifest" rel="manifest"/>
 <meta content="#742284" name="theme-color"/>
@@ -39,7 +39,7 @@
 
     var refreshing = false;
     function registerSW(){
-      navigator.serviceWorker.register('./service-worker.js?v=monto-iphone-safe-20260729-v1', { scope: './' }).then(function(reg){
+      navigator.serviceWorker.register('./service-worker.js?v=monto-iphone-keyboard-20260729-v2', { scope: './' }).then(function(reg){
         try { reg.update && reg.update(); } catch(e){}
 
         function promoteWaiting(worker){
@@ -24630,6 +24630,8 @@ import { getFirestore, doc, getDoc, collection, query, where, getDocs, limit } f
 <style id="mov-actions-responsive-final">
 /* Los controles reales se crean dentro del comprobante; este bloque documenta la versión corregida. */
 </style>
+
+
 </body>
 
 </html>
@@ -37079,6 +37081,296 @@ body.yosi-validando-suave #mModal{
   }
   walk(window.top || window,[]);
   setInterval(function(){ walk(window.top || window,[]); },700);
+})();
+</script>
+
+<style id="ios-monto-keyboard-gap-fix-v2">
+html.yosi-ios-monto-root,
+html.yosi-ios-monto-root body{
+  width:100% !important;
+  height:var(--yosi-root-stable-h,100dvh) !important;
+  min-height:var(--yosi-root-stable-h,100dvh) !important;
+  max-height:var(--yosi-root-stable-h,100dvh) !important;
+  overflow:hidden !important;
+  overscroll-behavior:none !important;
+}
+html.yosi-ios-monto-root body{
+  position:fixed !important;
+  inset:0 !important;
+  margin:0 !important;
+}
+html.yosi-ios-monto-root .stage,
+html.yosi-ios-monto-root #homeFrame{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:var(--yosi-root-stable-h,100dvh) !important;
+  min-height:var(--yosi-root-stable-h,100dvh) !important;
+  max-height:var(--yosi-root-stable-h,100dvh) !important;
+  overflow:hidden !important;
+}
+</style>
+<script id="ios-monto-keyboard-gap-fix-v2-js">
+(function(){
+  if(window.__iosMontoKeyboardGapFixV2) return;
+  window.__iosMontoKeyboardGapFixV2 = true;
+
+  var ua = navigator.userAgent || '';
+  var platform = navigator.platform || '';
+  var isIOS = /iPhone|iPad|iPod/.test(ua) ||
+    (platform === 'MacIntel' && navigator.maxTouchPoints > 1) ||
+    (/Macintosh/.test(ua) && 'ontouchend' in document);
+  if(!isIOS) return;
+
+  document.documentElement.classList.add('yosi-ios-monto-root');
+
+  var vv = window.visualViewport;
+  var stableHeight = Math.max(
+    window.innerHeight || 0,
+    document.documentElement.clientHeight || 0,
+    vv ? (vv.height + vv.offsetTop) : 0
+  );
+  var lastWidth = window.innerWidth || 0;
+  var homeFrame = null;
+  var innerFrame = null;
+  var homeDoc = null;
+  var innerDoc = null;
+  var innerWin = null;
+  var focusTimer = 0;
+
+  function px(n){ return Math.max(0, Math.round(Number(n) || 0)) + 'px'; }
+
+  function activeInput(){
+    try{
+      var el = innerDoc && innerDoc.activeElement;
+      if(!el) return null;
+      var tag = String(el.tagName || '').toUpperCase();
+      return (tag === 'INPUT' || tag === 'TEXTAREA' || el.isContentEditable) ? el : null;
+    }catch(e){ return null; }
+  }
+
+  function montoVisible(){
+    try{
+      if(!homeDoc) return false;
+      var view = homeDoc.getElementById('montoView');
+      if(!view || view.classList.contains('hidden')) return false;
+      return homeDoc.defaultView.getComputedStyle(view).display !== 'none';
+    }catch(e){ return false; }
+  }
+
+  function zeroScroll(){
+    try{ window.scrollTo(0,0); }catch(e){}
+    try{
+      if(document.scrollingElement) document.scrollingElement.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }catch(e){}
+    try{
+      var hw = homeFrame && homeFrame.contentWindow;
+      if(hw) hw.scrollTo(0,0);
+      if(homeDoc && homeDoc.scrollingElement) homeDoc.scrollingElement.scrollTop = 0;
+    }catch(e){}
+    try{
+      if(innerWin) innerWin.scrollTo(0,0);
+      if(innerDoc && innerDoc.scrollingElement) innerDoc.scrollingElement.scrollTop = 0;
+      if(innerDoc){
+        innerDoc.documentElement.scrollTop = 0;
+        innerDoc.body.scrollTop = 0;
+      }
+    }catch(e){}
+  }
+
+  function injectHomeStyle(doc){
+    if(!doc || !doc.head) return;
+    var st = doc.getElementById('yosi-monto-host-keyboard-style-v2');
+    if(!st){
+      st = doc.createElement('style');
+      st.id = 'yosi-monto-host-keyboard-style-v2';
+      st.textContent = [
+        'html.yosi-monto-host-stable,html.yosi-monto-host-stable body,html.yosi-monto-host-stable .device,html.yosi-monto-host-stable .views{height:var(--yosi-monto-host-h,100dvh)!important;min-height:var(--yosi-monto-host-h,100dvh)!important;max-height:var(--yosi-monto-host-h,100dvh)!important;overflow:hidden!important;}',
+        'html.yosi-monto-host-stable body{position:fixed!important;inset:0!important;width:100%!important;margin:0!important;overscroll-behavior:none!important;}',
+        'html.yosi-monto-host-stable #montoView{position:absolute!important;inset:0!important;width:100%!important;height:var(--yosi-monto-host-h,100dvh)!important;min-height:var(--yosi-monto-host-h,100dvh)!important;max-height:var(--yosi-monto-host-h,100dvh)!important;overflow:hidden!important;background:#fff!important;}',
+        'html.yosi-monto-host-stable #montoOptimizadoFrame{position:absolute!important;inset:0!important;width:100%!important;height:var(--yosi-monto-host-h,100dvh)!important;min-height:var(--yosi-monto-host-h,100dvh)!important;max-height:var(--yosi-monto-host-h,100dvh)!important;background:#fff!important;transform:none!important;}'
+      ].join('');
+      doc.head.appendChild(st);
+    }
+    doc.documentElement.classList.add('yosi-monto-host-stable');
+  }
+
+  function injectInnerStyle(doc){
+    if(!doc || !doc.head) return;
+    var st = doc.getElementById('yosi-monto-inner-keyboard-style-v2');
+    if(!st){
+      st = doc.createElement('style');
+      st.id = 'yosi-monto-inner-keyboard-style-v2';
+      st.textContent = [
+        ':root{--yosi-monto-stable-h:100dvh;--yosi-monto-kb-h:0px;--yosi-monto-vv-top:0px;}',
+        'html.yosi-monto-inner-stable,html.yosi-monto-inner-stable body,html.yosi-monto-inner-stable app-root,html.yosi-monto-inner-stable app-monto{width:100%!important;height:var(--yosi-monto-stable-h)!important;min-height:var(--yosi-monto-stable-h)!important;max-height:var(--yosi-monto-stable-h)!important;overflow:hidden!important;overscroll-behavior:none!important;}',
+        'html.yosi-monto-inner-stable body{position:fixed!important;left:0!important;right:0!important;top:0!important;bottom:auto!important;margin:0!important;background:#742284!important;}',
+        'html.yosi-monto-inner-stable .father{position:relative!important;width:100%!important;height:var(--yosi-monto-stable-h)!important;min-height:var(--yosi-monto-stable-h)!important;max-height:var(--yosi-monto-stable-h)!important;overflow:hidden!important;background:#fff!important;transform:translate3d(0,var(--yosi-monto-vv-top),0)!important;will-change:transform!important;}',
+        'html.yosi-monto-inner-stable .datos{height:calc(var(--yosi-monto-stable-h) - 15vw)!important;min-height:0!important;overflow:hidden!important;background:#fff!important;}',
+        'html.yosi-monto-inner-stable .footer{position:absolute!important;left:0!important;right:0!important;bottom:var(--yosi-monto-kb-h)!important;width:100%!important;margin:0!important;background:#fff!important;z-index:2147483000!important;transform:none!important;transition:none!important;}',
+        'html.yosi-monto-inner-stable input,html.yosi-monto-inner-stable textarea{scroll-margin:0!important;}',
+        'html.yosi-monto-inner-stable .inputdesc{font-size:max(16px,3.89vw)!important;}',
+        'html.yosi-monto-inner-stable.yosi-monto-kb-open .father{background:#fff!important;}',
+        'html.yosi-monto-inner-stable.yosi-monto-kb-open .footer{padding-bottom:max(8px,env(safe-area-inset-bottom,0px))!important;}'
+      ].join('');
+      doc.head.appendChild(st);
+    }
+    doc.documentElement.classList.add('yosi-monto-inner-stable');
+  }
+
+  function bindInner(doc, win){
+    if(!doc || doc.__yosiMontoKeyboardBoundV2) return;
+    doc.__yosiMontoKeyboardBoundV2 = true;
+
+    function focused(){
+      clearTimeout(focusTimer);
+      sync(true);
+      [0,30,80,160,280,480].forEach(function(ms){
+        setTimeout(function(){ zeroScroll(); sync(true); }, ms);
+      });
+    }
+
+    function blurred(){
+      clearTimeout(focusTimer);
+      focusTimer = setTimeout(function(){ zeroScroll(); sync(false); }, 120);
+      setTimeout(function(){ zeroScroll(); sync(false); }, 320);
+    }
+
+    doc.addEventListener('focusin', focused, true);
+    doc.addEventListener('focusout', blurred, true);
+    doc.addEventListener('touchend', function(e){
+      var t = e.target;
+      if(t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) focused();
+    }, true);
+    doc.addEventListener('click', function(e){
+      var t = e.target;
+      if(t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) focused();
+    }, true);
+
+    try{
+      var amount = doc.getElementById('monto');
+      var msg = doc.querySelector('.inputdesc');
+      if(amount) amount.setAttribute('enterkeyhint','done');
+      if(msg) msg.setAttribute('enterkeyhint','done');
+    }catch(e){}
+  }
+
+  function discover(){
+    try{
+      homeFrame = document.getElementById('homeFrame');
+      if(!homeFrame) return false;
+      homeDoc = homeFrame.contentDocument || (homeFrame.contentWindow && homeFrame.contentWindow.document);
+      if(!homeDoc) return false;
+      injectHomeStyle(homeDoc);
+      innerFrame = homeDoc.getElementById('montoOptimizadoFrame');
+      if(!innerFrame) return false;
+      innerDoc = innerFrame.contentDocument || (innerFrame.contentWindow && innerFrame.contentWindow.document);
+      innerWin = innerFrame.contentWindow || null;
+      if(!innerDoc) return false;
+      injectInnerStyle(innerDoc);
+      bindInner(innerDoc, innerWin);
+      return true;
+    }catch(e){ return false; }
+  }
+
+  function sync(forceKeyboard){
+    discover();
+
+    vv = window.visualViewport;
+    var currentWidth = window.innerWidth || 0;
+    var vvHeight = vv ? vv.height : (window.innerHeight || stableHeight);
+    var vvTop = vv ? vv.offsetTop : 0;
+    var viewportBottom = vvHeight + vvTop;
+    var focused = !!activeInput();
+    var likelyKeyboard = focused || forceKeyboard || (stableHeight - viewportBottom > 90);
+
+    if(Math.abs(currentWidth - lastWidth) > 80){
+      lastWidth = currentWidth;
+      stableHeight = Math.max(window.innerHeight || 0, document.documentElement.clientHeight || 0, viewportBottom || 0);
+    }else if(!likelyKeyboard && viewportBottom > stableHeight * 0.90){
+      stableHeight = Math.max(stableHeight, viewportBottom, window.innerHeight || 0, document.documentElement.clientHeight || 0);
+    }
+
+    var keyboardHeight = likelyKeyboard ? Math.max(0, stableHeight - vvHeight) : 0;
+    var visualTop = likelyKeyboard ? Math.max(0, vvTop) : 0;
+    if(keyboardHeight < 80) keyboardHeight = 0;
+    if(!focused && stableHeight - viewportBottom < 80){
+      keyboardHeight = 0;
+      visualTop = 0;
+      likelyKeyboard = false;
+    }
+
+    document.documentElement.style.setProperty('--yosi-root-stable-h', px(stableHeight));
+
+    if(homeDoc){
+      homeDoc.documentElement.style.setProperty('--yosi-monto-host-h', px(stableHeight));
+      homeDoc.documentElement.classList.toggle('yosi-monto-host-kb-open', likelyKeyboard && montoVisible());
+      try{
+        var mv = homeDoc.getElementById('montoView');
+        var mf = homeDoc.getElementById('montoOptimizadoFrame');
+        if(mv){ mv.style.height = px(stableHeight); mv.style.maxHeight = px(stableHeight); }
+        if(mf){ mf.style.height = px(stableHeight); mf.style.maxHeight = px(stableHeight); }
+      }catch(e){}
+    }
+
+    if(innerDoc){
+      innerDoc.documentElement.style.setProperty('--yosi-monto-stable-h', px(stableHeight));
+      innerDoc.documentElement.style.setProperty('--yosi-monto-kb-h', px(keyboardHeight));
+      innerDoc.documentElement.style.setProperty('--yosi-monto-vv-top', px(visualTop));
+      innerDoc.documentElement.classList.toggle('yosi-monto-kb-open', likelyKeyboard && focused);
+    }
+
+    if(focused || likelyKeyboard) zeroScroll();
+  }
+
+  function attachFrames(){
+    homeFrame = document.getElementById('homeFrame');
+    if(homeFrame && !homeFrame.__yosiKeyboardLoadV2){
+      homeFrame.__yosiKeyboardLoadV2 = true;
+      homeFrame.addEventListener('load', function(){
+        setTimeout(function(){ discover(); sync(false); }, 0);
+        setTimeout(function(){ discover(); sync(false); }, 250);
+        setTimeout(function(){ discover(); sync(false); }, 900);
+      });
+    }
+    if(discover() && innerFrame && !innerFrame.__yosiKeyboardLoadV2){
+      innerFrame.__yosiKeyboardLoadV2 = true;
+      innerFrame.addEventListener('load', function(){
+        setTimeout(function(){ discover(); sync(false); }, 0);
+        setTimeout(function(){ discover(); sync(false); }, 180);
+      });
+    }
+  }
+
+  ['resize','pageshow'].forEach(function(ev){
+    window.addEventListener(ev, function(){ sync(false); }, {passive:true});
+  });
+  window.addEventListener('orientationchange', function(){
+    setTimeout(function(){
+      stableHeight = Math.max(window.innerHeight || 0, document.documentElement.clientHeight || 0, window.visualViewport ? window.visualViewport.height + window.visualViewport.offsetTop : 0);
+      sync(false);
+    }, 450);
+  }, {passive:true});
+
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize', function(){ sync(false); }, {passive:true});
+    window.visualViewport.addEventListener('scroll', function(){ sync(false); }, {passive:true});
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', function(){ attachFrames(); sync(false); }, {once:true});
+  }else{
+    attachFrames();
+    sync(false);
+  }
+
+  setTimeout(function(){ attachFrames(); sync(false); }, 80);
+  setTimeout(function(){ attachFrames(); sync(false); }, 350);
+  setTimeout(function(){ attachFrames(); sync(false); }, 1000);
+  setTimeout(function(){ attachFrames(); sync(false); }, 2200);
+  setInterval(function(){ attachFrames(); if(montoVisible()) sync(false); }, 700);
 })();
 </script>
 
