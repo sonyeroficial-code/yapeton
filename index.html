@@ -9,7 +9,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
-<meta name="yosi-build" content="monto-iphone-keyboard-20260729-v2"/>
+<meta name="yosi-build" content="iphone-fullscreen-bottom-20260729-v3"/>
 
 <link href="manifest.webmanifest" rel="manifest"/>
 <meta content="#742284" name="theme-color"/>
@@ -24632,6 +24632,8 @@ import { getFirestore, doc, getDoc, collection, query, where, getDocs, limit } f
 </style>
 
 
+
+
 </body>
 
 </html>
@@ -37374,3 +37376,175 @@ html.yosi-ios-monto-root #homeFrame{
 })();
 </script>
 
+<!-- IOS_FULL_SCREEN_BOTTOM_FIX_V3_START -->
+<style id="ios-fullscreen-bottom-gap-fix-v3">
+/* iPhone/iPad only: the main stage is pinned to all four viewport edges.
+   Using inset instead of a captured pixel height prevents the purple strip
+   that Safari can leave below the app after its bars or keyboard resize. */
+html.yosi-ios-fullscreen-v3 {
+  width:100% !important;
+  height:100% !important;
+  min-height:100% !important;
+  overflow:hidden !important;
+  background:#742284 !important;
+}
+html.yosi-ios-fullscreen-v3 body {
+  position:fixed !important;
+  inset:0 !important;
+  width:auto !important;
+  height:auto !important;
+  min-height:0 !important;
+  max-height:none !important;
+  margin:0 !important;
+  overflow:hidden !important;
+  overscroll-behavior:none !important;
+  background:#742284 !important;
+}
+html.yosi-ios-fullscreen-v3 #appWrap,
+html.yosi-ios-fullscreen-v3 #loginWrap {
+  width:100% !important;
+  height:100% !important;
+  min-height:100% !important;
+  max-height:none !important;
+}
+html.yosi-ios-fullscreen-v3 .stage {
+  position:fixed !important;
+  inset:0 !important;
+  width:auto !important;
+  height:auto !important;
+  min-height:0 !important;
+  max-height:none !important;
+  overflow:hidden !important;
+  background:#742284 !important;
+}
+html.yosi-ios-fullscreen-v3 #loginFrame,
+html.yosi-ios-fullscreen-v3 #homeFrame {
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  min-height:100% !important;
+  max-height:none !important;
+  background:#742284 !important;
+}
+</style>
+<script id="ios-fullscreen-bottom-gap-fix-v3-js">
+(function(){
+  if(window.__yosiIosFullscreenBottomFixV3) return;
+  window.__yosiIosFullscreenBottomFixV3 = true;
+
+  var ua = navigator.userAgent || '';
+  var platform = navigator.platform || '';
+  var isIOS = /iPhone|iPad|iPod/i.test(ua) ||
+    (platform === 'MacIntel' && navigator.maxTouchPoints > 1) ||
+    (/Macintosh/i.test(ua) && 'ontouchend' in document);
+  if(!isIOS) return;
+
+  document.documentElement.classList.add('yosi-ios-fullscreen-v3');
+
+  function addStyle(doc, id, css){
+    if(!doc || !doc.head) return;
+    var style = doc.getElementById(id);
+    if(!style){
+      style = doc.createElement('style');
+      style.id = id;
+      doc.head.appendChild(style);
+    }
+    if(style.textContent !== css) style.textContent = css;
+  }
+
+  var homeCss = [
+    'html.__yosi_ios_home_full_v3{width:100%!important;height:100%!important;min-height:100%!important;overflow:hidden!important;background:#742284!important;}',
+    'html.__yosi_ios_home_full_v3 body{position:fixed!important;inset:0!important;width:auto!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0!important;padding:0!important;overflow:hidden!important;background:#742284!important;overscroll-behavior:none!important;}',
+    'html.__yosi_ios_home_full_v3 .device{position:fixed!important;inset:0!important;width:auto!important;height:auto!important;min-height:0!important;max-width:none!important;max-height:none!important;margin:0!important;border-radius:0!important;overflow:hidden!important;}',
+    'html.__yosi_ios_home_full_v3 .views{position:absolute!important;inset:0!important;width:auto!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:hidden!important;}',
+    'html.__yosi_ios_home_full_v3 .view{bottom:0!important;min-height:0!important;max-height:none!important;}',
+    'html.__yosi_ios_home_full_v3 #montoView{position:absolute!important;inset:0!important;width:auto!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:hidden!important;background:#fff!important;}',
+    'html.__yosi_ios_home_full_v3 #montoOptimizadoFrame{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;min-height:100%!important;max-height:none!important;background:#fff!important;}'
+  ].join('');
+
+  var innerCss = [
+    'html.__yosi_ios_inner_full_v3{width:100%!important;height:100%!important;min-height:100%!important;overflow:hidden!important;background:#fff!important;}',
+    'html.__yosi_ios_inner_full_v3 body{position:fixed!important;inset:0!important;width:auto!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0!important;overflow:hidden!important;background:#fff!important;}',
+    'html.__yosi_ios_inner_full_v3 app-root,html.__yosi_ios_inner_full_v3 app-monto{position:absolute!important;inset:0!important;display:block!important;width:auto!important;height:auto!important;min-height:0!important;max-height:none!important;background:#fff!important;overflow:hidden!important;}',
+    'html.__yosi_ios_inner_full_v3 .father{position:absolute!important;inset:0!important;width:auto!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0!important;background:#fff!important;overflow:hidden!important;}'
+  ].join('');
+
+  function patchInnerFrame(frame){
+    if(!frame) return;
+    try{
+      var doc = frame.contentDocument || (frame.contentWindow && frame.contentWindow.document);
+      if(!doc || !doc.documentElement) return;
+      doc.documentElement.classList.add('__yosi_ios_inner_full_v3');
+      addStyle(doc, '__yosi_ios_inner_full_style_v3', innerCss);
+    }catch(e){}
+  }
+
+  function patchHome(){
+    var frame = document.getElementById('homeFrame');
+    if(!frame) return;
+
+    // Re-assert edge pinning because iOS may write a stale iframe height
+    // after closing the keyboard or expanding/collapsing Safari bars.
+    try{
+      frame.style.setProperty('top','0','important');
+      frame.style.setProperty('right','0','important');
+      frame.style.setProperty('bottom','0','important');
+      frame.style.setProperty('left','0','important');
+      frame.style.setProperty('width','100%','important');
+      frame.style.setProperty('height','100%','important');
+      frame.style.setProperty('min-height','100%','important');
+      frame.style.setProperty('max-height','none','important');
+    }catch(e){}
+
+    try{
+      var doc = frame.contentDocument || (frame.contentWindow && frame.contentWindow.document);
+      if(!doc || !doc.documentElement) return;
+      doc.documentElement.classList.add('__yosi_ios_home_full_v3');
+      addStyle(doc, '__yosi_ios_home_full_style_v3', homeCss);
+      patchInnerFrame(doc.getElementById('montoOptimizadoFrame'));
+    }catch(e){}
+  }
+
+  function refresh(){
+    document.documentElement.classList.add('yosi-ios-fullscreen-v3');
+    patchHome();
+    try{ window.scrollTo(0,0); }catch(e){}
+  }
+
+  var home = document.getElementById('homeFrame');
+  if(home && !home.__yosiIosFullLoadV3){
+    home.__yosiIosFullLoadV3 = true;
+    home.addEventListener('load', function(){
+      setTimeout(refresh,0);
+      setTimeout(refresh,180);
+      setTimeout(refresh,700);
+    });
+  }
+
+  ['resize','orientationchange','pageshow'].forEach(function(type){
+    window.addEventListener(type, function(){
+      refresh();
+      setTimeout(refresh,80);
+      setTimeout(refresh,320);
+    }, {passive:true});
+  });
+
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize', refresh, {passive:true});
+    window.visualViewport.addEventListener('scroll', refresh, {passive:true});
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', refresh, {once:true});
+  }else{
+    refresh();
+  }
+
+  setTimeout(refresh,60);
+  setTimeout(refresh,300);
+  setTimeout(refresh,900);
+  setInterval(refresh,650);
+})();
+</script>
+<!-- IOS_FULL_SCREEN_BOTTOM_FIX_V3_END -->
