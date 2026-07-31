@@ -34,7 +34,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
-<meta name="yosi-build" content="biometria-auto-ios-android-20260731-v3"/>
+<meta name="yosi-build" content="biometria-perfil-v8-tap-opciones-20260731"/>
 
 <link href="manifest.webmanifest" rel="manifest"/>
 <meta content="#742284" name="theme-color"/>
@@ -64,7 +64,7 @@
 
     var refreshing = false;
     function registerSW(){
-      navigator.serviceWorker.register('./service-worker.js?v=biometria-auto-ios-android-20260731-v3', { scope: './' }).then(function(reg){
+      navigator.serviceWorker.register('./service-worker.js?v=biometria-perfil-v8-tap-opciones-20260731', { scope: './' }).then(function(reg){
         try { reg.update && reg.update(); } catch(e){}
 
         function promoteWaiting(worker){
@@ -2022,8 +2022,222 @@
 &lt;div id=&quot;homeView&quot;&gt;
 
 &lt;div class=&quot;screen active&quot; data-yosi-menu-perfil=&quot;direct&quot; id=&quot;perfilScreen&quot;&gt;
-&lt;app-root&gt;&lt;div class=&quot;menu-desplegable&quot;&gt;&lt;div class=&quot;revMenu&quot;&gt;&lt;div class=&quot;menu-top&quot;&gt;&lt;div class=&quot;menu-cerrar yosi-tap&quot; data-yosi-action=&quot;closePerfil&quot; id=&quot;btnBackHome&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;menu-degrade&quot;&gt;&lt;span class=&quot;menu-titular&quot;&gt;Mi Perfil&lt;/span&gt;&lt;div class=&quot;ayuda&quot;&gt;&lt;img alt=&quot;&quot; src=&quot;assets/embedded/icono-ayuda-soporte.svg&quot;/&gt;&lt;span&gt;Ayuda&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;flex flex-column justify-content-center align-items-center&quot; style=&quot;padding-top:30vw&quot;&gt;&lt;div class=&quot;menu-box-items&quot;&gt;&lt;span class=&quot;menu-b-tittle&quot;&gt;Mi cuenta&lt;/span&gt;&lt;div class=&quot;yosi-tap&quot; data-yosi-action=&quot;misDatos&quot; id=&quot;misDatosBtn&quot; role=&quot;button&quot; tabindex=&quot;0&quot;&gt;&lt;img alt=&quot;&quot; src=&quot;assets/embedded/icono-mis-datos.svg&quot;/&gt;&lt;span&gt;Mis datos&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;yosi-tap&quot; data-yosi-action=&quot;miQR&quot; id=&quot;miQRBtn&quot; role=&quot;button&quot; tabindex=&quot;0&quot;&gt;&lt;img alt=&quot;&quot; src=&quot;assets/embedded/icono-mi-qr.svg&quot;/&gt;&lt;span&gt;Mi QR&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;img alt=&quot;&quot; src=&quot;assets/embedded/icono-mis-direcciones.svg&quot;/&gt;&lt;span&gt;Mis direcciones&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;img alt=&quot;&quot; src=&quot;assets/embedded/icono-eliminar-cuenta.svg&quot;/&gt;&lt;span&gt;Eliminar mi cuenta&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;menu-box-items&quot;&gt;&lt;span class=&quot;menu-b-tittle&quot;&gt;Ajustes&lt;/span&gt;&lt;div&gt;&lt;img alt=&quot;&quot; src=&quot;assets/embedded/icono-biometria-huella.svg&quot;/&gt;&lt;span&gt;Biometría digital&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;img alt=&quot;&quot; src=&quot;assets/embedded/icono-compras-internet-pos.svg&quot;/&gt;&lt;span&gt;Compras por internet y POS&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;img alt=&quot;&quot; src=&quot;assets/embedded/icono-confirmacion-yapeo-alto.svg&quot;/&gt;&lt;span&gt;Confirmación de yapeo alto&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;img alt=&quot;&quot; src=&quot;assets/embedded/icono-limites-transaccionales.svg&quot;/&gt;&lt;span&gt;Límites Transaccionales&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;img alt=&quot;&quot; src=&quot;assets/embedded/icono-notificaciones-yapeo.svg&quot;/&gt;&lt;span&gt;Notificaciones por yapeo&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;cont-versions&quot;&gt;&lt;div class=&quot;menu-version&quot;&gt;&lt;span&gt;&lt;strong&gt;Versión Yape:&lt;/strong&gt; 8.12.0&lt;/span&gt;&lt;span&gt;&lt;strong&gt;Tipo de Cuenta:&lt;/strong&gt; Yape con BCP &lt;br/&gt;BANCO DE CRÉDITO DEL PERÚ&lt;/span&gt;&lt;span&gt;&lt;strong&gt;RUC:&lt;/strong&gt; 20100249280&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;menu-last&quot;&gt;&lt;div&gt;&lt;img alt=&quot;&quot; src=&quot;assets/embedded/icono-terminos-condiciones.svg&quot;/&gt;&lt;span&gt;Términos y condiciones&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;img alt=&quot;&quot; src=&quot;assets/embedded/icono-politica-privacidad.svg&quot;/&gt;&lt;span&gt;Política de privacidad&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;yosi-tap&quot; data-yosi-action=&quot;closePerfil&quot; id=&quot;cerrarSesionBtn&quot; role=&quot;button&quot; tabindex=&quot;0&quot;&gt;&lt;img alt=&quot;&quot; src=&quot;assets/embedded/icono-cerrar-sesion.svg&quot;/&gt;&lt;span&gt;Cerrar sesión&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/app-root&gt;
+&lt;app-root&gt;&lt;div class=&quot;menu-desplegable&quot;&gt;&lt;div class=&quot;revMenu&quot;&gt;&lt;div class=&quot;menu-top&quot;&gt;&lt;div class=&quot;menu-cerrar yosi-tap&quot; data-yosi-action=&quot;closePerfil&quot; id=&quot;btnBackHome&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;menu-degrade&quot;&gt;&lt;span class=&quot;menu-titular&quot;&gt;Mi Perfil&lt;/span&gt;&lt;div class=&quot;ayuda&quot;&gt;&lt;img alt=&quot;&quot; src=&quot;assets/embedded/icono-ayuda-soporte.svg&quot;/&gt;&lt;span&gt;Ayuda&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;flex flex-column justify-content-center align-items-center&quot; style=&quot;padding-top:30vw&quot;&gt;&lt;div class=&quot;menu-box-items&quot;&gt;&lt;span class=&quot;menu-b-tittle&quot;&gt;Mi cuenta&lt;/span&gt;&lt;div class=&quot;yosi-tap&quot; data-yosi-action=&quot;misDatos&quot; id=&quot;misDatosBtn&quot; role=&quot;button&quot; tabindex=&quot;0&quot;&gt;&lt;img alt=&quot;&quot; src=&quot;assets/embedded/icono-mis-datos.svg&quot;/&gt;&lt;span&gt;Mis datos&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;yosi-tap&quot; data-yosi-action=&quot;miQR&quot; id=&quot;miQRBtn&quot; role=&quot;button&quot; tabindex=&quot;0&quot;&gt;&lt;img alt=&quot;&quot; src=&quot;assets/embedded/icono-mi-qr.svg&quot;/&gt;&lt;span&gt;Mi QR&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;img alt=&quot;&quot; src=&quot;assets/embedded/icono-mis-direcciones.svg&quot;/&gt;&lt;span&gt;Mis direcciones&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;img alt=&quot;&quot; src=&quot;assets/embedded/icono-eliminar-cuenta.svg&quot;/&gt;&lt;span&gt;Eliminar mi cuenta&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;menu-box-items&quot;&gt;&lt;span class=&quot;menu-b-tittle&quot;&gt;Ajustes&lt;/span&gt;&lt;div id=&quot;biometriaPerfilBtnV8&quot; class=&quot;yosi-tap yape-bio-profile-trigger-v8&quot; role=&quot;button&quot; tabindex=&quot;0&quot; aria-label=&quot;Abrir ajustes de biometría digital&quot; data-yosi-action=&quot;openBiometriaPerfilV8&quot; onclick=&quot;return window.__openYapeBiometriaPerfilV8(event)&quot;&gt;&lt;img alt=&quot;&quot; src=&quot;assets/embedded/icono-biometria-huella.svg&quot;/&gt;&lt;span&gt;Biometría digital&lt;/span&gt;&lt;span class=&quot;ybp8-row-chevron&quot; aria-hidden=&quot;true&quot;&gt;›&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;img alt=&quot;&quot; src=&quot;assets/embedded/icono-compras-internet-pos.svg&quot;/&gt;&lt;span&gt;Compras por internet y POS&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;img alt=&quot;&quot; src=&quot;assets/embedded/icono-confirmacion-yapeo-alto.svg&quot;/&gt;&lt;span&gt;Confirmación de yapeo alto&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;img alt=&quot;&quot; src=&quot;assets/embedded/icono-limites-transaccionales.svg&quot;/&gt;&lt;span&gt;Límites Transaccionales&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;img alt=&quot;&quot; src=&quot;assets/embedded/icono-notificaciones-yapeo.svg&quot;/&gt;&lt;span&gt;Notificaciones por yapeo&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;cont-versions&quot;&gt;&lt;div class=&quot;menu-version&quot;&gt;&lt;span&gt;&lt;strong&gt;Versión Yape:&lt;/strong&gt; 8.12.0&lt;/span&gt;&lt;span&gt;&lt;strong&gt;Tipo de Cuenta:&lt;/strong&gt; Yape con BCP &lt;br/&gt;BANCO DE CRÉDITO DEL PERÚ&lt;/span&gt;&lt;span&gt;&lt;strong&gt;RUC:&lt;/strong&gt; 20100249280&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;menu-last&quot;&gt;&lt;div&gt;&lt;img alt=&quot;&quot; src=&quot;assets/embedded/icono-terminos-condiciones.svg&quot;/&gt;&lt;span&gt;Términos y condiciones&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;img alt=&quot;&quot; src=&quot;assets/embedded/icono-politica-privacidad.svg&quot;/&gt;&lt;span&gt;Política de privacidad&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;yosi-tap&quot; data-yosi-action=&quot;closePerfil&quot; id=&quot;cerrarSesionBtn&quot; role=&quot;button&quot; tabindex=&quot;0&quot;&gt;&lt;img alt=&quot;&quot; src=&quot;assets/embedded/icono-cerrar-sesion.svg&quot;/&gt;&lt;span&gt;Cerrar sesión&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/app-root&gt;
 &lt;/div&gt;
+
+&lt;style id=&quot;yape-biometria-perfil-v8-style&quot;&gt;
+  #biometriaPerfilBtnV8{cursor:pointer!important;pointer-events:auto!important;touch-action:manipulation!important;-webkit-tap-highlight-color:transparent!important;position:relative!important;z-index:4!important;width:100%!important;user-select:none!important;-webkit-user-select:none!important}
+  #biometriaPerfilBtnV8:active{opacity:.58!important}
+  #biometriaPerfilBtnV8 .ybp8-row-chevron{margin-left:auto!important;color:#a88caf!important;font-size:26px!important;line-height:1!important;font-weight:500!important;pointer-events:none!important}
+  #yapeBiometriaPerfilV8{position:fixed!important;inset:0!important;z-index:2147483647!important;display:none;background:#fff!important;color:#27172f!important;overflow:hidden!important;font-family:Roboto,system-ui,-apple-system,&quot;Segoe UI&quot;,Arial,sans-serif!important}
+  #yapeBiometriaPerfilV8.open{display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;animation:yapeBioPerfilV8In .20s cubic-bezier(.2,.9,.2,1) both}
+  #yapeBiometriaPerfilV8 *{box-sizing:border-box}
+  .ybp8-top{display:flex;align-items:center;gap:12px;height:calc(70px + env(safe-area-inset-top,0px));padding:calc(env(safe-area-inset-top,0px) + 13px) 18px 11px;border-bottom:1px solid #f0ebf3;background:#fff}
+  .ybp8-back{width:42px;height:42px;min-width:42px;border:0;border-radius:999px;background:#f3eef7;color:#24162c;display:grid;place-items:center;font-size:25px;line-height:1;font-weight:800;cursor:pointer;touch-action:manipulation}
+  .ybp8-head{font-size:18px;line-height:1.2;font-weight:800;color:#24162c}
+  .ybp8-scroll{height:calc(100% - 70px - env(safe-area-inset-top,0px));overflow-y:auto;-webkit-overflow-scrolling:touch;padding:17px 18px calc(env(safe-area-inset-bottom,0px) + 22px);overscroll-behavior:contain}
+  .ybp8-content{min-height:100%;display:flex;flex-direction:column;align-items:center;text-align:center}
+  .ybp8-icon{margin-top:8px;width:82px;height:82px;border-radius:27px;display:grid;place-items:center;background:linear-gradient(145deg,#d7a4e8,#bd70d7 48%,#9b35bd 75%);box-shadow:0 14px 28px rgba(116,34,132,.16),0 0 0 9px rgba(116,34,132,.05);position:relative}
+  .ybp8-icon svg{width:51px;height:51px;display:block}
+  #ybp8Check{position:absolute;right:-6px;bottom:-5px;width:34px;height:34px;border-radius:999px;background:#1fc8b8;color:#fff;display:grid;place-items:center;font-size:21px;font-weight:950;box-shadow:0 8px 18px rgba(31,200,184,.28)}
+  .ybp8-pill{margin-top:14px;padding:6px 12px;border-radius:999px;background:#f6f0fa;color:#742284;border:1px solid rgba(116,34,132,.10);font-size:10px;font-weight:900;letter-spacing:.09em;text-transform:uppercase}
+  #ybp8Title{margin:16px 0 8px;color:#7d1ca5;font-size:23px;line-height:1.17;font-weight:900;letter-spacing:-.02em}
+  #ybp8Text{max-width:330px;margin:0 auto;color:#706378;font-size:14px;line-height:1.4;font-weight:500}
+  .ybp8-info{width:min(100%,355px);margin:14px auto 0;padding:11px 12px;border-radius:16px;background:#f7f4fa;border:1px solid rgba(116,34,132,.08);color:#5f5068;font-size:12.3px;line-height:1.35;text-align:left;display:flex;align-items:flex-start;gap:9px}
+  .ybp8-info b{width:23px;height:23px;min-width:23px;border-radius:999px;background:rgba(31,200,184,.14);color:#0b958a;display:grid;place-items:center;font-size:12px;font-weight:950}
+  .ybp8-section-title{width:100%;max-width:360px;margin:18px 0 2px;text-align:left;color:#32213a;font-size:14px;font-weight:850}
+  .ybp8-actions{width:100%;max-width:360px;margin-top:0;padding-top:0}
+  .ybp8-btn{width:100%;min-height:48px;margin-top:8px;padding:0 14px;border-radius:15px;font-size:14.5px;font-weight:850;letter-spacing:.005em;cursor:pointer;touch-action:manipulation}
+  .ybp8-btn.primary{border:0;background:#18c6b7;color:#fff;box-shadow:0 11px 21px rgba(24,198,183,.20)}
+  .ybp8-btn.outline{border:2px solid #18c6b7;background:#fff;color:#14ae9f}
+  .ybp8-btn.soft{border:1px solid rgba(116,34,132,.14);background:#f7f2fa;color:#742284}
+  .ybp8-btn.danger{border:1px solid rgba(220,64,64,.22);background:#fff;color:#d33f3f}
+  .ybp8-btn.home{border:0;background:#f1edf4;color:#5c4865;box-shadow:none;margin-top:13px}
+  .ybp8-btn:disabled{opacity:.48;cursor:not-allowed;box-shadow:none;filter:grayscale(.12)}
+  #ybp8Status{min-height:20px;margin:11px 4px 0;color:#742284;font-size:12.4px;line-height:1.35;font-weight:750}
+  #ybp8Toast{position:fixed;z-index:2147483647;left:50%;top:calc(env(safe-area-inset-top,0px) + 14px);transform:translate(-50%,-14px);width:min(330px,calc(100vw - 28px));padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.98);color:#2b1735;box-shadow:0 16px 38px rgba(20,2,31,.30);font-size:12.5px;font-weight:750;line-height:1.3;opacity:0;pointer-events:none;transition:opacity .18s ease,transform .18s ease}
+  #ybp8Toast.show{opacity:1;transform:translate(-50%,0)}
+  @keyframes yapeBioPerfilV8In{from{opacity:.30;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}
+  @media (max-height:700px){.ybp8-scroll{padding-top:12px}.ybp8-icon{width:72px;height:72px;margin-top:3px}.ybp8-icon svg{width:45px;height:45px}.ybp8-pill{margin-top:11px}#ybp8Title{margin-top:13px;font-size:21px}.ybp8-info{margin-top:11px}.ybp8-section-title{margin-top:14px}.ybp8-btn{min-height:45px;margin-top:7px}}
+&lt;/style&gt;
+
+&lt;section id=&quot;yapeBiometriaPerfilV8&quot; aria-hidden=&quot;true&quot;&gt;
+  &lt;div class=&quot;ybp8-top&quot;&gt;
+    &lt;button class=&quot;ybp8-back&quot; id=&quot;ybp8Back&quot; type=&quot;button&quot; aria-label=&quot;Volver&quot;&gt;‹&lt;/button&gt;
+    &lt;div class=&quot;ybp8-head&quot;&gt;Biometría digital&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;ybp8-scroll&quot;&gt;
+    &lt;div class=&quot;ybp8-content&quot;&gt;
+      &lt;div class=&quot;ybp8-icon&quot;&gt;
+        &lt;svg viewBox=&quot;0 0 64 64&quot; fill=&quot;none&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot; aria-hidden=&quot;true&quot;&gt;
+          &lt;path d=&quot;M32 12c-9.7 0-17.5 7.8-17.5 17.5v4.4M49.5 33.9v-4.4C49.5 19.8 41.7 12 32 12&quot; stroke=&quot;#7b1fa2&quot; stroke-width=&quot;3.7&quot; stroke-linecap=&quot;round&quot;/&gt;
+          &lt;path d=&quot;M22 32c0-6 4.5-10.5 10-10.5S42 26 42 32v6.7M26 32.5c0-3.6 2.6-6.5 6-6.5s6 2.9 6 6.5v8.3M30 33v8.8M34 32.5v12.2M18.5 36.5c.4 7.4 3.5 12.3 8.1 15.5M45.5 36.5c-.4 7.4-3.5 12.3-8.1 15.5M23.5 43.5c1.2 4.5 4 7.3 8.5 9.5M40.5 43.5c-1.2 4.5-4 7.3-8.5 9.5&quot; stroke=&quot;#7b1fa2&quot; stroke-width=&quot;3.2&quot; stroke-linecap=&quot;round&quot;/&gt;
+        &lt;/svg&gt;
+        &lt;div id=&quot;ybp8Check&quot;&gt;✓&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;ybp8-pill&quot;&gt;Seguridad del teléfono&lt;/div&gt;
+      &lt;h2 id=&quot;ybp8Title&quot;&gt;Biometría digital&lt;/h2&gt;
+      &lt;p id=&quot;ybp8Text&quot;&gt;&lt;/p&gt;
+      &lt;div class=&quot;ybp8-info&quot;&gt;&lt;b&gt;i&lt;/b&gt;&lt;div id=&quot;ybp8Info&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;div class=&quot;ybp8-section-title&quot;&gt;Administrar biometría&lt;/div&gt;
+      &lt;div class=&quot;ybp8-actions&quot;&gt;
+        &lt;button class=&quot;ybp8-btn primary&quot; id=&quot;ybp8Activate&quot; type=&quot;button&quot;&gt;Activar biometría&lt;/button&gt;
+        &lt;button class=&quot;ybp8-btn soft&quot; id=&quot;ybp8Configure&quot; type=&quot;button&quot;&gt;Configurar biometría&lt;/button&gt;
+        &lt;button class=&quot;ybp8-btn soft&quot; id=&quot;ybp8Verify&quot; type=&quot;button&quot;&gt;Verificar ahora&lt;/button&gt;
+        &lt;button class=&quot;ybp8-btn outline&quot; id=&quot;ybp8Disable&quot; type=&quot;button&quot;&gt;Desactivar biometría digital&lt;/button&gt;
+        &lt;button class=&quot;ybp8-btn danger&quot; id=&quot;ybp8Delete&quot; type=&quot;button&quot;&gt;Eliminar configuración de esta app&lt;/button&gt;
+        &lt;button class=&quot;ybp8-btn home&quot; id=&quot;ybp8Home&quot; type=&quot;button&quot;&gt;Ir al inicio&lt;/button&gt;
+        &lt;div id=&quot;ybp8Status&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+&lt;div id=&quot;ybp8Toast&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
+
+&lt;script id=&quot;yape-biometria-perfil-v8-script&quot;&gt;
+(function(){
+  &#x27;use strict&#x27;;
+  var busy=false, toastTimer=0, tapStart=null, lastOpenAt=0;
+
+  function hostFn(name){
+    try{if(window.parent&amp;&amp;typeof window.parent[name]===&#x27;function&#x27;)return window.parent[name];}catch(e){}
+    try{if(typeof window[name]===&#x27;function&#x27;)return window[name];}catch(e){}
+    return null;
+  }
+  function isIOS(){var ua=navigator.userAgent||&#x27;&#x27;,p=navigator.platform||&#x27;&#x27;;return /iPad|iPhone|iPod/.test(ua)||(p===&#x27;MacIntel&#x27;&amp;&amp;navigator.maxTouchPoints&gt;1);}
+  function method(){return isIOS()?&#x27;Face ID&#x27;:&#x27;huella&#x27;;}
+  function methodLong(){return isIOS()?&#x27;Face ID&#x27;:&#x27;huella digital&#x27;;}
+  function state(){var fn=hostFn(&#x27;__getYapePlatformBiometricState&#x27;);try{return(fn&amp;&amp;fn())||{hasSession:false,configured:false};}catch(e){return{hasSession:false,configured:false};}}
+  function byId(id){return document.getElementById(id);}
+  function status(msg){var e=byId(&#x27;ybp8Status&#x27;);if(e)e.textContent=msg||&#x27;&#x27;;}
+  function toast(msg){var e=byId(&#x27;ybp8Toast&#x27;);if(!e)return;e.textContent=msg;e.classList.add(&#x27;show&#x27;);clearTimeout(toastTimer);toastTimer=setTimeout(function(){e.classList.remove(&#x27;show&#x27;);},2400);}
+  function disableAll(v){[&#x27;ybp8Home&#x27;,&#x27;ybp8Activate&#x27;,&#x27;ybp8Verify&#x27;,&#x27;ybp8Configure&#x27;,&#x27;ybp8Disable&#x27;,&#x27;ybp8Delete&#x27;].forEach(function(id){var e=byId(id);if(e)e.disabled=!!v;});}
+
+  function render(){
+    var configured=!!state().configured;
+    var activate=byId(&#x27;ybp8Activate&#x27;),verify=byId(&#x27;ybp8Verify&#x27;),configure=byId(&#x27;ybp8Configure&#x27;),disable=byId(&#x27;ybp8Disable&#x27;),remove=byId(&#x27;ybp8Delete&#x27;);
+    byId(&#x27;ybp8Check&#x27;).style.display=configured?&#x27;grid&#x27;:&#x27;none&#x27;;
+    activate.textContent=configured?(methodLong()+&#x27; activado&#x27;):(&#x27;Activar &#x27;+method());
+    configure.textContent=configured?(&#x27;Configurar nuevamente &#x27;+method()):(&#x27;Configurar &#x27;+method());
+    verify.textContent=&#x27;Verificar ahora&#x27;;
+    disable.textContent=&#x27;Desactivar &#x27;+method();
+    remove.textContent=&#x27;Eliminar &#x27;+method()+&#x27; de esta app&#x27;;
+    activate.disabled=configured;
+    verify.disabled=!configured;
+    disable.disabled=!configured;
+    remove.disabled=!configured;
+    configure.disabled=false;
+    if(configured){
+      byId(&#x27;ybp8Title&#x27;).textContent=&#x27;Tienes activa tu biometría digital&#x27;;
+      byId(&#x27;ybp8Text&#x27;).textContent=&#x27;También puedes entrar con tu clave de siempre o usando &#x27;+methodLong()+&#x27;.&#x27;;
+      byId(&#x27;ybp8Info&#x27;).textContent=&#x27;Todas las opciones están disponibles aquí: verificar, configurar nuevamente, desactivar o eliminar el acceso biométrico de esta app.&#x27;;
+    }else{
+      byId(&#x27;ybp8Title&#x27;).textContent=&#x27;Activa tu biometría digital&#x27;;
+      byId(&#x27;ybp8Text&#x27;).textContent=&#x27;Configura &#x27;+methodLong()+&#x27; para entrar más rápido desde este teléfono.&#x27;;
+      byId(&#x27;ybp8Info&#x27;).textContent=&#x27;La app no guarda tu rostro ni tu huella. Primero activa o configura la biometría; después se habilitarán verificar, desactivar y eliminar.&#x27;;
+    }
+    status(&#x27;&#x27;);
+  }
+
+  window.__openYapeBiometriaPerfilV8=function(ev){
+    var now=Date.now();
+    if(now-lastOpenAt&lt;350)return false;
+    lastOpenAt=now;
+    try{if(ev){ev.preventDefault();ev.stopPropagation();if(ev.stopImmediatePropagation)ev.stopImmediatePropagation();}}catch(e){}
+    var screen=byId(&#x27;yapeBiometriaPerfilV8&#x27;);if(!screen)return false;
+    render();screen.classList.add(&#x27;open&#x27;);screen.setAttribute(&#x27;aria-hidden&#x27;,&#x27;false&#x27;);return false;
+  };
+  window.__closeYapeBiometriaPerfilV8=function(ev){
+    try{if(ev){ev.preventDefault();ev.stopPropagation();}}catch(e){}
+    var screen=byId(&#x27;yapeBiometriaPerfilV8&#x27;);if(screen){screen.classList.remove(&#x27;open&#x27;);screen.setAttribute(&#x27;aria-hidden&#x27;,&#x27;true&#x27;);}return false;
+  };
+
+  async function registerOrConfigure(forceReset){
+    var register=hostFn(&#x27;__registerYapePlatformBiometric&#x27;);
+    var reset=hostFn(&#x27;__resetYapePlatformBiometric&#x27;);
+    if(!register){status(&#x27;No se pudo conectar con la seguridad del teléfono.&#x27;);return;}
+    if(forceReset&amp;&amp;state().configured){
+      if(!reset){status(&#x27;No se pudo preparar una nueva configuración.&#x27;);return;}
+      if(!confirm(&#x27;¿Deseas configurar nuevamente &#x27;+methodLong()+&#x27; para esta cuenta?&#x27;))return;
+      reset();
+    }
+    busy=true;disableAll(true);status(&#x27;Confirma la configuración en tu teléfono.&#x27;);
+    await register();render();status(&#x27;Biometría configurada correctamente.&#x27;);toast(&#x27;Biometría configurada.&#x27;);
+  }
+
+  async function action(kind){
+    if(busy)return;
+    var auth=hostFn(&#x27;__yapePlatformBiometric&#x27;);
+    var reset=hostFn(&#x27;__resetYapePlatformBiometric&#x27;);
+    try{
+      if(kind===&#x27;activate&#x27;){if(state().configured){status(methodLong()+&#x27; ya está activado.&#x27;);return;}await registerOrConfigure(false);return;}
+      if(kind===&#x27;configure&#x27;){await registerOrConfigure(!!state().configured);return;}
+      if(kind===&#x27;verify&#x27;){
+        if(!state().configured){status(&#x27;Primero activa o configura &#x27;+methodLong()+&#x27;.&#x27;);return;}
+        if(!auth){status(&#x27;No se pudo conectar con la seguridad del teléfono.&#x27;);return;}
+        busy=true;disableAll(true);status(&#x27;Verifica tu identidad en el teléfono.&#x27;);await auth();status(&#x27;Verificación completada correctamente.&#x27;);toast(&#x27;Verificación correcta.&#x27;);return;
+      }
+      if(kind===&#x27;disable&#x27;){
+        if(!state().configured){status(&#x27;La biometría todavía no está activa.&#x27;);return;}
+        if(!reset){status(&#x27;No se pudo desactivar la biometría.&#x27;);return;}
+        if(!confirm(&#x27;¿Deseas desactivar &#x27;+methodLong()+&#x27; para esta cuenta?&#x27;))return;
+        busy=true;disableAll(true);reset();render();status(&#x27;Biometría desactivada.&#x27;);toast(&#x27;Biometría desactivada.&#x27;);return;
+      }
+      if(kind===&#x27;delete&#x27;){
+        if(!state().configured){status(&#x27;No existe una configuración biométrica para eliminar.&#x27;);return;}
+        if(!reset){status(&#x27;No se pudo eliminar la configuración.&#x27;);return;}
+        if(!confirm(&#x27;¿Deseas eliminar &#x27;+methodLong()+&#x27; de esta app? No se eliminará del teléfono.&#x27;))return;
+        busy=true;disableAll(true);reset();render();status(&#x27;Configuración eliminada de esta app.&#x27;);toast(&#x27;Configuración eliminada.&#x27;);return;
+      }
+    }catch(err){
+      var msg=err&amp;&amp;err.message?String(err.message):&#x27;No se pudo completar la acción.&#x27;;
+      if(err&amp;&amp;(err.code===&#x27;CANCELLED&#x27;||err.name===&#x27;NotAllowedError&#x27;))msg=&#x27;Operación cancelada.&#x27;;
+      status(msg);
+    }finally{busy=false;disableAll(false);renderButtonsOnly();}
+  }
+
+  function renderButtonsOnly(){
+    var configured=!!state().configured;
+    var activate=byId(&#x27;ybp8Activate&#x27;),verify=byId(&#x27;ybp8Verify&#x27;),configure=byId(&#x27;ybp8Configure&#x27;),disable=byId(&#x27;ybp8Disable&#x27;),remove=byId(&#x27;ybp8Delete&#x27;);
+    if(!activate)return;
+    activate.disabled=configured;verify.disabled=!configured;configure.disabled=false;disable.disabled=!configured;remove.disabled=!configured;
+  }
+
+  function bindReliableTap(row){
+    if(!row||row.__ybp8TapBound)return;
+    row.__ybp8TapBound=true;
+    row.style.touchAction=&#x27;manipulation&#x27;;
+    if(window.PointerEvent){
+      row.addEventListener(&#x27;pointerdown&#x27;,function(ev){if(ev.pointerType===&#x27;mouse&#x27;&amp;&amp;ev.button!==0)return;tapStart={id:ev.pointerId,x:ev.clientX,y:ev.clientY,t:Date.now()};},true);
+      row.addEventListener(&#x27;pointerup&#x27;,function(ev){
+        if(!tapStart||tapStart.id!==ev.pointerId)return;
+        var dx=ev.clientX-tapStart.x,dy=ev.clientY-tapStart.y,dt=Date.now()-tapStart.t;
+        tapStart=null;
+        if(Math.hypot(dx,dy)&lt;=12&amp;&amp;dt&lt;=800){window.__openYapeBiometriaPerfilV8(ev);}
+      },true);
+      row.addEventListener(&#x27;pointercancel&#x27;,function(){tapStart=null;},true);
+    }else{
+      var touchStart=null;
+      row.addEventListener(&#x27;touchstart&#x27;,function(ev){var t=ev.changedTouches&amp;&amp;ev.changedTouches[0];if(t)touchStart={x:t.clientX,y:t.clientY,t:Date.now()};},{capture:true,passive:true});
+      row.addEventListener(&#x27;touchend&#x27;,function(ev){var t=ev.changedTouches&amp;&amp;ev.changedTouches[0];if(!t||!touchStart)return;var dx=t.clientX-touchStart.x,dy=t.clientY-touchStart.y,dt=Date.now()-touchStart.t;touchStart=null;if(Math.hypot(dx,dy)&lt;=12&amp;&amp;dt&lt;=800)window.__openYapeBiometriaPerfilV8(ev);},{capture:true,passive:false});
+    }
+    row.addEventListener(&#x27;click&#x27;,function(ev){if(Date.now()-lastOpenAt&gt;450)window.__openYapeBiometriaPerfilV8(ev);},true);
+    row.addEventListener(&#x27;keydown&#x27;,function(ev){if(ev.key===&#x27;Enter&#x27;||ev.key===&#x27; &#x27;)window.__openYapeBiometriaPerfilV8(ev);},true);
+  }
+
+  function install(){
+    var row=byId(&#x27;biometriaPerfilBtnV8&#x27;);bindReliableTap(row);
+    byId(&#x27;ybp8Back&#x27;).addEventListener(&#x27;click&#x27;,window.__closeYapeBiometriaPerfilV8,true);
+    byId(&#x27;ybp8Home&#x27;).addEventListener(&#x27;click&#x27;,function(ev){window.__closeYapeBiometriaPerfilV8(ev);setTimeout(function(){var back=byId(&#x27;btnBackHome&#x27;);if(back)back.click();},40);});
+    byId(&#x27;ybp8Activate&#x27;).addEventListener(&#x27;click&#x27;,function(){action(&#x27;activate&#x27;);});
+    byId(&#x27;ybp8Verify&#x27;).addEventListener(&#x27;click&#x27;,function(){action(&#x27;verify&#x27;);});
+    byId(&#x27;ybp8Configure&#x27;).addEventListener(&#x27;click&#x27;,function(){action(&#x27;configure&#x27;);});
+    byId(&#x27;ybp8Disable&#x27;).addEventListener(&#x27;click&#x27;,function(){action(&#x27;disable&#x27;);});
+    byId(&#x27;ybp8Delete&#x27;).addEventListener(&#x27;click&#x27;,function(){action(&#x27;delete&#x27;);});
+  }
+  if(document.readyState===&#x27;loading&#x27;)document.addEventListener(&#x27;DOMContentLoaded&#x27;,install,{once:true});else install();
+})();
+&lt;/script&gt;
 
 &lt;div class=&quot;screen&quot; id=&quot;opcionesScreen&quot;&gt;
 &lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;0&quot; style=&quot;position:absolute&quot; width=&quot;0&quot;&gt;&lt;symbol id=&quot;u&quot; viewbox=&quot;0 0 24 24&quot;&gt;&lt;circle cx=&quot;12&quot; cy=&quot;8&quot; r=&quot;4&quot;&gt;&lt;/circle&gt;&lt;path d=&quot;M4 21a8 8 0 0116 0&quot;&gt;&lt;/path&gt;&lt;/symbol&gt;&lt;symbol id=&quot;d&quot; viewbox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6 3h10l4 4v14H6zM16 3v5h5M9 10h6M9 14h6M9 18h3&quot;&gt;&lt;/path&gt;&lt;circle cx=&quot;17&quot; cy=&quot;17&quot; r=&quot;3&quot;&gt;&lt;/circle&gt;&lt;path d=&quot;m15.8 17 1 1 1.8-2&quot;&gt;&lt;/path&gt;&lt;/symbol&gt;&lt;symbol id=&quot;p&quot; viewbox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M22 17v3a2 2 0 01-2 2A20 20 0 013 5a2 2 0 012-2h3a2 2 0 012 2l.4 2a2 2 0 01-.6 2L8.6 10a15 15 0 005.4 5.4l1.1-1.2a2 2 0 012-.6l2 .4a2 2 0 012 2z&quot;&gt;&lt;/path&gt;&lt;/symbol&gt;&lt;symbol id=&quot;q&quot; viewbox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 14h2v4h-4v2h-2v-4h4zM18 20h2&quot;&gt;&lt;/path&gt;&lt;/symbol&gt;&lt;symbol id=&quot;y&quot; viewbox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M4 15v-3a8 8 0 0116 0v3M4 15a3 3 0 003 3h1v-6H7a3 3 0 00-3 3zm16 0a3 3 0 01-3 3h-1v-6h1a3 3 0 013 3zM12 21h3a3 3 0 003-3&quot;&gt;&lt;/path&gt;&lt;/symbol&gt;&lt;symbol id=&quot;hm&quot; viewbox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M20 11 12 3l-8 8m2 0v7a2 2 0 002 2h4m4 0a2 2 0 002-2v-7&quot;&gt;&lt;/path&gt;&lt;/symbol&gt;&lt;/svg&gt;
@@ -3569,6 +3783,9 @@
   if(document.readyState === &#x27;loading&#x27;) document.addEventListener(&#x27;DOMContentLoaded&#x27;, init, {once:true});
   else init();
 })();&lt;/script&gt;
+
+
+
 &lt;/body&gt;&lt;/html&gt;
 &lt;/template&gt;
 &lt;script&gt;document.getElementById(&quot;misDatosBtn&quot;).addEventListener(&quot;click&quot;,function(){
