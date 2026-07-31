@@ -34,7 +34,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
-<meta name="yosi-build" content="biometria-webauthn-real-20260731-v1"/>
+<meta name="yosi-build" content="biometria-faceid-auto-20260731-v2"/>
 
 <link href="manifest.webmanifest" rel="manifest"/>
 <meta content="#742284" name="theme-color"/>
@@ -64,7 +64,7 @@
 
     var refreshing = false;
     function registerSW(){
-      navigator.serviceWorker.register('./service-worker.js?v=biometria-webauthn-real-20260731-v1', { scope: './' }).then(function(reg){
+      navigator.serviceWorker.register('./service-worker.js?v=biometria-faceid-auto-20260731-v2', { scope: './' }).then(function(reg){
         try { reg.update && reg.update(); } catch(e){}
 
         function promoteWaiting(worker){
@@ -11643,6 +11643,7 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
       if(code === 'UNSUPPORTED') return 'Este navegador no admite verificación biométrica web.';
       if(code === 'NO_PLATFORM_AUTHENTICATOR') return 'Activa una huella, Face ID o bloqueo de pantalla en el teléfono.';
       if(code === 'NO_SESSION') return 'Primero inicia sesión con tu cuenta.';
+      if(code === 'NOT_CONFIGURED') return 'Primero configura Face ID o huella desde el botón biométrico.';
       if(name === 'NotAllowedError' || code === 'CANCELLED') return 'Verificación cancelada. Toca la huella para intentarlo otra vez.';
       if(name === 'SecurityError') return 'Abre la app desde un dominio HTTPS; no funciona como archivo directo.';
       if(name === 'NotSupportedError') return 'Este teléfono o navegador no permite esta verificación.';
@@ -12675,6 +12676,242 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
   [0,30,80,160,320,700,1200].forEach(function(ms){
     setTimeout(actualizar, ms);
   });
+})();
+</script>
+
+
+<style id="yape-biometric-setup-v2-style">
+  #yapeBiometricSetupV2{position:fixed;inset:0;z-index:2147483646;display:none;align-items:flex-end;justify-content:center;background:rgba(24,4,38,.56);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:16px 14px calc(env(safe-area-inset-bottom,0px) + 14px);font-family:Roboto,system-ui,-apple-system,Segoe UI,Arial,sans-serif}
+  #yapeBiometricSetupV2.open{display:flex;animation:yapeBioSetupFade .18s ease-out both}
+  #yapeBiometricSetupCardV2{width:min(100%,390px);border-radius:30px;background:#fff;color:#25152d;padding:18px 18px 16px;box-shadow:0 28px 70px rgba(15,2,25,.42);position:relative;text-align:center;animation:yapeBioSetupUp .24s cubic-bezier(.2,.9,.2,1) both}
+  #yapeBiometricSetupCloseV2{position:absolute;right:12px;top:12px;width:36px;height:36px;border:0;border-radius:999px;background:#f1ebf5;color:#742284;font-size:23px;line-height:1;display:grid;place-items:center;font-weight:500}
+  #yapeBiometricSetupIconV2{width:78px;height:78px;margin:8px auto 14px;border-radius:27px;display:grid;place-items:center;background:linear-gradient(145deg,#8f2aae,#742284 58%,#24c0b5);box-shadow:0 18px 34px rgba(116,34,132,.24),0 0 0 10px rgba(116,34,132,.07)}
+  #yapeBiometricSetupIconV2 svg{width:48px;height:48px;display:block}
+  #yapeBiometricSetupTitleV2{margin:0;color:#25152d;font-size:23px;line-height:1.12;font-weight:850;letter-spacing:-.02em}
+  #yapeBiometricSetupTextV2{margin:10px auto 16px;max-width:310px;color:#76697e;font-size:14px;line-height:1.4;font-weight:520}
+  #yapeBiometricSetupInfoV2{display:flex;align-items:flex-start;gap:10px;text-align:left;background:#f6f0f9;border:1px solid rgba(116,34,132,.08);border-radius:17px;padding:12px;margin-bottom:14px;color:#5f5068;font-size:12.5px;line-height:1.35}
+  #yapeBiometricSetupInfoV2 span:first-child{width:25px;height:25px;flex:0 0 25px;border-radius:9px;background:rgba(36,192,181,.14);color:#0e9990;display:grid;place-items:center;font-size:15px;font-weight:900}
+  #yapeBiometricSetupActionV2{width:100%;height:51px;border:0;border-radius:18px;color:#fff;background:linear-gradient(180deg,#9228b3,#742284);box-shadow:0 14px 25px rgba(116,34,132,.25);font-size:15px;font-weight:850}
+  #yapeBiometricSetupActionV2:disabled{opacity:.68;box-shadow:none}
+  #yapeBiometricSetupLaterV2{margin-top:9px;width:100%;height:40px;border:0;background:transparent;color:#742284;font-size:13px;font-weight:750}
+  #yapeBiometricSetupStatusV2{min-height:20px;margin:10px 4px 0;color:#742284;font-size:12.5px;font-weight:750;line-height:1.3}
+  #yapeBioMiniToastV2{position:fixed;z-index:2147483647;left:50%;top:calc(env(safe-area-inset-top,0px) + 14px);transform:translate(-50%,-14px);width:min(330px,calc(100vw - 28px));padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.96);color:#2b1735;box-shadow:0 16px 38px rgba(20,2,31,.30);font-size:12.5px;font-weight:750;line-height:1.3;opacity:0;pointer-events:none;transition:opacity .18s ease,transform .18s ease}
+  #yapeBioMiniToastV2.show{opacity:1;transform:translate(-50%,0)}
+  .biometria-btn.yape-bio-busy{pointer-events:none;animation:yapeBioBtnPulseV2 .8s ease-in-out infinite}
+  @keyframes yapeBioSetupFade{from{opacity:0}to{opacity:1}}
+  @keyframes yapeBioSetupUp{from{opacity:.3;transform:translateY(25px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+  @keyframes yapeBioBtnPulseV2{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.62;transform:scale(.94)}}
+</style>
+<script id="yape-biometric-setup-v2-script">
+(function(){
+  'use strict';
+
+  var authBusy = false;
+  var toastTimer = 0;
+
+  function parentFn(name){
+    try{
+      if(window.parent && window.parent !== window && typeof window.parent[name] === 'function') return window.parent[name];
+    }catch(e){}
+    try{
+      if(typeof window[name] === 'function') return window[name];
+    }catch(e){}
+    return null;
+  }
+
+  function isIOS(){
+    var ua = navigator.userAgent || '';
+    var platform = navigator.platform || '';
+    return /iPad|iPhone|iPod/.test(ua) || (platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  }
+
+  function isConfigured(){
+    var fn = parentFn('__hasYapePlatformBiometric');
+    try{ return !!(fn && fn()); }catch(e){ return false; }
+  }
+
+  function label(){ return isIOS() ? 'Face ID' : 'huella'; }
+
+  function errorMessage(err){
+    var code = err && err.code ? String(err.code) : '';
+    var name = err && err.name ? String(err.name) : '';
+    if(code === 'INSECURE_CONTEXT' || name === 'SecurityError') return 'Abre la app desde HTTPS para usar la biometría.';
+    if(code === 'NO_PLATFORM_AUTHENTICATOR') return 'Primero activa Face ID, una huella o el bloqueo de pantalla en este teléfono.';
+    if(code === 'NO_SESSION') return 'Primero inicia sesión con tu cuenta.';
+    if(code === 'UNSUPPORTED' || name === 'NotSupportedError') return 'Este navegador no permite usar la biometría del teléfono.';
+    if(code === 'NOT_CONFIGURED') return 'Configura ' + label() + ' antes de usarlo.';
+    if(code === 'CANCELLED' || name === 'NotAllowedError') return 'Verificación cancelada.';
+    return (err && err.message) ? String(err.message) : 'No se pudo completar la verificación.';
+  }
+
+  function ensureUI(){
+    var root = document.getElementById('yapeBiometricSetupV2');
+    if(root) return root;
+
+    root = document.createElement('section');
+    root.id = 'yapeBiometricSetupV2';
+    root.setAttribute('aria-hidden','true');
+    root.innerHTML = ''
+      + '<div id="yapeBiometricSetupCardV2" role="dialog" aria-modal="true" aria-labelledby="yapeBiometricSetupTitleV2">'
+      +   '<button id="yapeBiometricSetupCloseV2" type="button" aria-label="Cerrar">×</button>'
+      +   '<div id="yapeBiometricSetupIconV2">'
+      +     '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
+      +       '<path d="M18 9h-5a4 4 0 0 0-4 4v5M46 9h5a4 4 0 0 1 4 4v5M18 55h-5a4 4 0 0 1-4-4v-5M46 55h5a4 4 0 0 0 4-4v-5" stroke="white" stroke-width="4" stroke-linecap="round"/>'
+      +       '<path d="M23 27v-3M41 27v-3M24 41c4.8 4.2 11.2 4.2 16 0M32 25v10l-4 2" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>'
+      +     '</svg>'
+      +   '</div>'
+      +   '<h2 id="yapeBiometricSetupTitleV2">Activa <span id="yapeBiometricSetupMethodV2"></span></h2>'
+      +   '<p id="yapeBiometricSetupTextV2">Ingresa más rápido usando la seguridad que ya tienes configurada en este teléfono.</p>'
+      +   '<div id="yapeBiometricSetupInfoV2"><span>✓</span><div>La app no guarda tu rostro ni tu huella. El teléfono realiza la verificación.</div></div>'
+      +   '<button id="yapeBiometricSetupActionV2" type="button">Configurar ahora</button>'
+      +   '<button id="yapeBiometricSetupLaterV2" type="button">Ahora no</button>'
+      +   '<div id="yapeBiometricSetupStatusV2" aria-live="polite"></div>'
+      + '</div>';
+    document.body.appendChild(root);
+
+    var toast = document.createElement('div');
+    toast.id = 'yapeBioMiniToastV2';
+    toast.setAttribute('aria-live','polite');
+    document.body.appendChild(toast);
+
+    document.getElementById('yapeBiometricSetupMethodV2').textContent = label();
+    document.getElementById('yapeBiometricSetupCloseV2').addEventListener('click', closeSetup);
+    document.getElementById('yapeBiometricSetupLaterV2').addEventListener('click', closeSetup);
+    document.getElementById('yapeBiometricSetupActionV2').addEventListener('click', configureNow);
+    root.addEventListener('click', function(ev){ if(ev.target === root) closeSetup(); });
+    return root;
+  }
+
+  function openSetup(){
+    var root = ensureUI();
+    var status = document.getElementById('yapeBiometricSetupStatusV2');
+    var action = document.getElementById('yapeBiometricSetupActionV2');
+    if(status) status.textContent = '';
+    if(action){ action.disabled = false; action.textContent = 'Configurar ahora'; }
+    root.classList.add('open');
+    root.setAttribute('aria-hidden','false');
+  }
+
+  function closeSetup(){
+    var root = document.getElementById('yapeBiometricSetupV2');
+    if(root){ root.classList.remove('open'); root.setAttribute('aria-hidden','true'); }
+  }
+
+  function showToast(message){
+    ensureUI();
+    var toast = document.getElementById('yapeBioMiniToastV2');
+    if(!toast) return;
+    toast.textContent = message;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2400);
+  }
+
+  function unlock(){
+    try{
+      if(window.parent && window.parent !== window){
+        window.parent.postMessage({type:'LOGIN_OK'}, '*');
+      }
+    }catch(e){}
+  }
+
+  async function configureNow(){
+    if(authBusy) return;
+    var register = parentFn('__registerYapePlatformBiometric');
+    var action = document.getElementById('yapeBiometricSetupActionV2');
+    var status = document.getElementById('yapeBiometricSetupStatusV2');
+    if(!register){
+      if(status) status.textContent = 'No se pudo conectar con la seguridad del teléfono.';
+      return;
+    }
+    authBusy = true;
+    if(action){ action.disabled = true; action.textContent = 'Abriendo ' + label() + '…'; }
+    if(status) status.textContent = 'Confirma la configuración en tu teléfono.';
+    try{
+      var result = await register();
+      if(result && result.ok){
+        if(status) status.textContent = label() + ' quedó activado correctamente.';
+        if(action) action.textContent = 'Listo';
+        setTimeout(function(){ closeSetup(); unlock(); }, 650);
+        return;
+      }
+      throw new Error('No se pudo activar la biometría.');
+    }catch(err){
+      if(status) status.textContent = errorMessage(err);
+      if(action){ action.disabled = false; action.textContent = 'Intentar nuevamente'; }
+    }finally{
+      authBusy = false;
+    }
+  }
+
+  async function authenticateNow(options){
+    options = options || {};
+    if(authBusy) return;
+    if(!isConfigured()){
+      if(!options.auto) openSetup();
+      return;
+    }
+    var run = parentFn('__yapePlatformBiometric');
+    if(!run){
+      if(!options.auto) showToast('No se pudo conectar con la seguridad del teléfono.');
+      return;
+    }
+    authBusy = true;
+    var btn = document.querySelector('.biometria-btn');
+    if(btn) btn.classList.add('yape-bio-busy');
+    try{
+      var result = await run();
+      if(result && result.ok){ unlock(); }
+    }catch(err){
+      if(err && err.code === 'NOT_CONFIGURED'){
+        if(!options.auto) openSetup();
+      }else if(!options.auto && !(err && (err.code === 'CANCELLED' || err.name === 'NotAllowedError'))){
+        showToast(errorMessage(err));
+      }
+    }finally{
+      authBusy = false;
+      if(btn) btn.classList.remove('yape-bio-busy');
+    }
+  }
+
+  function interceptBiometric(ev){
+    var target = ev && ev.target && ev.target.closest ? ev.target.closest('.biometria-btn') : null;
+    if(!target) return;
+    ev.preventDefault();
+    ev.stopPropagation();
+    if(ev.stopImmediatePropagation) ev.stopImmediatePropagation();
+    authenticateNow({auto:false});
+  }
+
+  function install(){
+    ensureUI();
+    document.addEventListener('click', interceptBiometric, true);
+    document.addEventListener('keydown', function(ev){
+      if((ev.key === 'Enter' || ev.key === ' ') && ev.target && ev.target.closest && ev.target.closest('.biometria-btn')){
+        interceptBiometric(ev);
+      }
+      if(ev.key === 'Escape') closeSetup();
+    }, true);
+
+    // On iPhone/iPad, request Face ID once when the lock screen opens,
+    // only when this account has already completed setup.
+    if(isIOS() && isConfigured()){
+      var now = Date.now();
+      var parentWindow = null;
+      try{ parentWindow = window.parent && window.parent !== window ? window.parent : window; }catch(e){ parentWindow = window; }
+      var last = 0;
+      try{ last = Number(parentWindow.__yapeAutoBiometricPromptAtV2 || 0); }catch(e){}
+      if(now - last > 5000){
+        try{ parentWindow.__yapeAutoBiometricPromptAtV2 = now; }catch(e){}
+        setTimeout(function(){
+          if(document.visibilityState === 'visible') authenticateNow({auto:true});
+        }, 700);
+      }
+    }
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install, {once:true});
+  else install();
 })();
 </script>
 
@@ -37326,7 +37563,7 @@ html.yosi-ios-standalone-full-v13 .stage > iframe{
 
 
 <!-- Biometría real del dispositivo mediante WebAuthn. -->
-<script id="yape-platform-biometric-webauthn-v1">
+<script id="yape-platform-biometric-webauthn-v2">
 (function(){
   'use strict';
 
@@ -37488,12 +37725,41 @@ html.yosi-ios-standalone-full-v13 .stage > iframe{
     return { ok: true, registered: false, method: 'webauthn' };
   }
 
+  window.__hasYapePlatformBiometric = function(){
+    var account = currentAccount();
+    return !!(account && readRecord(account));
+  };
+
+  window.__getYapePlatformBiometricState = function(){
+    var account = currentAccount();
+    var record = account ? readRecord(account) : null;
+    return {
+      hasSession: !!account,
+      configured: !!record,
+      createdAt: record && record.createdAt ? record.createdAt : null,
+      origin: record && record.origin ? record.origin : null
+    };
+  };
+
+  window.__registerYapePlatformBiometric = async function(){
+    await assertAvailability();
+    var account = currentAccount();
+    if(!account) throw makeError('NO_SESSION', 'No existe una sesión activa.');
+    var record = readRecord(account);
+    if(record){
+      return { ok: true, registered: false, alreadyConfigured: true, method: 'webauthn' };
+    }
+    return registerCredential(account);
+  };
+
   window.__yapePlatformBiometric = async function(){
     await assertAvailability();
     var account = currentAccount();
     if(!account) throw makeError('NO_SESSION', 'No existe una sesión activa.');
     var record = readRecord(account);
-    if(!record) return registerCredential(account);
+    if(!record){
+      throw makeError('NOT_CONFIGURED', 'Face ID o huella todavía no está configurado para esta cuenta.');
+    }
     return authenticateCredential(account, record);
   };
 
