@@ -34,7 +34,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
-<meta name="yosi-build" content="biometria-faceid-auto-20260731-v2"/>
+<meta name="yosi-build" content="biometria-auto-ios-android-20260731-v3"/>
 
 <link href="manifest.webmanifest" rel="manifest"/>
 <meta content="#742284" name="theme-color"/>
@@ -64,7 +64,7 @@
 
     var refreshing = false;
     function registerSW(){
-      navigator.serviceWorker.register('./service-worker.js?v=biometria-faceid-auto-20260731-v2', { scope: './' }).then(function(reg){
+      navigator.serviceWorker.register('./service-worker.js?v=biometria-auto-ios-android-20260731-v3', { scope: './' }).then(function(reg){
         try { reg.update && reg.update(); } catch(e){}
 
         function promoteWaiting(worker){
@@ -12702,7 +12702,7 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
   @keyframes yapeBioSetupUp{from{opacity:.3;transform:translateY(25px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
   @keyframes yapeBioBtnPulseV2{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.62;transform:scale(.94)}}
 </style>
-<script id="yape-biometric-setup-v2-script">
+<script id="yape-biometric-setup-v3-script">
 (function(){
   'use strict';
 
@@ -12723,6 +12723,14 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
     var ua = navigator.userAgent || '';
     var platform = navigator.platform || '';
     return /iPad|iPhone|iPod/.test(ua) || (platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  }
+
+  function isAndroid(){
+    return /Android/i.test(navigator.userAgent || '');
+  }
+
+  function isMobileBiometricPlatform(){
+    return isIOS() || isAndroid();
   }
 
   function isConfigured(){
@@ -12832,6 +12840,11 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
       if(result && result.ok){
         if(status) status.textContent = label() + ' quedó activado correctamente.';
         if(action) action.textContent = 'Listo';
+        try{ sessionStorage.setItem('yape_bio_auto_prompted_v3', '1'); }catch(e){}
+        try{
+          var pw = window.parent && window.parent !== window ? window.parent : window;
+          pw.__yapeAutoBiometricPromptAtV3 = true;
+        }catch(e){}
         setTimeout(function(){ closeSetup(); unlock(); }, 650);
         return;
       }
@@ -12893,19 +12906,30 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
       if(ev.key === 'Escape') closeSetup();
     }, true);
 
-    // On iPhone/iPad, request Face ID once when the lock screen opens,
-    // only when this account has already completed setup.
-    if(isIOS() && isConfigured()){
-      var now = Date.now();
+    // Al abrir la app, solicitar automáticamente la seguridad del teléfono
+    // en iPhone/iPad y Android, solamente si esta cuenta ya la configuró.
+    // sessionStorage evita que vuelva a mostrarse por recargas internas,
+    // cambios de pantalla o re-montajes del iframe durante la misma apertura.
+    if(isMobileBiometricPlatform() && isConfigured()){
       var parentWindow = null;
       try{ parentWindow = window.parent && window.parent !== window ? window.parent : window; }catch(e){ parentWindow = window; }
-      var last = 0;
-      try{ last = Number(parentWindow.__yapeAutoBiometricPromptAtV2 || 0); }catch(e){}
-      if(now - last > 5000){
-        try{ parentWindow.__yapeAutoBiometricPromptAtV2 = now; }catch(e){}
-        setTimeout(function(){
-          if(document.visibilityState === 'visible') authenticateNow({auto:true});
-        }, 700);
+
+      var autoKey = 'yape_bio_auto_prompted_v3';
+      var alreadyPrompted = false;
+      try{ alreadyPrompted = sessionStorage.getItem(autoKey) === '1'; }catch(e){}
+      try{ alreadyPrompted = alreadyPrompted || parentWindow.__yapeAutoBiometricPromptAtV3 === true; }catch(e){}
+
+      if(!alreadyPrompted){
+        try{ sessionStorage.setItem(autoKey, '1'); }catch(e){}
+        try{ parentWindow.__yapeAutoBiometricPromptAtV3 = true; }catch(e){}
+
+        var launchAutoBiometric = function(){
+          if(document.visibilityState !== 'visible') return;
+          authenticateNow({auto:true});
+        };
+
+        // Dar tiempo a que la pantalla de clave termine de montarse.
+        setTimeout(launchAutoBiometric, isIOS() ? 550 : 450);
       }
     }
   }
