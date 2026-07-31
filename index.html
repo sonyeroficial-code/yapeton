@@ -34,7 +34,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
-<meta name="yosi-build" content="iphone-standalone-full-height-20260730-v14-startup-paint"/>
+<meta name="yosi-build" content="biometria-webauthn-real-20260731-v1"/>
 
 <link href="manifest.webmanifest" rel="manifest"/>
 <meta content="#742284" name="theme-color"/>
@@ -64,7 +64,7 @@
 
     var refreshing = false;
     function registerSW(){
-      navigator.serviceWorker.register('./service-worker.js?v=iphone-startup-paint-20260730-v14', { scope: './' }).then(function(reg){
+      navigator.serviceWorker.register('./service-worker.js?v=biometria-webauthn-real-20260731-v1', { scope: './' }).then(function(reg){
         try { reg.update && reg.update(); } catch(e){}
 
         function promoteWaiting(worker){
@@ -617,7 +617,7 @@
 <img alt="BCP" decoding="async" id="__yapeSplashBCP" loading="lazy" src="bcp.png"/>
 </div>
 <div class="stage">
-<iframe allow="camera; microphone; clipboard-read; clipboard-write" id="loginFrame"></iframe>
+<iframe allow="camera; microphone; clipboard-read; clipboard-write; publickey-credentials-get; publickey-credentials-create" id="loginFrame"></iframe>
 <iframe allow="camera; microphone; clipboard-read; clipboard-write" id="homeFrame" srcdoc="&lt;!DOCTYPE html&gt;
 
 &lt;html lang=&quot;es&quot;&gt;
@@ -11496,14 +11496,14 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
     bio.setAttribute('aria-hidden','true');
     bio.innerHTML=''
       + '<div id="yapeBioSheet">'
-      +   '<div id="yapeBioCard" role="dialog" aria-modal="true" aria-label="Confirma tu dato biométrico">'
+      +   '<div id="yapeBioCard" role="dialog" aria-modal="true" aria-label="Verifica tu identidad">'
       +     '<div id="yapeBioApp"><div class="yapeBioAppName">Yape</div></div>'
-      +     '<div id="yapeBioTitle">Confirma tu dato biométrico</div>'
-      +     '<div id="yapeBioSubtitle">Escanea tu huella digital.</div>'
+      +     '<div id="yapeBioTitle">Verifica tu identidad</div>'
+      +     '<div id="yapeBioSubtitle">Usa la huella, Face ID o el bloqueo de tu teléfono.</div>'
       +     '<div id="yapeBioStatus" aria-live="polite"></div>'
       +     '<button id="yapeBioCancel" type="button">CANCELAR</button>'
       +   '</div>'
-      +   '<button id="yapeBioSensor" type="button" aria-label="Escanear huella">'
+      +   '<button id="yapeBioSensor" type="button" aria-label="Abrir verificación biométrica">'
       +     '<svg class="yapeBioFingerSvg" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
       +       '<path d="M12.5 34.5v-7.2C12.5 16.2 21.1 7.7 32 7.7s19.5 8.5 19.5 19.6v6.2" stroke="white" stroke-width="3.05" stroke-linecap="round"/>'
       +       '<path d="M18.4 29.2v-2.1c0-7.7 6-13.5 13.6-13.5s13.6 5.8 13.6 13.5v9.3" stroke="white" stroke-width="3.05" stroke-linecap="round"/>'
@@ -11516,7 +11516,7 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
       +       '<path d="M51.3 40.3c-.5 7.8-3.6 14.2-9.2 19" stroke="white" stroke-width="3.05" stroke-linecap="round"/>'
       +     '</svg>'
       +   '</button>'
-      +   '<div id="yapeBioKnox">Secured by Knox</div>'
+      +   '<div id="yapeBioKnox">Seguridad del dispositivo</div>'
       + '</div>';
     document.body.appendChild(bio);
   }
@@ -11538,13 +11538,13 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
     var bioSensor=document.getElementById('yapeBioSensor');
     var bioStatus=document.getElementById('yapeBioStatus');
     var bioSubtitle=document.getElementById('yapeBioSubtitle');
-    var defaultBioSubtitle='Escanea tu huella digital.';
+    var defaultBioSubtitle='Usa la huella, Face ID o el bloqueo de tu teléfono.';
     var pin=[];
     var maxLen=dots.length||6;
     var validating=false;
     var validationTimer=null;
-    var bioSensorHoldTimer=null;
-    var bioSensorTriggered=false;
+    var bioRequestRunning=false;
+    var bioAttemptToken=0;
 
     function notifyUnlock(){
       try{
@@ -11607,9 +11607,6 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
     }
 
     function clearBioSensorHold(keepScanning){
-      clearTimeout(bioSensorHoldTimer);
-      bioSensorHoldTimer=null;
-      bioSensorTriggered=false;
       if(bioSensor && !keepScanning){
         bioSensor.classList.remove('scanning');
       }
@@ -11619,8 +11616,76 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
     }
 
     function closeBioPrompt(){
+      bioAttemptToken++;
+      bioRequestRunning=false;
       clearBioSensorHold(false);
       setBioPrompt(false);
+    }
+
+    function getNativeBiometricRunner(){
+      try{
+        if(window.parent && window.parent !== window && typeof window.parent.__yapePlatformBiometric === 'function'){
+          return window.parent.__yapePlatformBiometric;
+        }
+      }catch(e){}
+      try{
+        if(typeof window.__yapePlatformBiometric === 'function'){
+          return window.__yapePlatformBiometric;
+        }
+      }catch(e){}
+      return null;
+    }
+
+    function biometricErrorMessage(err){
+      var code = err && err.code ? String(err.code) : '';
+      var name = err && err.name ? String(err.name) : '';
+      if(code === 'INSECURE_CONTEXT') return 'Publica la app con HTTPS para usar huella o Face ID.';
+      if(code === 'UNSUPPORTED') return 'Este navegador no admite verificación biométrica web.';
+      if(code === 'NO_PLATFORM_AUTHENTICATOR') return 'Activa una huella, Face ID o bloqueo de pantalla en el teléfono.';
+      if(code === 'NO_SESSION') return 'Primero inicia sesión con tu cuenta.';
+      if(name === 'NotAllowedError' || code === 'CANCELLED') return 'Verificación cancelada. Toca la huella para intentarlo otra vez.';
+      if(name === 'SecurityError') return 'Abre la app desde un dominio HTTPS; no funciona como archivo directo.';
+      if(name === 'NotSupportedError') return 'Este teléfono o navegador no permite esta verificación.';
+      if(name === 'InvalidStateError') return 'La biometría ya estaba registrada. Intenta nuevamente.';
+      return (err && err.message) ? String(err.message) : 'No se pudo verificar tu identidad.';
+    }
+
+    function startNativeBiometric(ev){
+      if(ev){ ev.preventDefault(); ev.stopPropagation(); }
+      if(validating || bioRequestRunning) return;
+
+      var runner = getNativeBiometricRunner();
+      setBioPrompt(true);
+      if(!runner){
+        setBioStatus('No se pudo conectar con la seguridad del dispositivo.', true);
+        return;
+      }
+
+      bioRequestRunning=true;
+      var attempt=++bioAttemptToken;
+      if(bioSensor) bioSensor.classList.add('scanning');
+      setBioStatus('Abriendo la seguridad del teléfono...', true);
+
+      Promise.resolve().then(function(){
+        return runner();
+      }).then(function(result){
+        if(attempt !== bioAttemptToken) return;
+        bioRequestRunning=false;
+        if(bioSensor) bioSensor.classList.remove('scanning');
+        if(result && result.ok){
+          setBioStatus(result.registered ? 'Biometría activada correctamente.' : 'Identidad verificada.', true);
+          setTimeout(function(){
+            if(attempt === bioAttemptToken) beginValidation();
+          }, 180);
+          return;
+        }
+        setBioStatus('No se pudo verificar tu identidad.', true);
+      }).catch(function(err){
+        if(attempt !== bioAttemptToken) return;
+        bioRequestRunning=false;
+        if(bioSensor) bioSensor.classList.remove('scanning');
+        setBioStatus(biometricErrorMessage(err), true);
+      });
     }
 
     function render(){
@@ -11707,18 +11772,14 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
 
     var bioBtn = teclado.querySelector('.biometria-btn');
     if(bioBtn){
-      var openBioPrompt = function(ev){
-        if(validating || (bioOverlay && bioOverlay.classList.contains('activo'))) return;
-        setBioPrompt(true);
-        if(ev){ ev.preventDefault(); ev.stopPropagation(); }
-      };
       bioBtn.style.cursor = 'pointer';
       bioBtn.setAttribute('role', 'button');
       bioBtn.setAttribute('tabindex', '0');
-      bioBtn.addEventListener('click', openBioPrompt, {passive:false});
+      bioBtn.setAttribute('aria-label', 'Usar huella, Face ID o bloqueo del teléfono');
+      bioBtn.addEventListener('click', startNativeBiometric, {passive:false});
       bioBtn.addEventListener('keydown', function(ev){
         if(ev.key==='Enter' || ev.key===' '){
-          openBioPrompt(ev);
+          startNativeBiometric(ev);
         }
       });
     }
@@ -11738,40 +11799,10 @@ el('searchInput').addEventListener('input',function(){q=this.value.trim().toLowe
     }
 
     if(bioSensor){
-      var startBioSensorHold = function(ev){
-        if(validating || !bioOverlay || !bioOverlay.classList.contains('activo')) return;
-        if(bioSensor.classList.contains('scanning')) return;
-        clearBioSensorHold(false);
-        bioSensor.classList.add('scanning');
-        setBioStatus('Escaneando huella...', true);
-        bioSensorHoldTimer = setTimeout(function(){
-          bioSensorTriggered = true;
-          beginValidation();
-        }, 2000);
-        if(ev && ev.preventDefault){ ev.preventDefault(); }
-      };
-      var endBioSensorHold = function(ev){
-        if(!bioSensorTriggered){
-          clearBioSensorHold(false);
-        }
-        if(ev && ev.preventDefault){ ev.preventDefault(); }
-      };
-      bioSensor.addEventListener('pointerdown', startBioSensorHold, {passive:false});
-      bioSensor.addEventListener('pointerup', endBioSensorHold, {passive:false});
-      bioSensor.addEventListener('pointerleave', endBioSensorHold, {passive:false});
-      bioSensor.addEventListener('pointercancel', endBioSensorHold, {passive:false});
-      bioSensor.addEventListener('click', function(ev){ if(ev){ ev.preventDefault(); ev.stopPropagation(); } }, {passive:false});
+      bioSensor.addEventListener('click', startNativeBiometric, {passive:false});
       bioSensor.addEventListener('keydown', function(ev){
         if(ev.key==='Enter' || ev.key===' '){
-          ev.preventDefault();
-          if(validating) return;
-          clearBioSensorHold(false);
-          bioSensor.classList.add('scanning');
-          setBioStatus('Escaneando huella...', true);
-          bioSensorHoldTimer = setTimeout(function(){
-            bioSensorTriggered = true;
-            beginValidation();
-          }, 2000);
+          startNativeBiometric(ev);
         }
       });
     }
@@ -37292,3 +37323,185 @@ html.yosi-ios-standalone-full-v13 .stage > iframe{
 })();
 </script>
 
+
+
+<!-- Biometría real del dispositivo mediante WebAuthn. -->
+<script id="yape-platform-biometric-webauthn-v1">
+(function(){
+  'use strict';
+
+  var RECORD_PREFIX = 'yapeton_webauthn_local_v1:';
+  var SESSION_KEY = 'yapeton_session';
+
+  function makeError(code, message, original){
+    var err = new Error(message || code);
+    err.code = code;
+    if(original && original.name) err.name = original.name;
+    if(original) err.originalError = original;
+    return err;
+  }
+
+  function randomBytes(length){
+    var bytes = new Uint8Array(length);
+    crypto.getRandomValues(bytes);
+    return bytes;
+  }
+
+  function bytesToBase64Url(value){
+    var bytes = value instanceof Uint8Array ? value : new Uint8Array(value);
+    var binary = '';
+    for(var i=0;i<bytes.length;i++) binary += String.fromCharCode(bytes[i]);
+    return btoa(binary).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  }
+
+  function base64UrlToBytes(value){
+    var base64 = String(value || '').replace(/-/g,'+').replace(/_/g,'/');
+    while(base64.length % 4) base64 += '=';
+    var binary = atob(base64);
+    var bytes = new Uint8Array(binary.length);
+    for(var i=0;i<binary.length;i++) bytes[i] = binary.charCodeAt(i);
+    return bytes;
+  }
+
+  function currentAccount(){
+    try{
+      var raw = localStorage.getItem(SESSION_KEY);
+      var session = raw ? JSON.parse(raw) : null;
+      if(!session || session.ok !== true || !session.uid) return null;
+      return {
+        uid: String(session.uid),
+        name: String(session.phone || session.email || session.uid),
+        displayName: String(session.displayName || session.name || 'Usuario de la app')
+      };
+    }catch(e){
+      return null;
+    }
+  }
+
+  function accountStorageKey(account){
+    return RECORD_PREFIX + encodeURIComponent(account.uid);
+  }
+
+  function readRecord(account){
+    try{
+      var raw = localStorage.getItem(accountStorageKey(account));
+      var record = raw ? JSON.parse(raw) : null;
+      return record && record.credentialId ? record : null;
+    }catch(e){
+      return null;
+    }
+  }
+
+  function writeRecord(account, record){
+    localStorage.setItem(accountStorageKey(account), JSON.stringify(record));
+  }
+
+  async function assertAvailability(){
+    if(!window.isSecureContext){
+      throw makeError('INSECURE_CONTEXT', 'La biometría web necesita HTTPS o localhost.');
+    }
+    if(!window.PublicKeyCredential || !navigator.credentials || !navigator.credentials.create || !navigator.credentials.get){
+      throw makeError('UNSUPPORTED', 'El navegador no admite WebAuthn.');
+    }
+    if(typeof PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable === 'function'){
+      var available = false;
+      try{
+        available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+      }catch(e){
+        available = false;
+      }
+      if(!available){
+        throw makeError('NO_PLATFORM_AUTHENTICATOR', 'No hay autenticación del dispositivo disponible.');
+      }
+    }
+  }
+
+  async function registerCredential(account){
+    var userHandle = randomBytes(32);
+    var challenge = randomBytes(32);
+    var credential;
+    try{
+      credential = await navigator.credentials.create({
+        publicKey: {
+          challenge: challenge,
+          rp: { name: document.title || 'Aplicación web' },
+          user: {
+            id: userHandle,
+            name: account.name,
+            displayName: account.displayName
+          },
+          pubKeyCredParams: [
+            { type: 'public-key', alg: -7 },
+            { type: 'public-key', alg: -257 }
+          ],
+          authenticatorSelection: {
+            authenticatorAttachment: 'platform',
+            residentKey: 'preferred',
+            requireResidentKey: false,
+            userVerification: 'required'
+          },
+          timeout: 60000,
+          attestation: 'none'
+        }
+      });
+    }catch(e){
+      if(e && e.name === 'NotAllowedError') throw makeError('CANCELLED', 'La verificación fue cancelada.', e);
+      if(e && e.name === 'SecurityError') throw makeError('INSECURE_CONTEXT', 'WebAuthn necesita un dominio HTTPS válido.', e);
+      if(e && e.name === 'NotSupportedError') throw makeError('UNSUPPORTED', 'El dispositivo no admite esta credencial.', e);
+      throw e;
+    }
+    if(!credential) throw makeError('UNSUPPORTED', 'No se creó la credencial biométrica.');
+
+    writeRecord(account, {
+      credentialId: credential.id || bytesToBase64Url(credential.rawId),
+      userHandle: bytesToBase64Url(userHandle),
+      createdAt: new Date().toISOString(),
+      origin: location.origin
+    });
+
+    return { ok: true, registered: true, method: 'webauthn' };
+  }
+
+  async function authenticateCredential(account, record){
+    var challenge = randomBytes(32);
+    var assertion;
+    try{
+      assertion = await navigator.credentials.get({
+        publicKey: {
+          challenge: challenge,
+          allowCredentials: [{
+            type: 'public-key',
+            id: base64UrlToBytes(record.credentialId),
+            transports: ['internal']
+          }],
+          userVerification: 'required',
+          timeout: 60000
+        }
+      });
+    }catch(e){
+      if(e && e.name === 'NotAllowedError') throw makeError('CANCELLED', 'La verificación fue cancelada.', e);
+      if(e && e.name === 'SecurityError') throw makeError('INSECURE_CONTEXT', 'WebAuthn necesita un dominio HTTPS válido.', e);
+      if(e && e.name === 'NotSupportedError') throw makeError('UNSUPPORTED', 'El dispositivo no admite esta verificación.', e);
+      throw e;
+    }
+    if(!assertion) throw makeError('CANCELLED', 'No se verificó la identidad.');
+    return { ok: true, registered: false, method: 'webauthn' };
+  }
+
+  window.__yapePlatformBiometric = async function(){
+    await assertAvailability();
+    var account = currentAccount();
+    if(!account) throw makeError('NO_SESSION', 'No existe una sesión activa.');
+    var record = readRecord(account);
+    if(!record) return registerCredential(account);
+    return authenticateCredential(account, record);
+  };
+
+  window.__resetYapePlatformBiometric = function(){
+    var account = currentAccount();
+    if(!account) return false;
+    localStorage.removeItem(accountStorageKey(account));
+    return true;
+  };
+})();
+</script>
